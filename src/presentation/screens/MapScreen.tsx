@@ -1,250 +1,251 @@
 /**
- * MapScreen — the primary fog-of-war map view.
+ * MapScreen — the primary fog-of-war view, drawn on a REAL interactive basemap.
  *
- * Revealed H3 hexagons are projected from lat/lng into SVG screen space via
- * a simple equirectangular projection centred on the bounding box of all
- * revealed cells. Each hexagon is drawn as a Polygon in react-native-svg.
+ * A `react-native-maps` MapView renders real streets, roads, and place names and
+ * owns the projection (pan/zoom, centred on the user on open). The fog-of-war is
+ * a single dark Polygon covering the viewport with a HOLE punched for every
+ * explored area (`overlay.holes`), so the real map shows through where you've
+ * been. Unexplored pockets fully surrounded by explored land are re-fogged as
+ * islands, and freshly revealed cells flash briefly (the reveal animation).
  *
- * Below the map: XP bar, level badge, streak, and the worldwide exploration %.
- * Recent domain events float as EventToast banners above the map.
+ * All of the fog geometry is computed by the pure, unit-tested
+ * `@/domain/geo/fog` module — this file only binds it to the map SDK and the
+ * on-map HUD (level, XP, and "% uncovered", shown the moment the map opens).
  */
-import React, { useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Svg, { Polygon, Rect } from 'react-native-svg';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import MapView, { Polygon, type Region } from 'react-native-maps';
 
 import { palette, radii, spacing, typography } from '@/app/theme';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
 import { EventToast, LevelBadge, StreakFlame, XpBar } from '@/presentation/components';
-import { cellPolygon } from '@/domain/geo/grid';
-import type { Coordinates, H3Index } from '@/domain/geo/types';
+import { cellCenter } from '@/domain/geo/grid';
+import {
+  approximateAreaKm2,
+  buildFogOverlay,
+  computeFogGeometry,
+  viewExploredPercent,
+  type Ring,
+} from '@/domain/geo/fog';
+import type { H3Index } from '@/domain/geo/types';
 import { levelForXp } from '@/domain/progression/levels';
-import { worldwidePercent } from '@/domain/regions/exploration';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const MAP_HEIGHT = SCREEN_HEIGHT * 0.5;
-const SCALE = 8000;
+/** Fallback view when we have neither a device fix nor any revealed cells. */
+const DEFAULT_REGION: Region = {
+  latitude: 59.3293,
+  longitude: 18.0686,
+  latitudeDelta: 0.06,
+  longitudeDelta: 0.06,
+};
 
-// ---------------------------------------------------------------------------
-// Projection helpers
-// ---------------------------------------------------------------------------
+const REVEAL_PULSE_START = 0.55;
+const REVEAL_PULSE_STEP = 0.11;
 
-function latLngToSvg(
-  lat: number,
-  lng: number,
-  centerLat: number,
-  centerLng: number,
-  scale: number,
-  svgWidth: number,
-  svgHeight: number,
-): { x: number; y: number } {
-  const x = (lng - centerLng) * scale + svgWidth / 2;
-  const y = (centerLat - lat) * scale + svgHeight / 2;
-  return { x, y };
-}
-
-function coordinatesToPolygonPoints(
-  coords: Coordinates[],
-  centerLat: number,
-  centerLng: number,
-): string {
-  return coords
-    .map(({ latitude, longitude }) => {
-      const { x, y } = latLngToSvg(
-        latitude,
-        longitude,
-        centerLat,
-        centerLng,
-        SCALE,
-        SCREEN_WIDTH,
-        MAP_HEIGHT,
-      );
-      return `${x.toFixed(2)},${y.toFixed(2)}`;
-    })
-    .join(' ');
-}
-
-// ---------------------------------------------------------------------------
-// Placeholder fog hex grid when no cells are revealed
-// ---------------------------------------------------------------------------
-
-function PlaceholderFogGrid(): React.ReactElement {
-  const cols = 6;
-  const rows = 5;
-  const r = 28;
-  const dx = r * Math.sqrt(3);
-  const dy = r * 1.5;
-
-  const hexes: { points: string; key: string }[] = [];
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const cx = col * dx + (row % 2 === 0 ? 0 : dx / 2) + r;
-      const cy = row * dy + r;
-      const pts = Array.from({ length: 6 }, (_, i) => {
-        const angle = (Math.PI / 180) * (60 * i - 30);
-        return `${(cx + r * Math.cos(angle)).toFixed(2)},${(cy + r * Math.sin(angle)).toFixed(2)}`;
-      }).join(' ');
-      hexes.push({ points: pts, key: `${row}-${col}` });
-    }
+/** Region centred on the centroid of already-revealed cells, if any. */
+function centroidRegion(cells: readonly H3Index[]): Region | null {
+  if (cells.length === 0) {
+    return null;
   }
+  let lat = 0;
+  let lng = 0;
+  for (const cell of cells) {
+    const c = cellCenter(cell);
+    lat += c.latitude;
+    lng += c.longitude;
+  }
+  return {
+    latitude: lat / cells.length,
+    longitude: lng / cells.length,
+    latitudeDelta: 0.06,
+    longitudeDelta: 0.06,
+  };
+}
 
+function HudStat({ label, value }: { label: string; value: string }): React.ReactElement {
   return (
-    <Svg width={SCREEN_WIDTH} height={MAP_HEIGHT}>
-      <Rect x={0} y={0} width={SCREEN_WIDTH} height={MAP_HEIGHT} fill={palette.ink} />
-      {hexes.map((h) => (
-        <Polygon
-          key={h.key}
-          points={h.points}
-          fill="rgba(30,49,73,0.4)"
-          stroke="rgba(30,49,73,0.8)"
-          strokeWidth={0.8}
-        />
-      ))}
-    </Svg>
+    <View style={styles.hudStat}>
+      <Text style={styles.hudStatValue}>{value}</Text>
+      <Text style={styles.hudStatLabel}>{label}</Text>
+    </View>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Main component
-// ---------------------------------------------------------------------------
-
 export default function MapScreen(): React.ReactElement {
-  const { playerState, isDemoWalking, runDemoWalk, recentEvents } = useExplorationStore();
-  const [dismissedEventIds, setDismissedEventIds] = useState<Set<number>>(new Set());
+  const { playerState, currentLocation, recentEvents, isDemoWalking, runDemoWalk, locateMe } =
+    useExplorationStore();
 
-  const cells = Array.from(playerState.revealedCells) as H3Index[];
-  const hasRevealedCells = cells.length > 0;
+  const cells = useMemo(
+    () => Array.from(playerState.revealedCells) as H3Index[],
+    [playerState.revealedCells],
+  );
 
-  // ---------------------------------------------------------------------------
-  // Build polygon data for all revealed cells
-  // ---------------------------------------------------------------------------
+  const mapRef = useRef<MapView>(null);
+  const [region, setRegion] = useState<Region>(() => centroidRegion(cells) ?? DEFAULT_REGION);
 
-  const cellPolygons: { points: string; key: string }[] = [];
-  let totalLat = 0;
-  let totalLng = 0;
-  let totalCount = 0;
+  // Centre on the user's real location as soon as it resolves.
+  useEffect(() => {
+    void locateMe();
+  }, [locateMe]);
 
-  if (hasRevealedCells) {
-    // First pass: collect all vertex coords to compute centre
-    const allCoords: Coordinates[] = [];
-    const polygonCache = new Map<string, Coordinates[]>();
-    for (const cell of cells) {
-      const coords = cellPolygon(cell);
-      polygonCache.set(cell, coords);
-      for (const c of coords) {
-        allCoords.push(c);
-        totalLat += c.latitude;
-        totalLng += c.longitude;
-        totalCount += 1;
-      }
+  useEffect(() => {
+    if (currentLocation && mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          latitudeDelta: 0.02,
+          longitudeDelta: 0.02,
+        },
+        600,
+      );
     }
+  }, [currentLocation]);
 
-    const centerLat = totalCount > 0 ? totalLat / totalCount : 0;
-    const centerLng = totalCount > 0 ? totalLng / totalCount : 0;
-
-    // Second pass: project to SVG
-    for (const cell of cells) {
-      const coords = polygonCache.get(cell);
-      if (coords === undefined || coords.length === 0) {
-        continue;
-      }
-      const points = coordinatesToPolygonPoints(coords, centerLat, centerLng);
-      cellPolygons.push({ points, key: cell });
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // XP / level
-  // ---------------------------------------------------------------------------
+  // Fog geometry for the current viewport (pure, memoised).
+  const overlay = useMemo(() => buildFogOverlay(region, cells), [region, cells]);
   const levelProgress = levelForXp(playerState.stats.totalXp);
-  const worldPct = worldwidePercent(playerState.stats.cellsRevealed);
+  const viewPct = viewExploredPercent(overlay.exploredInView, overlay.estimatedCellsInView);
+  const areaKm2 = approximateAreaKm2(playerState.stats.cellsRevealed);
 
-  // ---------------------------------------------------------------------------
-  // Recent toasts (last 3, non-dismissed)
-  // ---------------------------------------------------------------------------
-  const visibleEvents = recentEvents.filter((_, idx) => !dismissedEventIds.has(idx)).slice(0, 3);
+  // --- Reveal animation: flash newly revealed outlines, then fade out. -------
+  const [pulseRings, setPulseRings] = useState<Ring[]>([]);
+  const [pulseAlpha, setPulseAlpha] = useState(0);
+  const lastPulsedRef = useRef<readonly H3Index[] | null>(null);
 
-  function dismissEvent(idx: number): void {
-    setDismissedEventIds((prev) => new Set([...prev, idx]));
-  }
+  useEffect(() => {
+    const latest = recentEvents[0];
+    if (latest?.type === 'cellsRevealed' && latest.cells !== lastPulsedRef.current) {
+      lastPulsedRef.current = latest.cells;
+      setPulseRings(computeFogGeometry(latest.cells).revealedOutlines);
+      setPulseAlpha(REVEAL_PULSE_START);
+    }
+  }, [recentEvents]);
+
+  useEffect(() => {
+    // Step the fade down over time. setState happens only in the timer callback
+    // (never synchronously in the effect body), and the pulse polygons are
+    // rendered only while `pulseAlpha > 0`, so there is no need to clear the
+    // rings — stale ones simply stop rendering once the flash finishes.
+    if (pulseAlpha <= 0) {
+      return;
+    }
+    const timer = setTimeout(() => setPulseAlpha((a) => Math.max(0, a - REVEAL_PULSE_STEP)), 110);
+    return () => clearTimeout(timer);
+  }, [pulseAlpha]);
+
+  // --- Toasts ----------------------------------------------------------------
+  const [dismissed, setDismissed] = useState<Set<number>>(new Set());
+  const visibleEvents = recentEvents
+    .map((event, idx) => ({ event, idx }))
+    .filter(({ event, idx }) => !dismissed.has(idx) && event.type !== 'xpGained')
+    .slice(0, 3);
 
   return (
     <View style={styles.root}>
-      {/* ------------------------------------------------------------------ */}
-      {/* Map SVG area                                                         */}
-      {/* ------------------------------------------------------------------ */}
-      <View style={styles.mapContainer}>
-        {hasRevealedCells ? (
-          <Svg width={SCREEN_WIDTH} height={MAP_HEIGHT}>
-            <Rect x={0} y={0} width={SCREEN_WIDTH} height={MAP_HEIGHT} fill={palette.ink} />
-            {cellPolygons.map(({ points, key }) => (
-              <Polygon
-                key={key}
-                points={points}
-                fill="rgba(56,224,166,0.3)"
-                stroke="rgba(56,224,166,0.7)"
-                strokeWidth={0.5}
+      <MapView
+        ref={mapRef}
+        style={StyleSheet.absoluteFill}
+        initialRegion={region}
+        onRegionChangeComplete={setRegion}
+        showsUserLocation
+        showsMyLocationButton={false}
+        toolbarEnabled={false}
+        loadingEnabled
+        loadingBackgroundColor={palette.ink}
+        loadingIndicatorColor={palette.lumen}
+      >
+        {/* The fog: one dark polygon over the viewport, holes where explored. */}
+        <Polygon
+          coordinates={overlay.outer}
+          holes={overlay.holes}
+          fillColor={palette.fogOverlay}
+          strokeColor="rgba(56,224,166,0.35)"
+          strokeWidth={1}
+          tappable={false}
+        />
+        {/* Fog islands: unexplored pockets surrounded by explored land. */}
+        {overlay.islands.map((ring, i) => (
+          <Polygon
+            key={`island-${i}`}
+            coordinates={ring}
+            fillColor={palette.fogOverlay}
+            strokeColor="transparent"
+            strokeWidth={0}
+            tappable={false}
+          />
+        ))}
+        {/* Reveal flash on newly uncovered cells. */}
+        {pulseAlpha > 0 &&
+          pulseRings.map((ring, i) => (
+            <Polygon
+              key={`pulse-${i}`}
+              coordinates={ring}
+              fillColor={`rgba(56,224,166,${pulseAlpha})`}
+              strokeColor={`rgba(56,224,166,${Math.min(1, pulseAlpha + 0.35)})`}
+              strokeWidth={2}
+              tappable={false}
+            />
+          ))}
+      </MapView>
+
+      {/* HUD — the first thing you see: how much you've uncovered. */}
+      <SafeAreaView style={styles.hudWrap} pointerEvents="box-none" edges={['top']}>
+        <View style={styles.hud} pointerEvents="none">
+          <View style={styles.hudTopRow}>
+            <LevelBadge level={levelProgress.level} size="md" />
+            <View style={styles.hudXp}>
+              <XpBar
+                progress={levelProgress.progress}
+                xpIntoLevel={levelProgress.xpIntoLevel}
+                xpForLevelSpan={levelProgress.xpForLevelSpan}
+                showLabel
               />
-            ))}
-          </Svg>
-        ) : (
-          <PlaceholderFogGrid />
-        )}
-
-        {/* Empty-state overlay */}
-        {!hasRevealedCells && (
-          <View style={styles.emptyOverlay} pointerEvents="none">
-            <Text style={styles.emptyTitle}>The world awaits.</Text>
-            <Text style={styles.emptySubtitle}>Take a walk to reveal the map!</Text>
+            </View>
+            <StreakFlame days={playerState.stats.currentStreakDays} size={32} />
           </View>
-        )}
 
-        {/* Event toasts — float above the map */}
-        {visibleEvents.map((event, idx) => (
-          <View
+          <View style={styles.hudPctRow}>
+            <Text style={styles.hudPct}>{viewPct.toFixed(1)}%</Text>
+            <Text style={styles.hudPctLabel}>of this area uncovered</Text>
+          </View>
+
+          <View style={styles.hudStatsRow}>
+            <HudStat label="Area" value={`${areaKm2.toFixed(1)} km²`} />
+            <HudStat
+              label="Distance"
+              value={`${(playerState.stats.distanceMeters / 1000).toFixed(1)} km`}
+            />
+            <HudStat label="Cells" value={`${playerState.stats.cellsRevealed}`} />
+          </View>
+        </View>
+      </SafeAreaView>
+
+      {/* Event toasts */}
+      <View style={styles.toastColumn} pointerEvents="box-none">
+        {visibleEvents.map(({ event, idx }) => (
+          <EventToast
             key={idx}
-            style={{ top: spacing.lg + idx * 64, position: 'absolute', left: 0, right: 0 }}
-          >
-            <EventToast event={event} onDismiss={() => dismissEvent(idx)} />
-          </View>
+            event={event}
+            onDismiss={() => setDismissed((prev) => new Set([...prev, idx]))}
+          />
         ))}
       </View>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Stats strip below the map                                           */}
-      {/* ------------------------------------------------------------------ */}
-      <ScrollView
-        style={styles.statsScroll}
-        contentContainerStyle={styles.statsContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Level + XP row */}
-        <View style={styles.levelRow}>
-          <LevelBadge level={levelProgress.level} size="md" />
-          <View style={styles.xpBarWrapper}>
-            <XpBar
-              progress={levelProgress.progress}
-              xpIntoLevel={levelProgress.xpIntoLevel}
-              xpForLevelSpan={levelProgress.xpForLevelSpan}
-              showLabel
-            />
-            <Text style={styles.levelLabel}>
-              Level {levelProgress.level} · {levelProgress.xpToNextLevel} XP to next
-            </Text>
-          </View>
-          <StreakFlame days={playerState.stats.currentStreakDays} size={36} />
-        </View>
-
-        {/* Worldwide % stat */}
-        <View style={styles.worldRow}>
-          <Text style={styles.worldLabel}>World explored</Text>
-          <Text style={styles.worldValue}>
-            {worldPct < 0.0001 ? worldPct.toExponential(2) : worldPct.toFixed(6)}%
-          </Text>
-        </View>
-
-        {/* Demo walk button */}
+      {/* Floating action buttons */}
+      <View style={styles.fabColumn} pointerEvents="box-none">
         <TouchableOpacity
-          style={[styles.demoButton, isDemoWalking && styles.demoButtonDisabled]}
+          style={styles.fab}
+          onPress={() => {
+            void locateMe();
+          }}
+          accessibilityLabel="Centre the map on my location"
+          accessibilityRole="button"
+        >
+          <Text style={styles.fabIcon}>◎</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.demoFab, isDemoWalking && styles.demoFabDisabled]}
           onPress={() => {
             void runDemoWalk();
           }}
@@ -252,111 +253,115 @@ export default function MapScreen(): React.ReactElement {
           accessibilityLabel={isDemoWalking ? 'Demo walk in progress' : 'Take a demo walk'}
           accessibilityRole="button"
         >
-          <Text style={[styles.demoButtonText, isDemoWalking && styles.demoButtonTextDisabled]}>
-            {isDemoWalking ? 'Walking…' : 'Take a demo walk'}
-          </Text>
+          <Text style={styles.demoFabText}>{isDemoWalking ? 'Walking…' : 'Demo walk'}</Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </View>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Styles
-// ---------------------------------------------------------------------------
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: palette.ink,
   },
-  mapContainer: {
-    width: SCREEN_WIDTH,
-    height: MAP_HEIGHT,
-    backgroundColor: palette.ink,
-    overflow: 'hidden',
-  },
-  emptyOverlay: {
+  hudWrap: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  emptyTitle: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.xl,
-    color: palette.text,
-    fontWeight: '700',
-    marginBottom: spacing.xs,
-  },
-  emptySubtitle: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.md,
-    color: palette.textMuted,
-  },
-  statsScroll: {
-    flex: 1,
-  },
-  statsContent: {
+  hud: {
+    margin: spacing.md,
     padding: spacing.md,
-    gap: spacing.md,
+    borderRadius: radii.lg,
+    backgroundColor: 'rgba(15,27,45,0.82)',
+    gap: spacing.sm,
   },
-  levelRow: {
+  hudTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    backgroundColor: palette.surface,
-    borderRadius: radii.md,
-    padding: spacing.md,
   },
-  xpBarWrapper: {
+  hudXp: {
     flex: 1,
-    gap: spacing.xs,
   },
-  levelLabel: {
+  hudPctRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: spacing.sm,
+  },
+  hudPct: {
+    fontFamily: typography.display,
+    fontSize: typography.sizes.xxl,
+    color: palette.lumen,
+    fontWeight: '800',
+  },
+  hudPctLabel: {
+    fontFamily: typography.body,
+    fontSize: typography.sizes.sm,
+    color: palette.textMuted,
+  },
+  hudStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  hudStat: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  hudStatValue: {
+    fontFamily: typography.display,
+    fontSize: typography.sizes.md,
+    color: palette.text,
+    fontWeight: '700',
+  },
+  hudStatLabel: {
     fontFamily: typography.body,
     fontSize: typography.sizes.xs,
     color: palette.textMuted,
   },
-  worldRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  toastColumn: {
+    position: 'absolute',
+    top: 190,
+    left: 0,
+    right: 0,
+    gap: spacing.sm,
+  },
+  fabColumn: {
+    position: 'absolute',
+    right: spacing.md,
+    bottom: spacing.xl,
+    alignItems: 'flex-end',
+    gap: spacing.md,
+  },
+  fab: {
+    width: 52,
+    height: 52,
+    borderRadius: radii.pill,
     backgroundColor: palette.surface,
-    borderRadius: radii.md,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  worldLabel: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.sm,
-    color: palette.textMuted,
-  },
-  worldValue: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.sm,
-    color: palette.aurora,
-    fontWeight: '600',
-  },
-  demoButton: {
-    backgroundColor: palette.lumen,
-    borderRadius: radii.md,
-    paddingVertical: spacing.md,
     alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: palette.surfaceAlt,
   },
-  demoButtonDisabled: {
+  fabIcon: {
+    fontSize: 24,
+    color: palette.lumen,
+  },
+  demoFab: {
+    backgroundColor: palette.lumen,
+    borderRadius: radii.pill,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+  },
+  demoFabDisabled: {
     backgroundColor: palette.surfaceAlt,
   },
-  demoButtonText: {
+  demoFabText: {
     fontFamily: typography.display,
     fontSize: typography.sizes.md,
     color: palette.ink,
     fontWeight: '700',
-  },
-  demoButtonTextDisabled: {
-    color: palette.textMuted,
   },
 });

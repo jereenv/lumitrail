@@ -15,6 +15,7 @@ module.exports = [
       'assets/*',
       'babel.config.js',
       'metro.config.js',
+      'app.config.js',
     ],
   },
   {

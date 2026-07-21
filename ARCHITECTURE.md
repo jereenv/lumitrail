@@ -117,6 +117,40 @@ centroid resolves into it — an exact count, immune to the nesting approximatio
 Region `targetCells` are estimates; production bundles precomputed land-cell
 counts from a real polygon dataset (see §7).
 
+### Rendering the fog on a real map
+
+Storing cells is only half the job; the other half is drawing them. The map is a
+real interactive basemap (`react-native-maps` — Google Maps on Android, Apple
+Maps on iOS) that **owns the projection**. We render the fog as a single dark
+`Polygon` covering the viewport with a **hole punched for every explored area**,
+using the SDK's `holes` support. Because the SDK projects our lat/lng rings, the
+fog aligns perfectly with real streets at every zoom level, and the basemap
+(streets, roads, place names) shows through wherever you have been.
+
+`h3-js`'s `cellsToMultiPolygon` dissolves adjacent explored hexagons into smooth
+merged outlines (internal edges removed) and surfaces inner rings for unexplored
+pockets, which we redraw as "fog islands". All of this is a pure function —
+`buildFogOverlay(region, cells)` in `domain/geo/fog.ts` — returning the outer
+ring, the holes, the islands, and the explored-vs-total counts that feed the
+on-map HUD, so it is unit-tested with zero device.
+
+**Why this replaced the first attempt.** The original map drew hexagons as SVG on
+a solid dark rectangle using a hand-rolled equirectangular projection. That was
+wrong on every axis: no streets, roads, or place names; no pan/zoom; and the
+custom projection only lined up with real geography at one fixed scale, drifting
+everywhere else. Letting the map SDK own the projection eliminates the entire
+class of problem — the hexagon holes are defined in lat/lng and the SDK places
+them exactly.
+
+**Why `react-native-maps`, not MapLibre.** Expo vets a `react-native-maps`
+version per SDK (1.27.2 for SDK 57), so it builds reliably on this bleeding-edge
+RN 0.86 / React 19 stack; its `holes` prop is the most direct fit for the
+punch-a-hole design; and iOS gets Apple Maps with no API key. MapLibre (free,
+keyless vector tiles) is appealing for a free app, but its New-Architecture
+support on RN 0.86 is unproven here and build reliability won. The
+`MapRegion` / `buildFogOverlay` boundary is SDK-agnostic, so moving to MapLibre
+later would touch only `MapScreen.tsx`.
+
 ---
 
 ## 4. Battery strategy (top priority)
@@ -219,16 +253,21 @@ is made (privacy: reverse geocoding stays on-device).
 - **The location provider is mocked** (`MockLocationProvider`) so the whole
   pipeline runs with scripted points and zero hardware — the DoD requirement.
 
-Total: **84 tests across 16 suites**, plus a runnable narrated demo
-(`npm run demo`).
+Total: **101 tests across 18 suites**, plus a runnable narrated demo
+(`npm run demo`). The map/fog rendering is covered by pure geometry tests
+(`domain/geo/fog.test.ts`) and a `MapScreen` test that mocks the map SDK.
 
 ---
 
 ## 9. Known limitations & next steps
 
-- **On-device build not run here** (no Android SDK / iOS pods in the environment).
-  The map rendering uses `react-native-svg`; integrating a full vector map
-  (MapLibre GL) is the next step for production polish.
+- **On-device build not run here** — no Android SDK, no iOS simulators, and no
+  CocoaPods in this environment. The app is verified by a Metro bundle
+  (`expo export`, 839 modules) plus the full test suite (including a `MapScreen`
+  test that mocks the map SDK). A live map render needs a development build on a
+  real machine (see README): a free Google Maps key on Android; Apple Maps needs
+  none. `react-native-maps` requires native code, so it does **not** run in Expo
+  Go — a dev build is required.
 - **Region targets are estimates.** Swap in the bundled polygon dataset (§7) for
   authoritative completion %.
 - **Sync backend is a fake client.** The `SyncClient` interface is ready; a real

@@ -80,6 +80,10 @@ const DEMO_ROUTE = buildDemoRoute();
 export interface ExplorationState {
   playerState: PlayerState;
   recentEvents: readonly DomainEvent[];
+  /** The device's current position once located, for centring the map. */
+  currentLocation: GeoPoint | null;
+  /** Whether the real device stack (GPS + SQLite) is active vs the demo stack. */
+  isDeviceBacked: boolean;
   isInitialized: boolean;
   isTracking: boolean;
   isDemoWalking: boolean;
@@ -92,6 +96,8 @@ export interface ExplorationActions {
   runDemoWalk(): Promise<void>;
   startTracking(): Promise<void>;
   stopTracking(): void;
+  /** Best-effort one-shot device location; no-op if unavailable (e.g. demo stack). */
+  locateMe(): Promise<void>;
   sync(): Promise<void>;
   exportData(): Promise<{ snapshot: unknown; revealedCells: string[] }>;
   deleteAllData(): Promise<void>;
@@ -108,6 +114,12 @@ let service: ExplorationService | null = null;
 let locationSubscription: LocationSubscription | null = null;
 let mockLocation: MockLocationProvider | null = null;
 
+/** Local timezone offset in minutes to add to UTC, for streak day bucketing. */
+function tzOffsetMinutes(): number {
+  return -new Date().getTimezoneOffset();
+}
+
+/** The demo/fallback stack: in-memory repositories + a scriptable mock GPS. */
 function buildService(): ExplorationService {
   mockLocation = new MockLocationProvider();
   return new ExplorationService({
@@ -118,8 +130,38 @@ function buildService(): ExplorationService {
     resolver: defaultRegionResolver,
     playerId: 'local-player',
     displayName: 'Explorer',
-    tzOffsetMinutes: 120,
+    tzOffsetMinutes: tzOffsetMinutes(),
   });
+}
+
+/**
+ * The real device stack: SQLite persistence + battery-safe Expo location, with
+ * background fixes replayed on launch. Native modules are imported dynamically
+ * so a failure to load them (Expo Go, web, tests) is caught by the caller,
+ * which then falls back to {@link buildService}.
+ */
+async function buildDeviceService(): Promise<ExplorationService> {
+  const [{ ExpoLocationProvider }, sqlite, { drainPendingFixes }] = await Promise.all([
+    import('@/data/location/ExpoLocationProvider'),
+    import('@/data/persistence/sqlite/SqliteRepositories'),
+    import('@/data/location/pendingFixes'),
+  ]);
+  const db = await sqlite.openLumitrailDatabase();
+  const provider = new ExpoLocationProvider();
+  await provider.requestForegroundPermission();
+  return new ExplorationService(
+    {
+      location: provider,
+      reveals: new sqlite.SqliteRevealRepository(db),
+      players: new sqlite.SqlitePlayerRepository(db),
+      outbox: new sqlite.SqliteSyncOutbox(db),
+      resolver: defaultRegionResolver,
+      playerId: 'local-player',
+      displayName: 'Explorer',
+      tzOffsetMinutes: tzOffsetMinutes(),
+    },
+    drainPendingFixes,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -150,6 +192,8 @@ export const useExplorationStore = create<ExplorationStore>((set, get) => ({
   // ----- initial state -----
   playerState: createPlayerState('local-player', 'Explorer'),
   recentEvents: [],
+  currentLocation: null,
+  isDeviceBacked: false,
   isInitialized: false,
   isTracking: false,
   isDemoWalking: false,
@@ -158,13 +202,36 @@ export const useExplorationStore = create<ExplorationStore>((set, get) => ({
   // ----- actions -----
 
   async init(): Promise<void> {
+    // Prefer the real device stack (GPS + SQLite). If its native modules can't
+    // load — Expo Go, web, tests — fall back to the in-memory demo stack so the
+    // app always starts and the map + demo walk remain usable.
+    let deviceBacked = false;
     try {
+      service = await buildDeviceService();
+      deviceBacked = true;
+    } catch {
       service = buildService();
+    }
+    try {
       const playerState = await service.init();
-      set({ playerState, isInitialized: true, error: null });
+      set({ playerState, isDeviceBacked: deviceBacked, isInitialized: true, error: null });
+      await get().locateMe();
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       set({ error: message });
+    }
+  },
+
+  async locateMe(): Promise<void> {
+    if (service === null) {
+      return;
+    }
+    try {
+      const point = await service.getCurrentPosition();
+      set({ currentLocation: point });
+    } catch {
+      // No fix available (permission denied, demo stack, or GPS loss). The map
+      // simply falls back to a default region — never an error the user sees.
     }
   },
 

@@ -7,9 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Real interactive map replaces the SVG placeholder.** `MapScreen` now renders
+  a real basemap with `react-native-maps` (Google Maps on Android, Apple Maps on
+  iOS) showing actual streets, roads, and place names with pan/zoom, centred on
+  the user's location on open. The hand-rolled `latLngToSvg` equirectangular
+  projection was deleted — the map SDK owns the projection, so hexagons align
+  with real geography at every zoom.
+- Fog-of-war is now a true **overlay**: one dark `Polygon` covering the viewport
+  with a **hole punched for every explored area** (via the SDK's `holes` prop),
+  revealing the real streets beneath. Adjacent explored hexagons are dissolved
+  into smooth merged outlines with `h3-js` `cellsToMultiPolygon`; unexplored
+  pockets become re-fogged "islands"; newly revealed cells flash on reveal.
+
+### Added
+
+- On-map **HUD** shown on open: level, XP bar, streak, and a prominent
+  **"% of this area uncovered"** plus lifetime area (km²), distance, and cell
+  count — the first thing a user sees is how much they've uncovered.
+- Pure, unit-tested fog geometry module `domain/geo/fog.ts`
+  (`buildFogOverlay`, `computeFogGeometry`, `viewExploredPercent`, area/estimate
+  helpers) and a `MapScreen` component test that mocks the map SDK.
+- Real device stack wiring: the store now boots SQLite + Expo location on device
+  (with the in-memory/mock fallback), a `locateMe` action, and a "recenter" FAB.
+- `app.config.js` + `.env.example`: the Android Google Maps API key is injected
+  from `GOOGLE_MAPS_API_KEY` at build time — never hardcoded or committed.
+
 ### Planned
 
-- Map rendering with actual tile provider (currently no tile layer)
+- Vector-tile styling / offline basemap tiles; optional MapLibre backend
 - Region/country boundary data import
 - Push notifications for friend activity
 - Shareable map snapshot images

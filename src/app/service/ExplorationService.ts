@@ -60,6 +60,11 @@ export class ExplorationService {
     return this.state;
   }
 
+  /** One-shot current position (for centring the map on open / "locate me"). */
+  getCurrentPosition(): Promise<GeoPoint> {
+    return this.deps.location.getCurrentPosition();
+  }
+
   /** Hydrates state from storage and replays any fixes captured while backgrounded. */
   async init(): Promise<PlayerState> {
     const [snapshot, cells] = await Promise.all([
