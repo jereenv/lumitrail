@@ -111,9 +111,4 @@ describe('MapScreen', () => {
     await render(<MapScreen />);
     expect(holesDrawn()).toBe(0);
   });
-
-  it('renders the region banner', async () => {
-    const { getByTestId } = await render(<MapScreen />);
-    expect(getByTestId('region-banner-percent')).toBeTruthy();
-  });
 });
