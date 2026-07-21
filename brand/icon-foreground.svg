@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Adaptive icon foreground: transparent background, content in central 66% safe zone (170–854) -->
+  <defs>
+    <filter id="hexGlowFg" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="trailBlurFg" x="-20%" y="-100%" width="140%" height="300%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+    <filter id="cometFg" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="trailGradFg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFB74D" stop-opacity="0"/>
+      <stop offset="40%" stop-color="#FFB74D" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#FFC97A" stop-opacity="1"/>
+    </linearGradient>
+    <radialGradient id="cometGlowFg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFF0C0"/>
+      <stop offset="40%" stop-color="#FFB74D"/>
+      <stop offset="100%" stop-color="#FFB74D" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Safe zone: 170 to 854 (66% of 1024). All content placed within. -->
+
+  <!-- Hex cluster - shifted to safe zone -->
+  <g opacity="0.35" filter="url(#hexGlowFg)">
+    <polygon points="350,510 385,490 420,510 420,550 385,570 350,550" fill="none" stroke="#38E0A6" stroke-width="3"/>
+  </g>
+  <g opacity="0.6" filter="url(#hexGlowFg)">
+    <polygon points="415,450 453,430 491,450 491,494 453,514 415,494" fill="#38E0A6" fill-opacity="0.1" stroke="#38E0A6" stroke-width="3.5"/>
+  </g>
+  <g opacity="0.75" filter="url(#hexGlowFg)">
+    <polygon points="478,518 518,496 558,518 558,564 518,586 478,564" fill="#38E0A6" fill-opacity="0.13" stroke="#38E0A6" stroke-width="4"/>
+  </g>
+  <!-- Center hex - teal -->
+  <g filter="url(#hexGlowFg)">
+    <polygon points="535,455 581,429 627,455 627,508 581,534 535,508" fill="#38E0A6" fill-opacity="0.22" stroke="#38E0A6" stroke-width="4.5"/>
+    <polygon points="535,455 581,429 627,455 627,508 581,534 535,508" fill="none" stroke="#7AEDCC" stroke-width="2" opacity="0.8"/>
+  </g>
+  <!-- Amber hex -->
+  <g filter="url(#hexGlowFg)">
+    <polygon points="608,522 657,495 706,522 706,575 657,602 608,575" fill="#FFB74D" fill-opacity="0.2" stroke="#FFB74D" stroke-width="4.5"/>
+    <polygon points="608,522 657,495 706,522 706,575 657,602 608,575" fill="none" stroke="#FFC97A" stroke-width="2" opacity="0.9"/>
+  </g>
+  <!-- Upper small hex -->
+  <g opacity="0.65" filter="url(#hexGlowFg)">
+    <polygon points="575,382 610,362 645,382 645,424 610,444 575,424" fill="#38E0A6" fill-opacity="0.1" stroke="#38E0A6" stroke-width="3"/>
+  </g>
+
+  <!-- Trail glow blur layer -->
+  <path d="M 220,628 Q 410,528 648,485 Q 748,465 840,430" stroke="url(#trailGradFg)" stroke-width="55" fill="none" stroke-linecap="round" filter="url(#trailBlurFg)" opacity="0.55"/>
+  <!-- Trail core -->
+  <path d="M 230,625 Q 420,525 650,482 Q 750,462 840,428" stroke="#FFB74D" stroke-width="9" fill="none" stroke-linecap="round" opacity="0.95"/>
+  <!-- Trail bright line -->
+  <path d="M 250,621 Q 430,521 652,478 Q 752,458 840,428" stroke="#FFF0C0" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.85"/>
+
+  <!-- Comet glow bloom -->
+  <circle cx="840" cy="428" r="65" fill="url(#cometGlowFg)" opacity="0.9"/>
+  <!-- Comet core -->
+  <circle cx="840" cy="428" r="26" fill="#FFF0C0" filter="url(#cometFg)"/>
+  <circle cx="840" cy="428" r="16" fill="#FFFFFF"/>
+
+  <!-- Sparks -->
+  <circle cx="778" cy="441" r="5.5" fill="#FFB74D" opacity="0.72"/>
+  <circle cx="728" cy="453" r="4" fill="#FFB74D" opacity="0.52"/>
+  <circle cx="698" cy="462" r="3" fill="#FFB74D" opacity="0.42"/>
+</svg>

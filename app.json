@@ -1,25 +1,67 @@
 {
   "expo": {
-    "name": "lumitrail",
+    "name": "Lumitrail",
     "slug": "lumitrail",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "scheme": "lumitrail",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0F1B2D",
+    "newArchEnabled": true,
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "app.lumitrail",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Lumitrail reveals the map as you explore. Your location is used only on your device to uncover fog around places you visit.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Lumitrail can keep revealing your map in the background so your exploration is captured even when the app is closed. Location stays on your device unless you opt in to sync.",
+        "UIBackgroundModes": ["location"]
+      }
     },
     "android": {
+      "package": "app.lumitrail",
+      "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0F1B2D",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "POST_NOTIFICATIONS"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Lumitrail uses your location to reveal the map as you explore.",
+          "locationAlwaysAndWhenInUsePermission": "Lumitrail uses your location in the background to reveal the map as you explore, even when the app is closed.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ],
+      "expo-sqlite",
+      "expo-sharing",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#0F1B2D"
+        }
+      ]
+    ]
   }
 }

@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 500" width="1024" height="500">
+  <defs>
+    <linearGradient id="fgBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A1520"/>
+      <stop offset="50%" stop-color="#0F1B2D"/>
+      <stop offset="100%" stop-color="#17263B"/>
+    </linearGradient>
+    <radialGradient id="fgFogL" cx="15%" cy="55%" r="40%">
+      <stop offset="0%" stop-color="#1C3050" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0F1B2D" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="fgFogR" cx="85%" cy="40%" r="35%">
+      <stop offset="0%" stop-color="#1A2E48" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#17263B" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fgTrail" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFB74D" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#FFB74D" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#FFC97A"/>
+    </linearGradient>
+    <radialGradient id="fgCometGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFF0C0"/>
+      <stop offset="35%" stop-color="#FFB74D"/>
+      <stop offset="100%" stop-color="#FFB74D" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fgLetterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E8EEF5"/>
+      <stop offset="60%" stop-color="#FFB74D"/>
+      <stop offset="100%" stop-color="#FFC97A"/>
+    </linearGradient>
+    <filter id="fgHexGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="fgTrailBlur" x="-20%" y="-100%" width="140%" height="300%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <filter id="fgCometFilter" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="fgTextGlow" x="-5%" y="-30%" width="110%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="500" fill="url(#fgBg)"/>
+  <rect width="1024" height="500" fill="url(#fgFogL)"/>
+  <rect width="1024" height="500" fill="url(#fgFogR)"/>
+
+  <!-- Stars -->
+  <circle cx="80" cy="40" r="1.5" fill="#E8EEF5" opacity="0.3"/>
+  <circle cx="200" cy="80" r="1" fill="#E8EEF5" opacity="0.2"/>
+  <circle cx="950" cy="30" r="1.5" fill="#E8EEF5" opacity="0.25"/>
+  <circle cx="850" cy="90" r="1" fill="#E8EEF5" opacity="0.2"/>
+  <circle cx="40" cy="200" r="1.5" fill="#E8EEF5" opacity="0.15"/>
+  <circle cx="980" cy="300" r="1" fill="#E8EEF5" opacity="0.18"/>
+  <circle cx="120" cy="430" r="1.5" fill="#E8EEF5" opacity="0.15"/>
+  <circle cx="900" cy="460" r="1" fill="#E8EEF5" opacity="0.12"/>
+  <circle cx="500" cy="50" r="1" fill="#E8EEF5" opacity="0.18"/>
+  <circle cx="700" cy="470" r="1.5" fill="#E8EEF5" opacity="0.12"/>
+
+  <!-- Hex grid (right half, decorative) -->
+  <g opacity="0.25" filter="url(#fgHexGlow)">
+    <polygon points="680,220 706,206 732,220 732,248 706,262 680,248" fill="none" stroke="#38E0A6" stroke-width="2"/>
+    <polygon points="730,188 756,174 782,188 782,216 756,230 730,216" fill="none" stroke="#38E0A6" stroke-width="2"/>
+    <polygon points="782,220 808,206 834,220 834,248 808,262 782,248" fill="none" stroke="#38E0A6" stroke-width="1.5"/>
+    <polygon points="730,252 756,238 782,252 782,280 756,294 730,280" fill="none" stroke="#38E0A6" stroke-width="1.5"/>
+    <polygon points="680,284 706,270 732,284 732,312 706,326 680,312" fill="none" stroke="#38E0A6" stroke-width="1.5"/>
+    <polygon points="834,188 860,174 886,188 886,216 860,230 834,216" fill="none" stroke="#38E0A6" stroke-width="1"/>
+    <polygon points="834,252 860,238 886,252 886,280 860,294 834,280" fill="none" stroke="#38E0A6" stroke-width="1"/>
+    <polygon points="782,284 808,270 834,284 834,312 808,326 782,312" fill="none" stroke="#38E0A6" stroke-width="1"/>
+  </g>
+
+  <!-- Brighter hex cluster (center-right) -->
+  <g opacity="0.7" filter="url(#fgHexGlow)">
+    <polygon points="750,210 778,194 806,210 806,242 778,258 750,242" fill="#38E0A6" fill-opacity="0.15" stroke="#38E0A6" stroke-width="3"/>
+    <polygon points="804,242 832,226 860,242 860,274 832,290 804,274" fill="#FFB74D" fill-opacity="0.15" stroke="#FFB74D" stroke-width="3"/>
+    <polygon points="750,274 778,258 806,274 806,306 778,322 750,306" fill="#38E0A6" fill-opacity="0.12" stroke="#38E0A6" stroke-width="2.5"/>
+  </g>
+
+  <!-- Trail glow (right side) -->
+  <path d="M 560,340 Q 680,290 800,260 Q 870,242 940,228" stroke="url(#fgTrail)" stroke-width="50" fill="none" stroke-linecap="round" filter="url(#fgTrailBlur)" opacity="0.5"/>
+  <path d="M 570,338 Q 685,288 804,258 Q 874,240 940,226" stroke="#FFB74D" stroke-width="8" fill="none" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 580,335 Q 692,285 806,255 Q 876,237 940,225" stroke="#FFF0C0" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.8"/>
+
+  <!-- Comet head -->
+  <circle cx="940" cy="225" r="55" fill="url(#fgCometGlow)" opacity="0.85"/>
+  <circle cx="940" cy="225" r="22" fill="#FFF0C0" filter="url(#fgCometFilter)"/>
+  <circle cx="940" cy="225" r="14" fill="#FFFFFF"/>
+
+  <!-- Fog patches (left half) -->
+  <ellipse cx="180" cy="320" rx="200" ry="160" fill="#1A2D45" opacity="0.4"/>
+  <ellipse cx="80" cy="180" rx="120" ry="150" fill="#1A2D45" opacity="0.35"/>
+
+  <!-- Icon mark (left side) -->
+  <!-- Small hex -->
+  <g filter="url(#fgHexGlow)">
+    <polygon points="120,240 148,224 176,240 176,272 148,288 120,272" fill="#38E0A6" fill-opacity="0.2" stroke="#38E0A6" stroke-width="3"/>
+  </g>
+  <!-- Mini trail from icon to logo -->
+  <path d="M 176,256 Q 240,246 300,240" stroke="#FFB74D" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.6"/>
+
+  <!-- LUMITRAIL wordmark (large, left-center) -->
+  <text
+    x="80"
+    y="170"
+    font-family="'Space Grotesk', 'Nunito', 'Futura', 'Century Gothic', 'Trebuchet MS', Arial, sans-serif"
+    font-size="96"
+    font-weight="700"
+    letter-spacing="6"
+    fill="url(#fgLetterGrad)"
+    filter="url(#fgTextGlow)"
+  >LUMITRAIL</text>
+
+  <!-- Tagline -->
+  <text
+    x="82"
+    y="210"
+    font-family="'Inter', 'Segoe UI', Arial, sans-serif"
+    font-size="18"
+    font-weight="400"
+    letter-spacing="3.5"
+    fill="#38E0A6"
+    opacity="0.9"
+  >WALK THE WORLD OUT OF THE FOG.</text>
+
+  <!-- Bottom separator line -->
+  <line x1="82" y1="222" x2="680" y2="222" stroke="#38E0A6" stroke-width="1" opacity="0.3"/>
+
+  <!-- Subtle "explore your world" subtitle -->
+  <text
+    x="82"
+    y="420"
+    font-family="'Inter', 'Segoe UI', Arial, sans-serif"
+    font-size="13"
+    font-weight="300"
+    letter-spacing="2"
+    fill="#E8EEF5"
+    opacity="0.35"
+  >REAL-WORLD FOG-OF-WAR EXPLORATION</text>
+</svg>

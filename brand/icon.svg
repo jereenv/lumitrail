@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <!-- Background fog gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F1B2D"/>
+      <stop offset="100%" stop-color="#17263B"/>
+    </linearGradient>
+    <!-- Fog overlay texture gradient -->
+    <radialGradient id="fogLeft" cx="20%" cy="60%" r="50%">
+      <stop offset="0%" stop-color="#1C3050" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0F1B2D" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Trail glow gradient -->
+    <linearGradient id="trailGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFB74D" stop-opacity="0"/>
+      <stop offset="40%" stop-color="#FFB74D" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#FFC97A" stop-opacity="1"/>
+    </linearGradient>
+    <!-- Comet glow -->
+    <radialGradient id="cometGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFF0C0"/>
+      <stop offset="40%" stop-color="#FFB74D"/>
+      <stop offset="100%" stop-color="#FFB74D" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Hex revealed glow -->
+    <radialGradient id="hexGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38E0A6"/>
+      <stop offset="60%" stop-color="#38E0A6" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#38E0A6" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Hex amber glow -->
+    <radialGradient id="hexAmberGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFB74D"/>
+      <stop offset="60%" stop-color="#FFB74D" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#FFB74D" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Trail blur filter -->
+    <filter id="trailBlur" x="-20%" y="-100%" width="140%" height="300%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="15" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="hexGlowFilter" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="cometFilter" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="20" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Rounded rect clip for app icon shape -->
+    <clipPath id="iconClip">
+      <rect width="1024" height="1024" rx="180" ry="180"/>
+    </clipPath>
+  </defs>
+
+  <!-- Base background -->
+  <g clip-path="url(#iconClip)">
+    <rect width="1024" height="1024" fill="url(#bgGrad)"/>
+
+    <!-- Subtle star field dots -->
+    <circle cx="120" cy="80" r="2" fill="#E8EEF5" opacity="0.3"/>
+    <circle cx="280" cy="140" r="1.5" fill="#E8EEF5" opacity="0.2"/>
+    <circle cx="800" cy="60" r="2" fill="#E8EEF5" opacity="0.25"/>
+    <circle cx="950" cy="200" r="1.5" fill="#E8EEF5" opacity="0.3"/>
+    <circle cx="70" cy="350" r="1.5" fill="#E8EEF5" opacity="0.15"/>
+    <circle cx="900" cy="750" r="2" fill="#E8EEF5" opacity="0.2"/>
+    <circle cx="160" cy="900" r="1.5" fill="#E8EEF5" opacity="0.2"/>
+    <circle cx="880" cy="950" r="1.5" fill="#E8EEF5" opacity="0.15"/>
+    <circle cx="400" cy="100" r="1" fill="#E8EEF5" opacity="0.2"/>
+    <circle cx="600" cy="900" r="1.5" fill="#E8EEF5" opacity="0.15"/>
+
+    <!-- Fog overlay (left side still in fog) -->
+    <rect width="1024" height="1024" fill="url(#fogLeft)"/>
+
+    <!-- Fog patches on the foggy side -->
+    <ellipse cx="220" cy="650" rx="200" ry="180" fill="#1A2D45" opacity="0.5"/>
+    <ellipse cx="100" cy="400" rx="160" ry="200" fill="#1A2D45" opacity="0.4"/>
+
+    <!-- Revealed hex grid pattern (right/center area) -->
+    <!-- Helper: flat-top hex centered at cx,cy with radius r -->
+    <!-- Hex cluster: center area, revealed by trail -->
+
+    <!-- Farthest hex (leftmost, fading into fog) -->
+    <g opacity="0.3" filter="url(#hexGlowFilter)">
+      <polygon points="350,490 385,470 420,490 420,530 385,550 350,530" fill="none" stroke="#38E0A6" stroke-width="2.5"/>
+    </g>
+
+    <!-- Medium revealed hex -->
+    <g opacity="0.55" filter="url(#hexGlowFilter)">
+      <polygon points="410,430 448,410 486,430 486,474 448,494 410,474" fill="#38E0A6" fill-opacity="0.08" stroke="#38E0A6" stroke-width="3"/>
+    </g>
+
+    <!-- Center-left hex -->
+    <g opacity="0.7" filter="url(#hexGlowFilter)">
+      <polygon points="470,500 510,478 550,500 550,546 510,568 470,546" fill="#38E0A6" fill-opacity="0.12" stroke="#38E0A6" stroke-width="3.5"/>
+    </g>
+
+    <!-- Center hex - brightest teal -->
+    <g filter="url(#hexGlowFilter)">
+      <polygon points="530,440 575,415 620,440 620,492 575,517 530,492" fill="#38E0A6" fill-opacity="0.2" stroke="#38E0A6" stroke-width="4"/>
+      <polygon points="530,440 575,415 620,440 620,492 575,517 530,492" fill="none" stroke="#7AEDCC" stroke-width="1.5" opacity="0.8"/>
+    </g>
+
+    <!-- Right amber hex (nearest to comet) -->
+    <g filter="url(#hexGlowFilter)">
+      <polygon points="600,510 648,484 696,510 696,562 648,588 600,562" fill="#FFB74D" fill-opacity="0.18" stroke="#FFB74D" stroke-width="4"/>
+      <polygon points="600,510 648,484 696,510 696,562 648,588 600,562" fill="none" stroke="#FFC97A" stroke-width="1.5" opacity="0.9"/>
+    </g>
+
+    <!-- Small upper hex -->
+    <g opacity="0.6" filter="url(#hexGlowFilter)">
+      <polygon points="570,370 604,350 638,370 638,410 604,430 570,410" fill="#38E0A6" fill-opacity="0.1" stroke="#38E0A6" stroke-width="2.5"/>
+    </g>
+
+    <!-- Small lower hex -->
+    <g opacity="0.5" filter="url(#hexGlowFilter)">
+      <polygon points="490,570 524,550 558,570 558,612 524,632 490,612" fill="#38E0A6" fill-opacity="0.08" stroke="#38E0A6" stroke-width="2"/>
+    </g>
+
+    <!-- Trail glow (wide blur layer) -->
+    <path d="M 200,620 Q 400,520 640,480 Q 740,460 840,420" stroke="url(#trailGrad)" stroke-width="60" fill="none" stroke-linecap="round" filter="url(#trailBlur)" opacity="0.6"/>
+
+    <!-- Trail core -->
+    <path d="M 220,615 Q 410,515 645,475 Q 745,455 840,418" stroke="#FFB74D" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <!-- Trail bright center line -->
+    <path d="M 240,612 Q 420,512 648,472 Q 748,452 840,418" stroke="#FFF0C0" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8"/>
+
+    <!-- Comet head glow (large bloom) -->
+    <circle cx="840" cy="418" r="70" fill="url(#cometGlow)" opacity="0.9"/>
+
+    <!-- Comet head core -->
+    <circle cx="840" cy="418" r="28" fill="#FFF0C0" filter="url(#cometFilter)"/>
+    <circle cx="840" cy="418" r="18" fill="#FFFFFF"/>
+
+    <!-- Comet tail sparks -->
+    <circle cx="780" cy="432" r="6" fill="#FFB74D" opacity="0.7"/>
+    <circle cx="730" cy="445" r="4" fill="#FFB74D" opacity="0.5"/>
+    <circle cx="700" cy="455" r="3" fill="#FFB74D" opacity="0.4"/>
+    <circle cx="660" cy="462" r="5" fill="#FFC97A" opacity="0.55"/>
+
+    <!-- Teal aurora shimmer around revealed hexes -->
+    <ellipse cx="560" cy="480" rx="180" ry="100" fill="#38E0A6" fill-opacity="0.04"/>
+  </g>
+</svg>

@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <!-- Screenshot 3: Achievements / Badges Grid -->
+  <defs>
+    <linearGradient id="s3bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A1520"/>
+      <stop offset="100%" stop-color="#17263B"/>
+    </linearGradient>
+    <radialGradient id="s3badgeGoldGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFB74D" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#FFB74D" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="s3badgeTealGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38E0A6" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#38E0A6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="s3badgeGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1080" height="1920" fill="url(#s3bg)"/>
+
+  <!-- Status bar -->
+  <rect x="0" y="0" width="1080" height="80" fill="#0A1520" fill-opacity="0.97"/>
+  <text x="52" y="52" font-family="'Inter', Arial, sans-serif" font-size="28" font-weight="600" fill="#E8EEF5">9:41</text>
+  <circle cx="980" cy="38" r="6" fill="#E8EEF5" opacity="0.9"/>
+  <circle cx="1000" cy="38" r="6" fill="#E8EEF5" opacity="0.9"/>
+  <circle cx="1020" cy="38" r="6" fill="#E8EEF5" opacity="0.9"/>
+  <rect x="1028" y="28" width="36" height="20" rx="4" fill="none" stroke="#E8EEF5" stroke-width="2" opacity="0.8"/>
+  <rect x="1031" y="31" width="28" height="14" rx="2" fill="#38E0A6"/>
+  <rect x="1064" y="34" width="4" height="8" rx="2" fill="#E8EEF5" opacity="0.6"/>
+
+  <!-- Header -->
+  <rect x="0" y="80" width="1080" height="110" fill="#0F1B2D" fill-opacity="0.97"/>
+  <text x="52" y="152" font-family="'Space Grotesk', Arial, sans-serif" font-size="42" font-weight="700" fill="#E8EEF5">Achievements</text>
+  <text x="860" y="140" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#38E0A6">23 / 64</text>
+  <text x="860" y="162" font-family="'Inter', Arial, sans-serif" font-size="15" fill="#E8EEF5" opacity="0.4">unlocked</text>
+
+  <!-- Progress bar -->
+  <rect x="52" y="210" width="976" height="8" rx="4" fill="#1A2D45"/>
+  <rect x="52" y="210" width="352" height="8" rx="4" fill="#FFB74D"/>
+
+  <!-- Filter tabs -->
+  <rect x="52" y="240" width="200" height="44" rx="22" fill="#FFB74D" fill-opacity="0.2"/>
+  <text x="152" y="268" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#FFB74D" text-anchor="middle">All</text>
+  <rect x="268" y="240" width="200" height="44" rx="22" fill="none"/>
+  <text x="368" y="268" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#E8EEF5" opacity="0.4" text-anchor="middle">Explorer</text>
+  <rect x="484" y="240" width="200" height="44" rx="22" fill="none"/>
+  <text x="584" y="268" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#E8EEF5" opacity="0.4" text-anchor="middle">Distance</text>
+  <rect x="700" y="240" width="200" height="44" rx="22" fill="none"/>
+  <text x="800" y="268" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#E8EEF5" opacity="0.4" text-anchor="middle">Streak</text>
+
+  <!-- Badge grid: 3 columns, 4 rows -->
+  <!-- Helper macros not available in SVG, draw individually -->
+
+  <!-- Row 1 -->
+  <!-- Badge 1: First Steps (unlocked, gold) -->
+  <rect x="52" y="316" width="308" height="308" rx="20" fill="#0F1B2D"/>
+  <rect x="52" y="316" width="308" height="308" rx="20" fill="none" stroke="#FFB74D" stroke-width="2.5"/>
+  <circle cx="206" cy="440" r="70" fill="url(#s3badgeGoldGlow)" filter="url(#s3badgeGlow)"/>
+  <polygon points="206,380 228,420 275,420 238,448 252,495 206,468 160,495 174,448 137,420 184,420" fill="#FFB74D" opacity="0.9"/>
+  <text x="206" y="528" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="600" fill="#E8EEF5" text-anchor="middle">First Steps</text>
+  <text x="206" y="552" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.5" text-anchor="middle">Walk 1 km</text>
+  <rect x="148" y="570" width="116" height="30" rx="15" fill="#FFB74D" fill-opacity="0.2"/>
+  <text x="206" y="590" font-family="'Inter', Arial, sans-serif" font-size="14" fill="#FFB74D" text-anchor="middle">Unlocked</text>
+
+  <!-- Badge 2: Trailblazer (unlocked, teal) -->
+  <rect x="386" y="316" width="308" height="308" rx="20" fill="#0F1B2D"/>
+  <rect x="386" y="316" width="308" height="308" rx="20" fill="none" stroke="#38E0A6" stroke-width="2.5"/>
+  <circle cx="540" cy="440" r="70" fill="url(#s3badgeTealGlow)" filter="url(#s3badgeGlow)"/>
+  <!-- Hex shape badge -->
+  <polygon points="540,378 574,398 574,438 540,458 506,438 506,398" fill="none" stroke="#38E0A6" stroke-width="4"/>
+  <polygon points="540,390 568,406 568,438 540,454 512,438 512,406" fill="#38E0A6" fill-opacity="0.2"/>
+  <circle cx="540" cy="422" r="18" fill="#38E0A6" opacity="0.9"/>
+  <text x="540" y="528" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="600" fill="#E8EEF5" text-anchor="middle">Trailblazer</text>
+  <text x="540" y="552" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.5" text-anchor="middle">Reveal 100 hexes</text>
+  <rect x="482" y="570" width="116" height="30" rx="15" fill="#38E0A6" fill-opacity="0.2"/>
+  <text x="540" y="590" font-family="'Inter', Arial, sans-serif" font-size="14" fill="#38E0A6" text-anchor="middle">Unlocked</text>
+
+  <!-- Badge 3: Marathon (unlocked, gold) -->
+  <rect x="720" y="316" width="308" height="308" rx="20" fill="#0F1B2D"/>
+  <rect x="720" y="316" width="308" height="308" rx="20" fill="none" stroke="#FFB74D" stroke-width="2.5"/>
+  <circle cx="874" cy="440" r="70" fill="url(#s3badgeGoldGlow)" filter="url(#s3badgeGlow)"/>
+  <!-- Running figure simplified -->
+  <circle cx="874" cy="392" r="20" fill="#FFB74D" opacity="0.9"/>
+  <path d="M 874,412 L 874,455 L 850,490" stroke="#FFB74D" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 874,435 L 898,460" stroke="#FFB74D" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 874,455 L 898,482" stroke="#FFB74D" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.9"/>
+  <text x="874" y="528" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="600" fill="#E8EEF5" text-anchor="middle">Marathon</text>
+  <text x="874" y="552" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.5" text-anchor="middle">Walk 42.2 km</text>
+  <rect x="816" y="570" width="116" height="30" rx="15" fill="#FFB74D" fill-opacity="0.2"/>
+  <text x="874" y="590" font-family="'Inter', Arial, sans-serif" font-size="14" fill="#FFB74D" text-anchor="middle">Unlocked</text>
+
+  <!-- Row 2 -->
+  <!-- Badge 4: Night Owl (unlocked, teal) -->
+  <rect x="52" y="652" width="308" height="308" rx="20" fill="#0F1B2D"/>
+  <rect x="52" y="652" width="308" height="308" rx="20" fill="none" stroke="#38E0A6" stroke-width="2.5"/>
+  <circle cx="206" cy="776" r="70" fill="url(#s3badgeTealGlow)" filter="url(#s3badgeGlow)"/>
+  <!-- Moon shape -->
+  <path d="M 188,738 Q 158,776 188,814 Q 230,840 260,810 Q 234,808 222,790 Q 210,772 222,754 Q 232,738 255,738 Q 228,712 188,738" fill="#38E0A6" opacity="0.9"/>
+  <text x="206" y="864" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="600" fill="#E8EEF5" text-anchor="middle">Night Owl</text>
+  <text x="206" y="888" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.5" text-anchor="middle">Walk after 10pm</text>
+  <rect x="148" y="906" width="116" height="30" rx="15" fill="#38E0A6" fill-opacity="0.2"/>
+  <text x="206" y="926" font-family="'Inter', Arial, sans-serif" font-size="14" fill="#38E0A6" text-anchor="middle">Unlocked</text>
+
+  <!-- Badge 5: Explorer King (unlocked, gold) -->
+  <rect x="386" y="652" width="308" height="308" rx="20" fill="#0F1B2D"/>
+  <rect x="386" y="652" width="308" height="308" rx="20" fill="none" stroke="#FFB74D" stroke-width="2.5"/>
+  <circle cx="540" cy="776" r="70" fill="url(#s3badgeGoldGlow)" filter="url(#s3badgeGlow)"/>
+  <!-- Crown shape -->
+  <path d="M 490,818 L 500,756 L 540,790 L 580,756 L 590,818 Z" fill="#FFB74D" opacity="0.9"/>
+  <circle cx="500" cy="756" r="10" fill="#FFC97A"/>
+  <circle cx="540" cy="742" r="12" fill="#FFC97A"/>
+  <circle cx="580" cy="756" r="10" fill="#FFC97A"/>
+  <text x="540" y="864" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="600" fill="#E8EEF5" text-anchor="middle">Explorer King</text>
+  <text x="540" y="888" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.5" text-anchor="middle">Reveal 1,000 hexes</text>
+  <rect x="482" y="906" width="116" height="30" rx="15" fill="#FFB74D" fill-opacity="0.2"/>
+  <text x="540" y="926" font-family="'Inter', Arial, sans-serif" font-size="14" fill="#FFB74D" text-anchor="middle">Unlocked</text>
+
+  <!-- Badge 6: Deep Fog (locked) -->
+  <rect x="720" y="652" width="308" height="308" rx="20" fill="#0F1B2D"/>
+  <rect x="720" y="652" width="308" height="308" rx="20" fill="none" stroke="#1A2D45" stroke-width="2"/>
+  <circle cx="874" cy="776" r="70" fill="#1A2D45"/>
+  <!-- Lock icon -->
+  <rect x="844" y="782" width="60" height="46" rx="8" fill="#E8EEF5" fill-opacity="0.15"/>
+  <path d="M 854,782 Q 854,752 874,752 Q 894,752 894,782" fill="none" stroke="#E8EEF5" stroke-width="6" stroke-opacity="0.3" stroke-linecap="round"/>
+  <circle cx="874" cy="808" r="6" fill="#E8EEF5" fill-opacity="0.3"/>
+  <text x="874" y="864" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="600" fill="#E8EEF5" opacity="0.4" text-anchor="middle">Deep Fog</text>
+  <text x="874" y="888" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.3" text-anchor="middle">Visit 50 new cities</text>
+  <!-- Progress bar for locked -->
+  <rect x="748" y="906" width="252" height="10" rx="5" fill="#1A2D45"/>
+  <rect x="748" y="906" width="50" height="10" rx="5" fill="#38E0A6" fill-opacity="0.5"/>
+  <text x="874" y="936" font-family="'Inter', Arial, sans-serif" font-size="14" fill="#E8EEF5" opacity="0.3" text-anchor="middle">10 / 50 cities</text>
+
+  <!-- Row 3 -->
+  <!-- Badge 7: Speed Walker (unlocked) -->
+  <rect x="52" y="988" width="308" height="308" rx="20" fill="#0F1B2D"/>
+  <rect x="52" y="988" width="308" height="308" rx="20" fill="none" stroke="#38E0A6" stroke-width="2.5"/>
+  <circle cx="206" cy="1112" r="70" fill="url(#s3badgeTealGlow)" filter="url(#s3badgeGlow)"/>
+  <!-- Lightning bolt -->
+  <path d="M 220,1068 L 190,1118 L 212,1118 L 192,1158 L 222,1108 L 200,1108 Z" fill="#38E0A6" opacity="0.9"/>
+  <text x="206" y="1200" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="600" fill="#E8EEF5" text-anchor="middle">Speed Walker</text>
+  <text x="206" y="1224" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.5" text-anchor="middle">5 km in under 1h</text>
+  <rect x="148" y="1242" width="116" height="30" rx="15" fill="#38E0A6" fill-opacity="0.2"/>
+  <text x="206" y="1262" font-family="'Inter', Arial, sans-serif" font-size="14" fill="#38E0A6" text-anchor="middle">Unlocked</text>
+
+  <!-- Badge 8: Weekender (locked) -->
+  <rect x="386" y="988" width="308" height="308" rx="20" fill="#0F1B2D"/>
+  <rect x="386" y="988" width="308" height="308" rx="20" fill="none" stroke="#1A2D45" stroke-width="2"/>
+  <circle cx="540" cy="1112" r="70" fill="#1A2D45"/>
+  <rect x="510" y="1100" width="60" height="46" rx="8" fill="#E8EEF5" fill-opacity="0.15"/>
+  <path d="M 520,1100 Q 520,1070 540,1070 Q 560,1070 560,1100" fill="none" stroke="#E8EEF5" stroke-width="6" stroke-opacity="0.3" stroke-linecap="round"/>
+  <circle cx="540" cy="1126" r="6" fill="#E8EEF5" fill-opacity="0.3"/>
+  <text x="540" y="1200" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="600" fill="#E8EEF5" opacity="0.4" text-anchor="middle">Weekender</text>
+  <text x="540" y="1224" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.3" text-anchor="middle">Walk 7 days straight</text>
+  <rect x="414" y="1242" width="252" height="10" rx="5" fill="#1A2D45"/>
+  <rect x="414" y="1242" width="180" height="10" rx="5" fill="#FFB74D" fill-opacity="0.5"/>
+  <text x="540" y="1272" font-family="'Inter', Arial, sans-serif" font-size="14" fill="#E8EEF5" opacity="0.3" text-anchor="middle">5 / 7 days</text>
+
+  <!-- Badge 9: Social Explorer (locked) -->
+  <rect x="720" y="988" width="308" height="308" rx="20" fill="#0F1B2D"/>
+  <rect x="720" y="988" width="308" height="308" rx="20" fill="none" stroke="#1A2D45" stroke-width="2"/>
+  <circle cx="874" cy="1112" r="70" fill="#1A2D45"/>
+  <rect x="844" y="1100" width="60" height="46" rx="8" fill="#E8EEF5" fill-opacity="0.15"/>
+  <path d="M 854,1100 Q 854,1070 874,1070 Q 894,1070 894,1100" fill="none" stroke="#E8EEF5" stroke-width="6" stroke-opacity="0.3" stroke-linecap="round"/>
+  <circle cx="874" cy="1126" r="6" fill="#E8EEF5" fill-opacity="0.3"/>
+  <text x="874" y="1200" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="600" fill="#E8EEF5" opacity="0.4" text-anchor="middle">Social Explorer</text>
+  <text x="874" y="1224" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.3" text-anchor="middle">Add 10 friends</text>
+  <rect x="748" y="1242" width="252" height="10" rx="5" fill="#1A2D45"/>
+  <rect x="748" y="1242" width="101" height="10" rx="5" fill="#38E0A6" fill-opacity="0.5"/>
+  <text x="874" y="1272" font-family="'Inter', Arial, sans-serif" font-size="14" fill="#E8EEF5" opacity="0.3" text-anchor="middle">4 / 10 friends</text>
+
+  <!-- Recently unlocked banner -->
+  <rect x="52" y="1330" width="976" height="90" rx="16" fill="#1A2D45"/>
+  <rect x="52" y="1330" width="976" height="90" rx="16" fill="none" stroke="#FFB74D" stroke-width="1.5" opacity="0.5"/>
+  <circle cx="110" cy="1375" r="22" fill="#FFB74D" fill-opacity="0.2"/>
+  <text x="110" y="1383" font-family="Arial, sans-serif" font-size="28" fill="#FFB74D" text-anchor="middle">★</text>
+  <text x="148" y="1366" font-family="'Inter', Arial, sans-serif" font-size="18" font-weight="600" fill="#E8EEF5">New! Explorer King unlocked</text>
+  <text x="148" y="1390" font-family="'Inter', Arial, sans-serif" font-size="15" fill="#E8EEF5" opacity="0.5">Today at 14:23 · +500 XP</text>
+  <text x="960" y="1383" font-family="'Inter', Arial, sans-serif" font-size="28" fill="#FFB74D" text-anchor="middle">›</text>
+
+  <!-- Bottom nav -->
+  <rect x="0" y="1740" width="1080" height="180" fill="#0A1520" fill-opacity="0.97"/>
+  <line x1="0" y1="1740" x2="1080" y2="1740" stroke="#38E0A6" stroke-width="1" opacity="0.2"/>
+  <text x="108" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">⬡</text>
+  <text x="100" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Map</text>
+  <text x="298" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">◎</text>
+  <text x="286" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Stats</text>
+  <!-- Badges active -->
+  <rect x="458" y="1760" width="60" height="60" rx="8" fill="#FFB74D" fill-opacity="0.15"/>
+  <text x="478" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#FFB74D">★</text>
+  <text x="448" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#FFB74D" font-weight="600">Badges</text>
+  <text x="676" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">◈</text>
+  <text x="656" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Friends</text>
+  <text x="888" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">◉</text>
+  <text x="872" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Profile</text>
+</svg>

@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <!-- Screenshot 4: Level-up / XP moment -->
+  <defs>
+    <linearGradient id="s4bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050D18"/>
+      <stop offset="100%" stop-color="#0F1B2D"/>
+    </linearGradient>
+    <radialGradient id="s4centerGlow" cx="50%" cy="45%" r="40%">
+      <stop offset="0%" stop-color="#FFB74D" stop-opacity="0.25"/>
+      <stop offset="60%" stop-color="#FFB74D" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#FFB74D" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="s4ringGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFB74D"/>
+      <stop offset="100%" stop-color="#FFC97A"/>
+    </radialGradient>
+    <filter id="s4bigGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="30" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="s4hexGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1080" height="1920" fill="url(#s4bg)"/>
+
+  <!-- Central glow bloom -->
+  <circle cx="540" cy="860" r="500" fill="url(#s4centerGlow)"/>
+
+  <!-- Status bar -->
+  <rect x="0" y="0" width="1080" height="80" fill="#050D18" fill-opacity="0.97"/>
+  <text x="52" y="52" font-family="'Inter', Arial, sans-serif" font-size="28" font-weight="600" fill="#E8EEF5">9:41</text>
+  <circle cx="980" cy="38" r="6" fill="#E8EEF5" opacity="0.9"/>
+  <circle cx="1000" cy="38" r="6" fill="#E8EEF5" opacity="0.9"/>
+  <circle cx="1020" cy="38" r="6" fill="#E8EEF5" opacity="0.9"/>
+  <rect x="1028" y="28" width="36" height="20" rx="4" fill="none" stroke="#E8EEF5" stroke-width="2" opacity="0.8"/>
+  <rect x="1031" y="31" width="28" height="14" rx="2" fill="#38E0A6"/>
+  <rect x="1064" y="34" width="4" height="8" rx="2" fill="#E8EEF5" opacity="0.6"/>
+
+  <!-- Particle decorations (hex fragments floating) -->
+  <g filter="url(#s4hexGlow)" opacity="0.6">
+    <polygon points="180,300 206,286 232,300 232,328 206,342 180,328" fill="none" stroke="#FFB74D" stroke-width="2.5"/>
+    <polygon points="820,250 848,234 876,250 876,282 848,298 820,282" fill="#FFB74D" fill-opacity="0.15" stroke="#FFB74D" stroke-width="2"/>
+    <polygon points="120,600 140,589 160,600 160,622 140,633 120,622" fill="none" stroke="#38E0A6" stroke-width="2"/>
+    <polygon points="880,550 904,536 928,550 928,578 904,592 880,578" fill="#38E0A6" fill-opacity="0.12" stroke="#38E0A6" stroke-width="2"/>
+    <polygon points="240,1100 260,1089 280,1100 280,1122 260,1133 240,1122" fill="none" stroke="#FFB74D" stroke-width="1.5" opacity="0.5"/>
+    <polygon points="800,1050 820,1039 840,1050 840,1072 820,1083 800,1072" fill="none" stroke="#38E0A6" stroke-width="1.5" opacity="0.5"/>
+  </g>
+
+  <!-- Sparkle dots -->
+  <circle cx="300" cy="450" r="4" fill="#FFB74D" opacity="0.6"/>
+  <circle cx="760" cy="380" r="3" fill="#FFB74D" opacity="0.5"/>
+  <circle cx="180" cy="780" r="3" fill="#38E0A6" opacity="0.5"/>
+  <circle cx="900" cy="720" r="4" fill="#38E0A6" opacity="0.6"/>
+  <circle cx="350" cy="1200" r="3" fill="#FFB74D" opacity="0.4"/>
+  <circle cx="730" cy="1150" r="3" fill="#38E0A6" opacity="0.4"/>
+  <circle cx="460" cy="350" r="2.5" fill="#FFC97A" opacity="0.5"/>
+  <circle cx="620" cy="310" r="2" fill="#38E0A6" opacity="0.4"/>
+
+  <!-- LEVEL UP label -->
+  <text x="540" y="460" font-family="'Space Grotesk', Arial, sans-serif" font-size="28" font-weight="700" fill="#38E0A6" text-anchor="middle" letter-spacing="8" opacity="0.9">LEVEL UP!</text>
+
+  <!-- Big level number ring -->
+  <!-- Outer glow ring -->
+  <circle cx="540" cy="700" r="230" fill="none" stroke="#FFB74D" stroke-width="2" stroke-opacity="0.15"/>
+  <circle cx="540" cy="700" r="210" fill="none" stroke="#FFB74D" stroke-width="6" stroke-opacity="0.3"/>
+  <!-- Main ring track -->
+  <circle cx="540" cy="700" r="190" fill="#0A1520" stroke="#1A2D45" stroke-width="20"/>
+  <!-- Progress arc (80% of way to next level) -->
+  <circle cx="540" cy="700" r="190" fill="none" stroke="url(#s4ringGrad)" stroke-width="20" stroke-dasharray="954 1194" stroke-dashoffset="298" stroke-linecap="round"/>
+
+  <!-- Level 24 text in ring -->
+  <text x="540" y="660" font-family="'Inter', Arial, sans-serif" font-size="24" fill="#E8EEF5" opacity="0.5" text-anchor="middle" letter-spacing="2">LEVEL</text>
+  <text x="540" y="760" font-family="'Space Grotesk', Arial, sans-serif" font-size="140" font-weight="700" fill="#FFB74D" text-anchor="middle" filter="url(#s4bigGlow)">24</text>
+
+  <!-- XP earned this session -->
+  <text x="540" y="960" font-family="'Inter', Arial, sans-serif" font-size="22" fill="#E8EEF5" opacity="0.6" text-anchor="middle">This walk</text>
+  <text x="540" y="1010" font-family="'Space Grotesk', Arial, sans-serif" font-size="72" font-weight="700" fill="#38E0A6" text-anchor="middle">+840 XP</text>
+
+  <!-- XP breakdown -->
+  <rect x="160" y="1050" width="760" height="200" rx="20" fill="#0F1B2D"/>
+  <rect x="160" y="1050" width="760" height="200" rx="20" fill="none" stroke="#1A2D45" stroke-width="2"/>
+
+  <text x="200" y="1098" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#E8EEF5" opacity="0.5">Distance bonus</text>
+  <text x="880" y="1098" font-family="'Inter', Arial, sans-serif" font-size="18" font-weight="700" fill="#38E0A6" text-anchor="end">+400 XP</text>
+
+  <line x1="200" y1="1112" x2="880" y2="1112" stroke="#1A2D45" stroke-width="1"/>
+
+  <text x="200" y="1148" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#E8EEF5" opacity="0.5">New hexes (84)</text>
+  <text x="880" y="1148" font-family="'Inter', Arial, sans-serif" font-size="18" font-weight="700" fill="#38E0A6" text-anchor="end">+252 XP</text>
+
+  <line x1="200" y1="1162" x2="880" y2="1162" stroke="#1A2D45" stroke-width="1"/>
+
+  <text x="200" y="1198" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#E8EEF5" opacity="0.5">Streak bonus (×1.5)</text>
+  <text x="880" y="1198" font-family="'Inter', Arial, sans-serif" font-size="18" font-weight="700" fill="#FFB74D" text-anchor="end">+188 XP</text>
+
+  <line x1="200" y1="1212" x2="880" y2="1212" stroke="#1A2D45" stroke-width="1"/>
+
+  <text x="200" y="1232" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.4">Achievement unlock</text>
+  <text x="880" y="1232" font-family="'Inter', Arial, sans-serif" font-size="16" font-weight="700" fill="#FFB74D" text-anchor="end">+0 XP</text>
+
+  <!-- Badges earned row -->
+  <text x="540" y="1300" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5" text-anchor="middle">Badges earned this session</text>
+  <!-- Badge pills -->
+  <rect x="200" y="1320" width="200" height="60" rx="30" fill="#FFB74D" fill-opacity="0.18"/>
+  <rect x="200" y="1320" width="200" height="60" rx="30" fill="none" stroke="#FFB74D" stroke-width="1.5"/>
+  <text x="300" y="1357" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#FFB74D" text-anchor="middle">Explorer King</text>
+
+  <rect x="420" y="1320" width="240" height="60" rx="30" fill="#38E0A6" fill-opacity="0.15"/>
+  <rect x="420" y="1320" width="240" height="60" rx="30" fill="none" stroke="#38E0A6" stroke-width="1.5"/>
+  <text x="540" y="1357" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#38E0A6" text-anchor="middle">Speed Walker</text>
+
+  <rect x="680" y="1320" width="200" height="60" rx="30" fill="#FFB74D" fill-opacity="0.18"/>
+  <rect x="680" y="1320" width="200" height="60" rx="30" fill="none" stroke="#FFB74D" stroke-width="1.5"/>
+  <text x="780" y="1357" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#FFB74D" text-anchor="middle">Marathon</text>
+
+  <!-- Next level progress -->
+  <text x="540" y="1440" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5" text-anchor="middle">Next: Level 25</text>
+  <rect x="160" y="1460" width="760" height="16" rx="8" fill="#1A2D45"/>
+  <rect x="160" y="1460" width="152" height="16" rx="8" fill="#FFB74D" fill-opacity="0.8"/>
+  <text x="540" y="1502" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.4" text-anchor="middle">12,480 / 20,000 XP</text>
+
+  <!-- CTA button -->
+  <rect x="200" y="1560" width="680" height="100" rx="50" fill="#FFB74D"/>
+  <text x="540" y="1620" font-family="'Space Grotesk', Arial, sans-serif" font-size="32" font-weight="700" fill="#0A1520" text-anchor="middle">Continue Exploring</text>
+
+  <!-- Tagline -->
+  <text x="540" y="1710" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#38E0A6" opacity="0.5" text-anchor="middle" letter-spacing="2">Walk the world out of the fog.</text>
+
+  <!-- Bottom nav -->
+  <rect x="0" y="1740" width="1080" height="180" fill="#050D18" fill-opacity="0.97"/>
+  <line x1="0" y1="1740" x2="1080" y2="1740" stroke="#FFB74D" stroke-width="1" opacity="0.3"/>
+  <text x="108" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">⬡</text>
+  <text x="100" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Map</text>
+  <text x="298" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">◎</text>
+  <text x="286" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Stats</text>
+  <text x="478" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">★</text>
+  <text x="452" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Badges</text>
+  <text x="676" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">◈</text>
+  <text x="656" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Friends</text>
+  <text x="888" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">◉</text>
+  <text x="872" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Profile</text>
+</svg>

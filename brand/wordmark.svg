@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 120" width="680" height="120">
+  <defs>
+    <linearGradient id="wordmarkBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F1B2D"/>
+      <stop offset="100%" stop-color="#17263B"/>
+    </linearGradient>
+    <linearGradient id="letterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E8EEF5"/>
+      <stop offset="60%" stop-color="#FFB74D"/>
+      <stop offset="100%" stop-color="#FFC97A"/>
+    </linearGradient>
+    <filter id="textGlow" x="-10%" y="-30%" width="120%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="680" height="120" rx="12" fill="url(#wordmarkBg)"/>
+
+  <!-- Small icon mark (simplified comet + hex) -->
+  <!-- Mini hex -->
+  <polygon points="28,42 42,34 56,42 56,58 42,66 28,58" fill="#38E0A6" fill-opacity="0.25" stroke="#38E0A6" stroke-width="2"/>
+  <!-- Mini comet trail -->
+  <path d="M 56,50 Q 75,44 92,40" stroke="#FFB74D" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.9"/>
+  <!-- Mini comet head -->
+  <circle cx="92" cy="40" r="6" fill="#FFC97A"/>
+  <circle cx="92" cy="40" r="10" fill="#FFB74D" fill-opacity="0.3"/>
+
+  <!-- LUMITRAIL wordmark text (geometric sans, simulated with paths/text) -->
+  <!-- Using system-safe geometric font stack; actual rendering depends on system fonts -->
+  <text
+    x="114"
+    y="76"
+    font-family="'Space Grotesk', 'Nunito', 'Futura', 'Century Gothic', 'Trebuchet MS', Arial, sans-serif"
+    font-size="62"
+    font-weight="700"
+    letter-spacing="4"
+    fill="url(#letterGrad)"
+    filter="url(#textGlow)"
+  >LUMITRAIL</text>
+
+  <!-- Accent dot after L in amber -->
+  <circle cx="116" cy="88" r="3" fill="#FFB74D" opacity="0.8"/>
+
+  <!-- Tagline -->
+  <text
+    x="114"
+    y="106"
+    font-family="'Inter', 'Segoe UI', Arial, sans-serif"
+    font-size="14"
+    font-weight="400"
+    letter-spacing="2.5"
+    fill="#38E0A6"
+    opacity="0.85"
+  >WALK THE WORLD OUT OF THE FOG</text>
+</svg>

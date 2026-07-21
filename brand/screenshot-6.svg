@@ -1,0 +1,199 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <!-- Screenshot 6: Friends / Shareable snapshot -->
+  <defs>
+    <linearGradient id="s6bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A1520"/>
+      <stop offset="100%" stop-color="#17263B"/>
+    </linearGradient>
+    <linearGradient id="s6shareCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F1B2D"/>
+      <stop offset="100%" stop-color="#17263B"/>
+    </linearGradient>
+    <radialGradient id="s6cardGlow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#FFB74D" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#FFB74D" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="s6hexGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1080" height="1920" fill="url(#s6bg)"/>
+
+  <!-- Status bar -->
+  <rect x="0" y="0" width="1080" height="80" fill="#0A1520" fill-opacity="0.97"/>
+  <text x="52" y="52" font-family="'Inter', Arial, sans-serif" font-size="28" font-weight="600" fill="#E8EEF5">9:41</text>
+  <circle cx="980" cy="38" r="6" fill="#E8EEF5" opacity="0.9"/>
+  <circle cx="1000" cy="38" r="6" fill="#E8EEF5" opacity="0.9"/>
+  <circle cx="1020" cy="38" r="6" fill="#E8EEF5" opacity="0.9"/>
+  <rect x="1028" y="28" width="36" height="20" rx="4" fill="none" stroke="#E8EEF5" stroke-width="2" opacity="0.8"/>
+  <rect x="1031" y="31" width="28" height="14" rx="2" fill="#38E0A6"/>
+  <rect x="1064" y="34" width="4" height="8" rx="2" fill="#E8EEF5" opacity="0.6"/>
+
+  <!-- Header -->
+  <rect x="0" y="80" width="1080" height="110" fill="#0F1B2D" fill-opacity="0.97"/>
+  <text x="52" y="152" font-family="'Space Grotesk', Arial, sans-serif" font-size="42" font-weight="700" fill="#E8EEF5">Friends</text>
+  <!-- Add friend button -->
+  <rect x="830" y="100" width="210" height="52" rx="26" fill="#FFB74D" fill-opacity="0.2"/>
+  <rect x="830" y="100" width="210" height="52" rx="26" fill="none" stroke="#FFB74D" stroke-width="1.5"/>
+  <text x="935" y="132" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#FFB74D" text-anchor="middle">+ Add Friend</text>
+
+  <!-- Friends activity feed header -->
+  <text x="52" y="240" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5" letter-spacing="1">RECENT ACTIVITY</text>
+
+  <!-- Activity item 1 -->
+  <rect x="52" y="260" width="976" height="120" rx="14" fill="#0F1B2D"/>
+  <circle cx="118" cy="320" r="40" fill="#1A2D45"/>
+  <circle cx="118" cy="320" r="40" fill="none" stroke="#38E0A6" stroke-width="2.5"/>
+  <text x="118" y="328" font-family="'Inter', Arial, sans-serif" font-size="26" fill="#38E0A6" text-anchor="middle">SL</text>
+  <text x="180" y="308" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="700" fill="#E8EEF5">SophiaL</text>
+  <text x="180" y="334" font-family="'Inter', Arial, sans-serif" font-size="17" fill="#E8EEF5" opacity="0.6">Walked 12.4 km in Helsinki · earned</text>
+  <text x="180" y="356" font-family="'Inter', Arial, sans-serif" font-size="17" fill="#FFB74D">Explorer King badge</text>
+  <text x="960" y="308" font-family="'Inter', Arial, sans-serif" font-size="15" fill="#E8EEF5" opacity="0.35" text-anchor="end">2h ago</text>
+  <!-- Hex icon decoration -->
+  <polygon points="940,330 952,323 964,330 964,344 952,351 940,344" fill="#38E0A6" fill-opacity="0.15" stroke="#38E0A6" stroke-width="1.5"/>
+
+  <!-- Activity item 2 -->
+  <rect x="52" y="396" width="976" height="120" rx="14" fill="#0F1B2D"/>
+  <circle cx="118" cy="456" r="40" fill="#1A2D45"/>
+  <circle cx="118" cy="456" r="40" fill="none" stroke="#FFB74D" stroke-width="2.5"/>
+  <text x="118" y="464" font-family="'Inter', Arial, sans-serif" font-size="26" fill="#FFB74D" text-anchor="middle">MK</text>
+  <text x="180" y="444" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="700" fill="#E8EEF5">MikaelK</text>
+  <text x="180" y="470" font-family="'Inter', Arial, sans-serif" font-size="17" fill="#E8EEF5" opacity="0.6">Leveled up to</text>
+  <text x="300" y="470" font-family="'Inter', Arial, sans-serif" font-size="17" fill="#FFB74D" font-weight="700">Level 27</text>
+  <text x="390" y="470" font-family="'Inter', Arial, sans-serif" font-size="17" fill="#E8EEF5" opacity="0.6">· 54,820 XP total</text>
+  <text x="180" y="494" font-family="'Inter', Arial, sans-serif" font-size="15" fill="#E8EEF5" opacity="0.4">Stockholm, SE</text>
+  <text x="960" y="444" font-family="'Inter', Arial, sans-serif" font-size="15" fill="#E8EEF5" opacity="0.35" text-anchor="end">5h ago</text>
+
+  <!-- Activity item 3 (you) -->
+  <rect x="52" y="532" width="976" height="120" rx="14" fill="#38E0A6" fill-opacity="0.04"/>
+  <rect x="52" y="532" width="976" height="120" rx="14" fill="none" stroke="#38E0A6" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="118" cy="592" r="40" fill="#38E0A6" fill-opacity="0.2"/>
+  <circle cx="118" cy="592" r="40" fill="none" stroke="#38E0A6" stroke-width="2.5"/>
+  <text x="118" y="600" font-family="'Inter', Arial, sans-serif" font-size="26" fill="#38E0A6" text-anchor="middle">JV</text>
+  <text x="180" y="580" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="700" fill="#E8EEF5">You</text>
+  <rect x="224" y="566" width="52" height="26" rx="13" fill="#38E0A6" fill-opacity="0.2"/>
+  <text x="250" y="583" font-family="'Inter', Arial, sans-serif" font-size="14" fill="#38E0A6" text-anchor="middle">Lv 24</text>
+  <text x="180" y="606" font-family="'Inter', Arial, sans-serif" font-size="17" fill="#E8EEF5" opacity="0.6">Walked 8.4 km · revealed 84 new hexes</text>
+  <text x="180" y="630" font-family="'Inter', Arial, sans-serif" font-size="15" fill="#E8EEF5" opacity="0.4">Helsinki, FI · Today</text>
+  <text x="960" y="580" font-family="'Inter', Arial, sans-serif" font-size="15" fill="#38E0A6" opacity="0.7" text-anchor="end">Just now</text>
+
+  <!-- Shareable card section -->
+  <text x="52" y="710" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5" letter-spacing="1">YOUR SNAPSHOT</text>
+  <text x="960" y="710" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#FFB74D" text-anchor="end">Share ↗</text>
+
+  <!-- The shareable card (premium design) -->
+  <rect x="52" y="730" width="976" height="560" rx="24" fill="url(#s6shareCard)"/>
+  <rect x="52" y="730" width="976" height="560" rx="24" fill="url(#s6cardGlow)"/>
+  <rect x="52" y="730" width="976" height="560" rx="24" fill="none" stroke="#FFB74D" stroke-width="2" opacity="0.35"/>
+
+  <!-- Card: hex grid decoration -->
+  <g filter="url(#s6hexGlow)" opacity="0.4">
+    <polygon points="800,770 830,754 860,770 860,802 830,818 800,802" fill="none" stroke="#38E0A6" stroke-width="2"/>
+    <polygon points="856,802 886,786 916,802 916,834 886,850 856,834" fill="#38E0A6" fill-opacity="0.1" stroke="#38E0A6" stroke-width="1.5"/>
+    <polygon points="800,836 830,820 860,836 860,868 830,884 800,868" fill="none" stroke="#FFB74D" stroke-width="1.5"/>
+    <polygon points="912,770 940,755 968,770 968,800 940,815 912,800" fill="none" stroke="#38E0A6" stroke-width="1"/>
+  </g>
+
+  <!-- Card: Lumitrail wordmark -->
+  <text x="104" y="794" font-family="'Space Grotesk', Arial, sans-serif" font-size="24" font-weight="700" fill="#FFB74D" letter-spacing="3">LUMITRAIL</text>
+  <line x1="104" y1="804" x2="500" y2="804" stroke="#FFB74D" stroke-width="1" opacity="0.3"/>
+
+  <!-- Card: avatar and name -->
+  <circle cx="150" cy="894" r="68" fill="#1A2D45"/>
+  <circle cx="150" cy="894" r="68" fill="none" stroke="#FFB74D" stroke-width="3" opacity="0.6"/>
+  <text x="150" y="904" font-family="'Inter', Arial, sans-serif" font-size="44" fill="#FFB74D" text-anchor="middle" font-weight="700">JV</text>
+  <!-- Rank badge on avatar -->
+  <circle cx="204" cy="944" r="22" fill="#0F1B2D"/>
+  <circle cx="204" cy="944" r="22" fill="none" stroke="#FFB74D" stroke-width="2"/>
+  <text x="204" y="952" font-family="'Space Grotesk', Arial, sans-serif" font-size="18" font-weight="700" fill="#FFB74D" text-anchor="middle">24</text>
+
+  <text x="250" y="870" font-family="'Space Grotesk', Arial, sans-serif" font-size="34" font-weight="700" fill="#E8EEF5">Jereen V.</text>
+  <text x="250" y="904" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#38E0A6">🏙 Helsinki, Finland</text>
+  <text x="250" y="930" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.45">Explorer since March 2025</text>
+
+  <!-- Card: stat grid -->
+  <!-- Row 1 -->
+  <rect x="104" y="980" width="220" height="110" rx="12" fill="#1A2D45"/>
+  <text x="214" y="1022" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#38E0A6" text-anchor="middle" letter-spacing="1">TOTAL KM</text>
+  <text x="214" y="1070" font-family="'Space Grotesk', Arial, sans-serif" font-size="42" font-weight="700" fill="#E8EEF5" text-anchor="middle">312</text>
+
+  <rect x="344" y="980" width="220" height="110" rx="12" fill="#1A2D45"/>
+  <text x="454" y="1022" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#FFB74D" text-anchor="middle" letter-spacing="1">HEXES</text>
+  <text x="454" y="1070" font-family="'Space Grotesk', Arial, sans-serif" font-size="42" font-weight="700" fill="#E8EEF5" text-anchor="middle">1,847</text>
+
+  <rect x="584" y="980" width="220" height="110" rx="12" fill="#1A2D45"/>
+  <text x="694" y="1022" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#38E0A6" text-anchor="middle" letter-spacing="1">STREAK</text>
+  <text x="694" y="1068" font-family="'Space Grotesk', Arial, sans-serif" font-size="40" font-weight="700" fill="#FFB74D" text-anchor="middle">🔥14</text>
+
+  <rect x="824" y="980" width="176" height="110" rx="12" fill="#1A2D45"/>
+  <text x="912" y="1022" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#FFB74D" text-anchor="middle" letter-spacing="1">RANK</text>
+  <text x="912" y="1070" font-family="'Space Grotesk', Arial, sans-serif" font-size="42" font-weight="700" fill="#E8EEF5" text-anchor="middle">#23</text>
+
+  <!-- Card: coverage bar -->
+  <text x="104" y="1130" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#E8EEF5" opacity="0.5">City coverage: Helsinki</text>
+  <text x="896" y="1130" font-family="'Inter', Arial, sans-serif" font-size="16" font-weight="700" fill="#FFB74D" text-anchor="end">34.2%</text>
+  <rect x="104" y="1142" width="792" height="12" rx="6" fill="#1A2D45"/>
+  <rect x="104" y="1142" width="271" height="12" rx="6" fill="#FFB74D" fill-opacity="0.8"/>
+
+  <!-- Card: tagline -->
+  <text x="540" y="1240" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#38E0A6" text-anchor="middle" opacity="0.7" letter-spacing="2">Walk the world out of the fog.</text>
+  <text x="540" y="1268" font-family="'Inter', Arial, sans-serif" font-size="14" fill="#E8EEF5" text-anchor="middle" opacity="0.3">lumitrail.app</text>
+
+  <!-- Friends list below -->
+  <text x="52" y="1360" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5" letter-spacing="1">FRIENDS (4)</text>
+
+  <!-- Friend row 1 -->
+  <rect x="52" y="1376" width="976" height="80" rx="12" fill="#0F1B2D"/>
+  <circle cx="116" cy="1416" r="32" fill="#1A2D45"/>
+  <circle cx="116" cy="1416" r="32" fill="none" stroke="#38E0A6" stroke-width="2"/>
+  <text x="116" y="1424" font-family="'Inter', Arial, sans-serif" font-size="22" fill="#38E0A6" text-anchor="middle">SL</text>
+  <text x="168" y="1408" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="600" fill="#E8EEF5">SophiaL</text>
+  <text x="168" y="1432" font-family="'Inter', Arial, sans-serif" font-size="15" fill="#E8EEF5" opacity="0.4">Lv 27 · 61,240 XP · Helsinki</text>
+  <text x="940" y="1416" font-family="'Space Grotesk', Arial, sans-serif" font-size="18" font-weight="700" fill="#FFB74D" text-anchor="end">#1</text>
+
+  <!-- Friend row 2 -->
+  <rect x="52" y="1472" width="976" height="80" rx="12" fill="#0F1B2D"/>
+  <circle cx="116" cy="1512" r="32" fill="#1A2D45"/>
+  <circle cx="116" cy="1512" r="32" fill="none" stroke="#FFB74D" stroke-width="2"/>
+  <text x="116" y="1520" font-family="'Inter', Arial, sans-serif" font-size="22" fill="#FFB74D" text-anchor="middle">MK</text>
+  <text x="168" y="1504" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="600" fill="#E8EEF5">MikaelK</text>
+  <text x="168" y="1528" font-family="'Inter', Arial, sans-serif" font-size="15" fill="#E8EEF5" opacity="0.4">Lv 27 · 54,820 XP · Stockholm</text>
+  <text x="940" y="1512" font-family="'Space Grotesk', Arial, sans-serif" font-size="18" font-weight="700" fill="#E8EEF5" opacity="0.5" text-anchor="end">#2</text>
+
+  <!-- Friend row 3 -->
+  <rect x="52" y="1568" width="976" height="80" rx="12" fill="#0F1B2D"/>
+  <circle cx="116" cy="1608" r="32" fill="#1A2D45"/>
+  <circle cx="116" cy="1608" r="32" fill="none" stroke="#E8EEF5" stroke-width="1.5" opacity="0.4"/>
+  <text x="116" y="1616" font-family="'Inter', Arial, sans-serif" font-size="22" fill="#E8EEF5" opacity="0.6" text-anchor="middle">EV</text>
+  <text x="168" y="1600" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="600" fill="#E8EEF5">ElenaV</text>
+  <text x="168" y="1624" font-family="'Inter', Arial, sans-serif" font-size="15" fill="#E8EEF5" opacity="0.4">Lv 19 · 28,340 XP · Tallinn</text>
+  <text x="940" y="1608" font-family="'Space Grotesk', Arial, sans-serif" font-size="18" font-weight="700" fill="#E8EEF5" opacity="0.5" text-anchor="end">#4</text>
+
+  <!-- Friend row 4 (YOU) -->
+  <rect x="52" y="1664" width="976" height="80" rx="12" fill="#38E0A6" fill-opacity="0.05"/>
+  <rect x="52" y="1664" width="976" height="80" rx="12" fill="none" stroke="#38E0A6" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="116" cy="1704" r="32" fill="#38E0A6" fill-opacity="0.2"/>
+  <circle cx="116" cy="1704" r="32" fill="none" stroke="#38E0A6" stroke-width="2.5"/>
+  <text x="116" y="1712" font-family="'Inter', Arial, sans-serif" font-size="22" fill="#38E0A6" text-anchor="middle">JV</text>
+  <text x="168" y="1696" font-family="'Inter', Arial, sans-serif" font-size="20" font-weight="700" fill="#38E0A6">You</text>
+  <text x="168" y="1720" font-family="'Inter', Arial, sans-serif" font-size="15" fill="#E8EEF5" opacity="0.4">Lv 24 · 12,480 XP · Helsinki</text>
+  <text x="940" y="1704" font-family="'Space Grotesk', Arial, sans-serif" font-size="18" font-weight="700" fill="#38E0A6" text-anchor="end">#3</text>
+
+  <!-- Bottom nav -->
+  <rect x="0" y="1740" width="1080" height="180" fill="#0A1520" fill-opacity="0.97"/>
+  <line x1="0" y1="1740" x2="1080" y2="1740" stroke="#38E0A6" stroke-width="1" opacity="0.2"/>
+  <text x="108" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">⬡</text>
+  <text x="100" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Map</text>
+  <text x="298" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">◎</text>
+  <text x="286" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Stats</text>
+  <text x="478" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">★</text>
+  <text x="452" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Badges</text>
+  <!-- Friends active -->
+  <rect x="626" y="1760" width="60" height="60" rx="8" fill="#FFB74D" fill-opacity="0.15"/>
+  <text x="646" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#FFB74D">◈</text>
+  <text x="618" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#FFB74D" font-weight="600">Friends</text>
+  <text x="888" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">◉</text>
+  <text x="872" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Profile</text>
+</svg>

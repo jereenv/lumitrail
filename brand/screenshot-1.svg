@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <!-- Screenshot 1: Fog map with revealed glowing trail -->
+  <defs>
+    <linearGradient id="s1bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A1520"/>
+      <stop offset="100%" stop-color="#17263B"/>
+    </linearGradient>
+    <radialGradient id="s1fog1" cx="20%" cy="40%" r="40%">
+      <stop offset="0%" stop-color="#1C3050" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#0F1B2D" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="s1fog2" cx="75%" cy="80%" r="35%">
+      <stop offset="0%" stop-color="#1C3050" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#0F1B2D" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="s1revealed" cx="55%" cy="50%" r="38%">
+      <stop offset="0%" stop-color="#1A3255" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0F1B2D" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="s1hexGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="s1trailBlur" x="-20%" y="-100%" width="140%" height="300%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <filter id="s1cometGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="20" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="s1trail" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFB74D" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#FFB74D" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#FFC97A"/>
+    </linearGradient>
+    <radialGradient id="s1cometR" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFF0C0"/>
+      <stop offset="35%" stop-color="#FFB74D"/>
+      <stop offset="100%" stop-color="#FFB74D" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1080" height="1920" fill="url(#s1bg)"/>
+  <rect width="1080" height="1920" fill="url(#s1fog1)"/>
+  <rect width="1080" height="1920" fill="url(#s1fog2)"/>
+
+  <!-- Stars -->
+  <circle cx="100" cy="200" r="1.5" fill="#E8EEF5" opacity="0.3"/>
+  <circle cx="300" cy="350" r="1" fill="#E8EEF5" opacity="0.2"/>
+  <circle cx="900" cy="280" r="1.5" fill="#E8EEF5" opacity="0.25"/>
+  <circle cx="750" cy="180" r="1" fill="#E8EEF5" opacity="0.2"/>
+  <circle cx="50" cy="500" r="1.5" fill="#E8EEF5" opacity="0.15"/>
+  <circle cx="1020" cy="600" r="1" fill="#E8EEF5" opacity="0.18"/>
+  <circle cx="200" cy="800" r="1.5" fill="#E8EEF5" opacity="0.15"/>
+  <circle cx="950" cy="900" r="1" fill="#E8EEF5" opacity="0.12"/>
+
+  <!-- Status bar -->
+  <rect x="0" y="0" width="1080" height="80" fill="#0A1520" fill-opacity="0.95"/>
+  <text x="52" y="52" font-family="'Inter', Arial, sans-serif" font-size="28" font-weight="600" fill="#E8EEF5">9:41</text>
+  <!-- Signal dots -->
+  <circle cx="980" cy="38" r="6" fill="#E8EEF5" opacity="0.9"/>
+  <circle cx="1000" cy="38" r="6" fill="#E8EEF5" opacity="0.9"/>
+  <circle cx="1020" cy="38" r="6" fill="#E8EEF5" opacity="0.9"/>
+  <!-- Battery -->
+  <rect x="1028" y="28" width="36" height="20" rx="4" fill="none" stroke="#E8EEF5" stroke-width="2" opacity="0.8"/>
+  <rect x="1031" y="31" width="28" height="14" rx="2" fill="#38E0A6"/>
+  <rect x="1064" y="34" width="4" height="8" rx="2" fill="#E8EEF5" opacity="0.6"/>
+
+  <!-- Nav bar top -->
+  <rect x="0" y="80" width="1080" height="100" fill="#0F1B2D" fill-opacity="0.97"/>
+  <text x="52" y="148" font-family="'Space Grotesk', Arial, sans-serif" font-size="36" font-weight="700" fill="#FFB74D">Lumitrail</text>
+  <!-- XP badge -->
+  <rect x="820" y="100" width="200" height="60" rx="12" fill="#1A2D45"/>
+  <text x="836" y="132" font-family="'Inter', Arial, sans-serif" font-size="18" fill="#38E0A6">XP</text>
+  <text x="868" y="132" font-family="'Inter', Arial, sans-serif" font-size="22" font-weight="700" fill="#E8EEF5">12,480</text>
+  <text x="836" y="152" font-family="'Inter', Arial, sans-serif" font-size="14" fill="#E8EEF5" opacity="0.5">Level 23</text>
+
+  <!-- Map area (main) -->
+  <rect x="0" y="180" width="1080" height="1560" fill="url(#s1bg)"/>
+  <rect x="0" y="180" width="1080" height="1560" fill="url(#s1revealed)"/>
+
+  <!-- Hex grid (revealed area) -->
+  <!-- Large hex grid covering the revealed portion of the map -->
+  <g filter="url(#s1hexGlow)">
+    <!-- Row 1 of hex grid -->
+    <polygon points="350,400 396,374 442,400 442,452 396,478 350,452" fill="#38E0A6" fill-opacity="0.1" stroke="#38E0A6" stroke-width="2" opacity="0.5"/>
+    <polygon points="440,400 486,374 532,400 532,452 486,478 440,452" fill="#38E0A6" fill-opacity="0.12" stroke="#38E0A6" stroke-width="2" opacity="0.6"/>
+    <polygon points="530,400 576,374 622,400 622,452 576,478 530,452" fill="#38E0A6" fill-opacity="0.15" stroke="#38E0A6" stroke-width="2.5" opacity="0.7"/>
+    <polygon points="620,400 666,374 712,400 712,452 666,478 620,452" fill="#FFB74D" fill-opacity="0.12" stroke="#FFB74D" stroke-width="2.5" opacity="0.65"/>
+    <polygon points="710,400 756,374 802,400 802,452 756,478 710,452" fill="#FFB74D" fill-opacity="0.15" stroke="#FFB74D" stroke-width="3" opacity="0.8"/>
+
+    <!-- Row 2 -->
+    <polygon points="305,478 351,452 397,478 397,530 351,556 305,530" fill="#38E0A6" fill-opacity="0.08" stroke="#38E0A6" stroke-width="1.5" opacity="0.4"/>
+    <polygon points="395,478 441,452 487,478 487,530 441,556 395,530" fill="#38E0A6" fill-opacity="0.1" stroke="#38E0A6" stroke-width="2" opacity="0.55"/>
+    <polygon points="485,478 531,452 577,478 577,530 531,556 485,530" fill="#38E0A6" fill-opacity="0.12" stroke="#38E0A6" stroke-width="2" opacity="0.65"/>
+    <polygon points="575,478 621,452 667,478 667,530 621,556 575,530" fill="#38E0A6" fill-opacity="0.14" stroke="#38E0A6" stroke-width="2.5" opacity="0.75"/>
+    <polygon points="665,478 711,452 757,478 757,530 711,556 665,530" fill="#FFB74D" fill-opacity="0.15" stroke="#FFB74D" stroke-width="3" opacity="0.85"/>
+    <polygon points="755,478 801,452 847,478 847,530 801,556 755,530" fill="#FFB74D" fill-opacity="0.18" stroke="#FFB74D" stroke-width="3" opacity="0.9"/>
+
+    <!-- Row 3 -->
+    <polygon points="350,556 396,530 442,556 442,608 396,634 350,608" fill="#38E0A6" fill-opacity="0.1" stroke="#38E0A6" stroke-width="2" opacity="0.5"/>
+    <polygon points="440,556 486,530 532,556 532,608 486,634 440,608" fill="#38E0A6" fill-opacity="0.12" stroke="#38E0A6" stroke-width="2" opacity="0.6"/>
+    <polygon points="530,556 576,530 622,556 622,608 576,634 530,608" fill="#38E0A6" fill-opacity="0.15" stroke="#38E0A6" stroke-width="2.5" opacity="0.7"/>
+    <polygon points="620,556 666,530 712,556 712,608 666,634 620,608" fill="#FFB74D" fill-opacity="0.15" stroke="#FFB74D" stroke-width="2.5" opacity="0.75"/>
+    <polygon points="710,556 756,530 802,556 802,608 756,634 710,608" fill="#FFB74D" fill-opacity="0.18" stroke="#FFB74D" stroke-width="3" opacity="0.88"/>
+
+    <!-- Row 4 - trail region, brighter -->
+    <polygon points="440,634 486,608 532,634 532,686 486,712 440,686" fill="#38E0A6" fill-opacity="0.2" stroke="#38E0A6" stroke-width="3" opacity="0.85"/>
+    <polygon points="530,634 576,608 622,634 622,686 576,712 530,686" fill="#FFB74D" fill-opacity="0.22" stroke="#FFB74D" stroke-width="3" opacity="0.9"/>
+    <polygon points="620,634 666,608 712,634 712,686 666,712 620,686" fill="#FFB74D" fill-opacity="0.25" stroke="#FFB74D" stroke-width="3.5" opacity="0.95"/>
+    <polygon points="710,634 756,608 802,634 802,686 756,712 710,686" fill="#FFC97A" fill-opacity="0.22" stroke="#FFC97A" stroke-width="3" opacity="0.92"/>
+  </g>
+
+  <!-- Fog patches (not yet explored) -->
+  <ellipse cx="200" cy="700" rx="250" ry="300" fill="#0F1B2D" fill-opacity="0.7"/>
+  <ellipse cx="150" cy="1100" rx="200" ry="280" fill="#0F1B2D" fill-opacity="0.65"/>
+  <ellipse cx="950" cy="1300" rx="180" ry="260" fill="#0F1B2D" fill-opacity="0.55"/>
+  <ellipse cx="900" cy="450" rx="150" ry="180" fill="#0F1B2D" fill-opacity="0.5"/>
+
+  <!-- Trail -->
+  <path d="M 300,900 Q 450,780 600,700 Q 720,640 820,610" stroke="url(#s1trail)" stroke-width="60" fill="none" stroke-linecap="round" filter="url(#s1trailBlur)" opacity="0.5"/>
+  <path d="M 310,898 Q 455,778 605,698 Q 725,638 822,608" stroke="#FFB74D" stroke-width="10" fill="none" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 325,895 Q 465,775 610,694 Q 730,635 822,607" stroke="#FFF0C0" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8"/>
+
+  <!-- Comet -->
+  <circle cx="822" cy="607" r="60" fill="url(#s1cometR)" opacity="0.85"/>
+  <circle cx="822" cy="607" r="24" fill="#FFF0C0" filter="url(#s1cometGlow)"/>
+  <circle cx="822" cy="607" r="15" fill="#FFFFFF"/>
+
+  <!-- Trail sparks -->
+  <circle cx="760" cy="625" r="7" fill="#FFB74D" opacity="0.7"/>
+  <circle cx="700" cy="640" r="5" fill="#FFB74D" opacity="0.55"/>
+  <circle cx="650" cy="654" r="4" fill="#FFB74D" opacity="0.45"/>
+
+  <!-- Distance badge -->
+  <rect x="60" y="820" width="240" height="90" rx="16" fill="#0F1B2D" fill-opacity="0.9"/>
+  <rect x="60" y="820" width="240" height="90" rx="16" fill="none" stroke="#38E0A6" stroke-width="1.5" opacity="0.5"/>
+  <text x="80" y="856" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#38E0A6">TODAY</text>
+  <text x="80" y="892" font-family="'Inter', Arial, sans-serif" font-size="32" font-weight="700" fill="#E8EEF5">8.4 km</text>
+
+  <!-- Steps badge -->
+  <rect x="320" y="820" width="240" height="90" rx="16" fill="#0F1B2D" fill-opacity="0.9"/>
+  <rect x="320" y="820" width="240" height="90" rx="16" fill="none" stroke="#FFB74D" stroke-width="1.5" opacity="0.5"/>
+  <text x="340" y="856" font-family="'Inter', Arial, sans-serif" font-size="16" fill="#FFB74D">STEPS</text>
+  <text x="340" y="892" font-family="'Inter', Arial, sans-serif" font-size="32" font-weight="700" fill="#E8EEF5">11,243</text>
+
+  <!-- Bottom navigation -->
+  <rect x="0" y="1740" width="1080" height="180" fill="#0A1520" fill-opacity="0.97"/>
+  <line x1="0" y1="1740" x2="1080" y2="1740" stroke="#38E0A6" stroke-width="1" opacity="0.2"/>
+  <!-- Nav icons (simplified) -->
+  <!-- Map (active) -->
+  <rect x="88" y="1760" width="60" height="60" rx="8" fill="#FFB74D" fill-opacity="0.15"/>
+  <text x="108" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#FFB74D">⬡</text>
+  <text x="80" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#FFB74D" font-weight="600">Map</text>
+  <!-- Stats -->
+  <text x="298" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">◎</text>
+  <text x="286" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Stats</text>
+  <!-- Achievements -->
+  <text x="508" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">★</text>
+  <text x="482" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Badges</text>
+  <!-- Friends -->
+  <text x="716" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">◈</text>
+  <text x="696" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Friends</text>
+  <!-- Profile -->
+  <text x="928" y="1802" font-family="Arial, sans-serif" font-size="32" fill="#E8EEF5" opacity="0.5">◉</text>
+  <text x="912" y="1840" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#E8EEF5" opacity="0.5">Profile</text>
+
+  <!-- Tagline at bottom -->
+  <text x="540" y="1900" font-family="'Inter', Arial, sans-serif" font-size="20" fill="#38E0A6" opacity="0.6" text-anchor="middle" letter-spacing="2">Walk the world out of the fog.</text>
+</svg>
