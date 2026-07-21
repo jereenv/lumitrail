@@ -26,6 +26,12 @@ export const palette = {
   warning: '#FFB74D',
   /** Semi-transparent fog fill painted over unexplored map tiles. */
   fogOverlay: 'rgba(15, 27, 45, 0.86)',
+  /** Green-teal fog painted over UNEXPLORED map (translucent so streets hint through). */
+  fog: 'rgba(30, 107, 92, 0.82)',
+  /** Dashed frontier border tracing the explored region's edge. */
+  frontier: '#FFFFFF',
+  /** Dark casing drawn under the frontier dashes for contrast. */
+  frontierCasing: 'rgba(17, 42, 36, 0.6)',
 } as const;
 
 export const typography = {
