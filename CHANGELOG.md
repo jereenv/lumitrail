@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **App crashed on launch on Android (Hermes).** `h3-js`' Emscripten glue calls
+  `new TextDecoder('utf-16le')` at import time, but Hermes' built-in
+  `TextDecoder` only supports `utf-8`, so it threw
+  `RangeError: Unknown encoding: utf-16le` during startup module loading and
+  aborted the process. Added `src/app/polyfills/textDecoder.ts` — a
+  `TextDecoder` that decodes the UTF-16LE family itself and delegates all other
+  encodings to the platform decoder — installed as the first import in
+  `index.ts`, before any module that pulls in `h3-js`. (The Jest suite had
+  masked this by swapping in Node's `TextDecoder`; that patch never shipped in
+  the app bundle.)
+
 ### Changed
 
 - **Real interactive map replaces the SVG placeholder.** `MapScreen` now renders

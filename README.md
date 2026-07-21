@@ -145,7 +145,7 @@ Apple Maps and needs no key, so you can skip this if you only run on iOS.
 npm run typecheck    # tsc --noEmit
 npm run lint         # eslint (flat config)
 npm run format:check # prettier
-npm test             # jest — 101 tests across 18 suites
+npm test             # jest — 108 tests across 19 suites
 ```
 
 ---

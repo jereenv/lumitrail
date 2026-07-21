@@ -1,3 +1,7 @@
+// Must be first: installs the UTF-16LE TextDecoder polyfill that h3-js needs on
+// Hermes, before any module that imports h3-js is loaded. See the module doc.
+import './src/app/polyfills';
+
 import { registerRootComponent } from 'expo';
 
 import App from './App';
