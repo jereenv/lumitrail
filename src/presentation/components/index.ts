@@ -13,6 +13,7 @@ export { default as StatCard } from './StatCard';
 export { default as AchievementBadge } from './AchievementBadge';
 export { default as StreakFlame } from './StreakFlame';
 export { default as ProgressRing } from './ProgressRing';
+export { RegionBanner } from './RegionBanner';
 export { default as ScreenHeader } from './ScreenHeader';
 export { default as TabBar } from './TabBar';
 export type { TabId } from './TabBar';
