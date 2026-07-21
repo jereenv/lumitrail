@@ -15,11 +15,20 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Polygon, type Region } from 'react-native-maps';
+import MapView, { Polygon, Polyline, type Region } from 'react-native-maps';
+import * as Location from 'expo-location';
 
 import { palette, radii, spacing, typography } from '@/app/theme';
+import { mapStyle } from '@/app/mapStyle';
+import { createCachedReverseGeocoder } from '@/data/location/reverseGeocode';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
-import { EventToast, LevelBadge, StreakFlame, XpBar } from '@/presentation/components';
+import {
+  EventToast,
+  LevelBadge,
+  RegionBanner,
+  StreakFlame,
+  XpBar,
+} from '@/presentation/components';
 import { cellCenter } from '@/domain/geo/grid';
 import {
   approximateAreaKm2,
@@ -41,6 +50,18 @@ const DEFAULT_REGION: Region = {
 
 const REVEAL_PULSE_START = 0.55;
 const REVEAL_PULSE_STEP = 0.11;
+
+/** One cached geocoder for the app session (expo-location matches the Geocoder shape). */
+const lookupLocality = createCachedReverseGeocoder(Location);
+
+/** Ensure a ring is a closed loop so Polyline draws the full boundary. */
+function closedRing(ring: Ring): Ring {
+  if (ring.length === 0) return ring;
+  const first = ring[0];
+  const last = ring[ring.length - 1];
+  if (first.latitude === last.latitude && first.longitude === last.longitude) return ring;
+  return [...ring, first];
+}
 
 /** Region centred on the centroid of already-revealed cells, if any. */
 function centroidRegion(cells: readonly H3Index[]): Region | null {
@@ -108,6 +129,18 @@ export default function MapScreen(): React.ReactElement {
   const viewPct = viewExploredPercent(overlay.exploredInView, overlay.estimatedCellsInView);
   const areaKm2 = approximateAreaKm2(playerState.stats.cellsRevealed);
 
+  const [locality, setLocality] = useState<string>('Your area');
+
+  useEffect(() => {
+    let cancelled = false;
+    void lookupLocality({ latitude: region.latitude, longitude: region.longitude }).then((name) => {
+      if (!cancelled && name) setLocality(name);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [region.latitude, region.longitude]);
+
   // --- Reveal animation: flash newly revealed outlines, then fade out. -------
   const [pulseRings, setPulseRings] = useState<Ring[]>([]);
   const [pulseAlpha, setPulseAlpha] = useState(0);
@@ -154,14 +187,15 @@ export default function MapScreen(): React.ReactElement {
         loadingEnabled
         loadingBackgroundColor={palette.ink}
         loadingIndicatorColor={palette.lumen}
+        customMapStyle={mapStyle}
       >
-        {/* The fog: one dark polygon over the viewport, holes where explored. */}
+        {/* The fog: one green-teal polygon over the viewport, holes where explored. */}
         <Polygon
           coordinates={overlay.outer}
           holes={overlay.holes}
-          fillColor={palette.fogOverlay}
-          strokeColor="rgba(56,224,166,0.35)"
-          strokeWidth={1}
+          fillColor={palette.fog}
+          strokeColor="transparent"
+          strokeWidth={0}
           tappable={false}
         />
         {/* Fog islands: unexplored pockets surrounded by explored land. */}
@@ -169,20 +203,35 @@ export default function MapScreen(): React.ReactElement {
           <Polygon
             key={`island-${i}`}
             coordinates={ring}
-            fillColor={palette.fogOverlay}
+            fillColor={palette.fog}
             strokeColor="transparent"
             strokeWidth={0}
             tappable={false}
           />
         ))}
+        {/* Dashed frontier border tracing the edge of explored land. */}
+        {[...overlay.holes, ...overlay.islands].map((ring, i) => {
+          const path = closedRing(ring);
+          return (
+            <React.Fragment key={`frontier-${i}`}>
+              <Polyline coordinates={path} strokeColor={palette.frontierCasing} strokeWidth={6} />
+              <Polyline
+                coordinates={path}
+                strokeColor={palette.frontier}
+                strokeWidth={3}
+                lineDashPattern={[10, 8]}
+              />
+            </React.Fragment>
+          );
+        })}
         {/* Reveal flash on newly uncovered cells. */}
         {pulseAlpha > 0 &&
           pulseRings.map((ring, i) => (
             <Polygon
               key={`pulse-${i}`}
               coordinates={ring}
-              fillColor={`rgba(56,224,166,${pulseAlpha})`}
-              strokeColor={`rgba(56,224,166,${Math.min(1, pulseAlpha + 0.35)})`}
+              fillColor={`rgba(255,183,77,${pulseAlpha})`}
+              strokeColor={`rgba(255,183,77,${Math.min(1, pulseAlpha + 0.35)})`}
               strokeWidth={2}
               tappable={false}
             />
@@ -203,11 +252,6 @@ export default function MapScreen(): React.ReactElement {
               />
             </View>
             <StreakFlame days={playerState.stats.currentStreakDays} size={32} />
-          </View>
-
-          <View style={styles.hudPctRow}>
-            <Text style={styles.hudPct}>{viewPct.toFixed(1)}%</Text>
-            <Text style={styles.hudPctLabel}>of this area uncovered</Text>
           </View>
 
           <View style={styles.hudStatsRow}>
@@ -256,6 +300,11 @@ export default function MapScreen(): React.ReactElement {
           <Text style={styles.demoFabText}>{isDemoWalking ? 'Walking…' : 'Demo walk'}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Bottom region banner: where you are + how much of the view is uncovered. */}
+      <SafeAreaView style={styles.bannerWrap} pointerEvents="box-none" edges={['bottom']}>
+        <RegionBanner locality={locality} percent={viewPct} />
+      </SafeAreaView>
     </View>
   );
 }
@@ -285,22 +334,6 @@ const styles = StyleSheet.create({
   },
   hudXp: {
     flex: 1,
-  },
-  hudPctRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: spacing.sm,
-  },
-  hudPct: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.xxl,
-    color: palette.lumen,
-    fontWeight: '800',
-  },
-  hudPctLabel: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.sm,
-    color: palette.textMuted,
   },
   hudStatsRow: {
     flexDirection: 'row',
@@ -363,5 +396,11 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.md,
     color: palette.ink,
     fontWeight: '700',
+  },
+  bannerWrap: {
+    position: 'absolute',
+    left: spacing.md,
+    right: spacing.md,
+    bottom: spacing.md,
   },
 });

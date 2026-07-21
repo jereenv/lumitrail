@@ -15,17 +15,24 @@ import MapScreen from './MapScreen';
 
 // --- Mock the native map SDK so the screen renders with no device. -----------
 jest.mock('react-native-maps', () => {
-  const ReactLib = require('react');
+  const React = require('react');
   const { View } = require('react-native');
-  const Polygon = jest.fn(() => ReactLib.createElement(View, { testID: 'polygon' }));
-  const MapView = ReactLib.forwardRef(
+  const Polygon = jest.fn(() => null);
+  const Polyline = jest.fn(() => null);
+  const MapView = React.forwardRef(
     (props: { children?: React.ReactNode }, ref: React.Ref<unknown>) => {
-      ReactLib.useImperativeHandle(ref, () => ({ animateToRegion: () => undefined }));
-      return ReactLib.createElement(View, { testID: 'map-view' }, props.children);
+      React.useImperativeHandle(ref, () => ({ animateToRegion: () => undefined }));
+      return React.createElement(View, { testID: 'map-view' }, props.children);
     },
   );
-  return { __esModule: true, default: MapView, Polygon };
+  MapView.displayName = 'MockMapView';
+  return { __esModule: true, default: MapView, Polygon, Polyline };
 });
+
+jest.mock('expo-location', () => ({
+  __esModule: true,
+  reverseGeocodeAsync: jest.fn().mockResolvedValue([{ city: 'Richmond' }]),
+}));
 
 jest.mock('react-native-safe-area-context', () => {
   const { View } = require('react-native');
@@ -88,11 +95,10 @@ describe('MapScreen', () => {
     expect(holesDrawn()).toBeGreaterThan(0);
   });
 
-  it('shows the "% uncovered" HUD on open', async () => {
-    const { getByText } = await render(<MapScreen />);
-    expect(getByText(/of this area uncovered/i)).toBeTruthy();
-    // The percentage is rendered as e.g. "12.3%".
-    expect(getByText(/%$/)).toBeTruthy();
+  it('shows the "% uncovered" in the region banner on open', async () => {
+    const { getByTestId } = await render(<MapScreen />);
+    // The percentage is now shown in the bottom RegionBanner (e.g. "12.3%").
+    expect(getByTestId('region-banner-percent')).toBeTruthy();
   });
 
   it('offers a demo walk control', async () => {
@@ -104,5 +110,10 @@ describe('MapScreen', () => {
     mockStore({ playerState: createPlayerState('p', 'P') });
     await render(<MapScreen />);
     expect(holesDrawn()).toBe(0);
+  });
+
+  it('renders the region banner', async () => {
+    const { getByTestId } = await render(<MapScreen />);
+    expect(getByTestId('region-banner-percent')).toBeTruthy();
   });
 });

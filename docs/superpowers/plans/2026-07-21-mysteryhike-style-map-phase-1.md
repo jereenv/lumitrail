@@ -24,26 +24,28 @@
 
 ## File Structure
 
-- `src/app/mapStyle.ts` *(new)* — Google Maps style JSON + `MapStyleElement` type. One responsibility: the basemap art.
-- `src/app/mapStyle.test.ts` *(new)* — validity tests.
-- `src/app/theme.ts` *(modify)* — add `palette.fog`, `palette.frontier`, `palette.frontierCasing`.
-- `src/data/location/reverseGeocode.ts` *(new)* — `localityFromAddress` + `createCachedReverseGeocoder` behind a `Geocoder` interface.
-- `src/data/location/reverseGeocode.test.ts` *(new)* — extraction, caching, fail-soft.
-- `src/presentation/components/RegionBanner.tsx` *(new)* — pure presentational bottom pill.
-- `src/presentation/components/RegionBanner.test.tsx` *(new)*.
-- `src/presentation/components/index.ts` *(modify)* — export `RegionBanner`.
-- `src/presentation/screens/MapScreen.tsx` *(modify)* — custom style, fog color, frontier polylines, banner + locality wiring, HUD tweak.
-- `src/presentation/screens/MapScreen.test.tsx` *(modify)* — cover `Polyline`, banner, mocked geocoder.
+- `src/app/mapStyle.ts` _(new)_ — Google Maps style JSON + `MapStyleElement` type. One responsibility: the basemap art.
+- `src/app/mapStyle.test.ts` _(new)_ — validity tests.
+- `src/app/theme.ts` _(modify)_ — add `palette.fog`, `palette.frontier`, `palette.frontierCasing`.
+- `src/data/location/reverseGeocode.ts` _(new)_ — `localityFromAddress` + `createCachedReverseGeocoder` behind a `Geocoder` interface.
+- `src/data/location/reverseGeocode.test.ts` _(new)_ — extraction, caching, fail-soft.
+- `src/presentation/components/RegionBanner.tsx` _(new)_ — pure presentational bottom pill.
+- `src/presentation/components/RegionBanner.test.tsx` _(new)_.
+- `src/presentation/components/index.ts` _(modify)_ — export `RegionBanner`.
+- `src/presentation/screens/MapScreen.tsx` _(modify)_ — custom style, fog color, frontier polylines, banner + locality wiring, HUD tweak.
+- `src/presentation/screens/MapScreen.test.tsx` _(modify)_ — cover `Polyline`, banner, mocked geocoder.
 
 ---
 
 ### Task 1: Custom map style module
 
 **Files:**
+
 - Create: `src/app/mapStyle.ts`
 - Test: `src/app/mapStyle.test.ts`
 
 **Interfaces:**
+
 - Produces: `export interface MapStyleElement { featureType?: string; elementType?: string; stylers: Array<Record<string, string | number>> }` and `export const mapStyle: MapStyleElement[]`.
 
 - [ ] **Step 1: Write the failing test**
@@ -133,9 +135,11 @@ git -c commit.gpgsign=false commit -m "Add stylized Google Maps basemap style"
 ### Task 2: Theme tokens for fog and frontier
 
 **Files:**
+
 - Modify: `src/app/theme.ts` (the `palette` object, after `fogOverlay`)
 
 **Interfaces:**
+
 - Produces: `palette.fog`, `palette.frontier`, `palette.frontierCasing` (all `string`).
 
 - [ ] **Step 1: Add the tokens**
@@ -168,10 +172,12 @@ git -c commit.gpgsign=false commit -m "Add fog and frontier palette tokens"
 ### Task 3: Reverse-geocode helper
 
 **Files:**
+
 - Create: `src/data/location/reverseGeocode.ts`
 - Test: `src/data/location/reverseGeocode.test.ts`
 
 **Interfaces:**
+
 - Produces:
   - `export interface GeocodedAddress { city?: string | null; district?: string | null; subregion?: string | null; region?: string | null; name?: string | null }`
   - `export interface Geocoder { reverseGeocodeAsync(location: { latitude: number; longitude: number }): Promise<GeocodedAddress[]> }`
@@ -182,11 +188,7 @@ git -c commit.gpgsign=false commit -m "Add fog and frontier palette tokens"
 
 ```ts
 // src/data/location/reverseGeocode.test.ts
-import {
-  createCachedReverseGeocoder,
-  localityFromAddress,
-  type Geocoder,
-} from './reverseGeocode';
+import { createCachedReverseGeocoder, localityFromAddress, type Geocoder } from './reverseGeocode';
 
 describe('localityFromAddress', () => {
   it('prefers city, then falls back through district/subregion/region/name', () => {
@@ -211,7 +213,10 @@ describe('createCachedReverseGeocoder', () => {
 
   it('caches within minMoveMeters (no second geocoder call)', async () => {
     const spy = jest.fn().mockResolvedValue([{ city: 'Richmond' }]);
-    const lookup = createCachedReverseGeocoder({ reverseGeocodeAsync: spy }, { minMoveMeters: 500 });
+    const lookup = createCachedReverseGeocoder(
+      { reverseGeocodeAsync: spy },
+      { minMoveMeters: 500 },
+    );
     await lookup(richmond);
     await lookup({ latitude: 37.5408, longitude: -77.4361 }); // ~15 m away
     expect(spy).toHaveBeenCalledTimes(1);
@@ -222,7 +227,10 @@ describe('createCachedReverseGeocoder', () => {
       .fn()
       .mockResolvedValueOnce([{ city: 'Richmond' }])
       .mockResolvedValueOnce([{ city: 'Petersburg' }]);
-    const lookup = createCachedReverseGeocoder({ reverseGeocodeAsync: spy }, { minMoveMeters: 500 });
+    const lookup = createCachedReverseGeocoder(
+      { reverseGeocodeAsync: spy },
+      { minMoveMeters: 500 },
+    );
     expect(await lookup(richmond)).toBe('Richmond');
     expect(await lookup({ latitude: 37.227, longitude: -77.402 })).toBe('Petersburg'); // ~35 km
     expect(spy).toHaveBeenCalledTimes(2);
@@ -279,12 +287,7 @@ interface LatLng {
 export function localityFromAddress(address: GeocodedAddress | undefined): string | null {
   if (address === undefined) return null;
   return (
-    address.city ??
-    address.district ??
-    address.subregion ??
-    address.region ??
-    address.name ??
-    null
+    address.city ?? address.district ?? address.subregion ?? address.region ?? address.name ?? null
   );
 }
 
@@ -341,11 +344,13 @@ git -c commit.gpgsign=false commit -m "Add cached reverse-geocode helper"
 ### Task 4: RegionBanner component
 
 **Files:**
+
 - Create: `src/presentation/components/RegionBanner.tsx`
 - Test: `src/presentation/components/RegionBanner.test.tsx`
 - Modify: `src/presentation/components/index.ts`
 
 **Interfaces:**
+
 - Consumes: `palette`, `radii`, `spacing`, `typography` from `@/app/theme`.
 - Produces: `export function RegionBanner(props: { locality: string; percent: number }): React.ReactElement`. Renders `testID="region-banner-name"` and `testID="region-banner-percent"`.
 
@@ -457,10 +462,12 @@ git -c commit.gpgsign=false commit -m "Add RegionBanner component"
 ### Task 5: Wire the new look into MapScreen
 
 **Files:**
+
 - Modify: `src/presentation/screens/MapScreen.tsx`
 - Modify: `src/presentation/screens/MapScreen.test.tsx`
 
 **Interfaces:**
+
 - Consumes: `mapStyle` (Task 1); `palette.fog/frontier/frontierCasing` (Task 2); `createCachedReverseGeocoder` (Task 3); `RegionBanner` (Task 4); `Polyline` from `react-native-maps`.
 
 - [ ] **Step 1: Update imports**
@@ -524,7 +531,9 @@ useEffect(() => {
 On the `<MapView>` element, add the `customMapStyle={mapStyle}` prop. Then replace the fog `Polygon` and island polygons so the fill uses `palette.fog` and the strokes are transparent (the frontier is drawn separately in Step 5):
 
 ```tsx
-{/* The fog: one green-teal polygon over the viewport, holes where explored. */}
+{
+  /* The fog: one green-teal polygon over the viewport, holes where explored. */
+}
 <Polygon
   coordinates={overlay.outer}
   holes={overlay.holes}
@@ -532,18 +541,22 @@ On the `<MapView>` element, add the `customMapStyle={mapStyle}` prop. Then repla
   strokeColor="transparent"
   strokeWidth={0}
   tappable={false}
-/>
-{/* Fog islands: unexplored pockets surrounded by explored land. */}
-{overlay.islands.map((ring, i) => (
-  <Polygon
-    key={`island-${i}`}
-    coordinates={ring}
-    fillColor={palette.fog}
-    strokeColor="transparent"
-    strokeWidth={0}
-    tappable={false}
-  />
-))}
+/>;
+{
+  /* Fog islands: unexplored pockets surrounded by explored land. */
+}
+{
+  overlay.islands.map((ring, i) => (
+    <Polygon
+      key={`island-${i}`}
+      coordinates={ring}
+      fillColor={palette.fog}
+      strokeColor="transparent"
+      strokeWidth={0}
+      tappable={false}
+    />
+  ));
+}
 ```
 
 - [ ] **Step 5: Draw the dashed frontier border**
@@ -551,21 +564,25 @@ On the `<MapView>` element, add the `customMapStyle={mapStyle}` prop. Then repla
 Immediately after the island polygons (still inside `<MapView>`), add the frontier: a dark casing line under a white dashed line, for every explored outline ring and island ring.
 
 ```tsx
-{/* Dashed frontier border tracing the edge of explored land. */}
-{[...overlay.holes, ...overlay.islands].map((ring, i) => {
-  const path = closedRing(ring);
-  return (
-    <React.Fragment key={`frontier-${i}`}>
-      <Polyline coordinates={path} strokeColor={palette.frontierCasing} strokeWidth={6} />
-      <Polyline
-        coordinates={path}
-        strokeColor={palette.frontier}
-        strokeWidth={3}
-        lineDashPattern={[10, 8]}
-      />
-    </React.Fragment>
-  );
-})}
+{
+  /* Dashed frontier border tracing the edge of explored land. */
+}
+{
+  [...overlay.holes, ...overlay.islands].map((ring, i) => {
+    const path = closedRing(ring);
+    return (
+      <React.Fragment key={`frontier-${i}`}>
+        <Polyline coordinates={path} strokeColor={palette.frontierCasing} strokeWidth={6} />
+        <Polyline
+          coordinates={path}
+          strokeColor={palette.frontier}
+          strokeWidth={3}
+          lineDashPattern={[10, 8]}
+        />
+      </React.Fragment>
+    );
+  });
+}
 ```
 
 - [ ] **Step 6: Recolor the reveal pulse to warm lumen**
@@ -573,17 +590,19 @@ Immediately after the island polygons (still inside `<MapView>`), add the fronti
 In the reveal-flash block, replace the aurora rgba values with lumen (`255,183,77`):
 
 ```tsx
-{pulseAlpha > 0 &&
-  pulseRings.map((ring, i) => (
-    <Polygon
-      key={`pulse-${i}`}
-      coordinates={ring}
-      fillColor={`rgba(255,183,77,${pulseAlpha})`}
-      strokeColor={`rgba(255,183,77,${Math.min(1, pulseAlpha + 0.35)})`}
-      strokeWidth={2}
-      tappable={false}
-    />
-  ))}
+{
+  pulseAlpha > 0 &&
+    pulseRings.map((ring, i) => (
+      <Polygon
+        key={`pulse-${i}`}
+        coordinates={ring}
+        fillColor={`rgba(255,183,77,${pulseAlpha})`}
+        strokeColor={`rgba(255,183,77,${Math.min(1, pulseAlpha + 0.35)})`}
+        strokeWidth={2}
+        tappable={false}
+      />
+    ));
+}
 ```
 
 - [ ] **Step 7: Move the headline % out of the top HUD**
@@ -595,10 +614,12 @@ Delete the `hudPctRow` block from the top HUD (the `<View style={styles.hudPctRo
 Just before the closing `</View>` of `root` (after the `fabColumn` block), add:
 
 ```tsx
-{/* Bottom region banner: where you are + how much of the view is uncovered. */}
+{
+  /* Bottom region banner: where you are + how much of the view is uncovered. */
+}
 <SafeAreaView style={styles.bannerWrap} pointerEvents="box-none" edges={['bottom']}>
   <RegionBanner locality={locality} percent={viewPct} />
-</SafeAreaView>
+</SafeAreaView>;
 ```
 
 And add these styles to the `StyleSheet.create({...})` block (and delete the now-unused `hudPctRow`, `hudPct`, `hudPctLabel` styles):
@@ -671,6 +692,7 @@ export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$PATH"
 cd android && ./gradlew :app:assembleRelease && cd ..
 cp android/app/build/outputs/apk/release/app-release.apk ~/Desktop/Lumitrail.apk
 ```
+
 Expected: `BUILD SUCCESSFUL`.
 
 - [ ] **Step 2: Reinstall and launch**
@@ -685,16 +707,18 @@ adb shell monkey -p app.lumitrail -c android.intent.category.LAUNCHER 1
 ```bash
 adb exec-out screencap -p > ~/Desktop/lumitrail-look.png
 ```
+
 Verify: pale stylized basemap, green-teal fog over unexplored area, cleared holes showing the bright map after a demo walk, a dashed white frontier border around explored land, and the bottom region banner ("<locality> · X%"). Tap **Demo walk** to confirm the frontier and clearing.
 
 - [ ] **Step 4: Tune (expected, not a failure)**
 
 Adjust on-device to taste, then rebuild (Steps 1–3):
+
 - Fog too dark/light → change alpha in `palette.fog` (e.g. `0.72`–`0.88`).
 - Fog hue → change the RGB (e.g. more blue-green).
 - Border too thin/bold → change `strokeWidth` in Task 5 Step 5, or the dash lengths in `lineDashPattern`.
 - Basemap colors → edit `mapStyle.ts`.
-Commit any token tweaks:
+  Commit any token tweaks:
 
 ```bash
 git add -A && git -c commit.gpgsign=false commit -m "Tune fog and frontier styling on device"
@@ -705,6 +729,7 @@ git add -A && git -c commit.gpgsign=false commit -m "Tune fog and frontier styli
 ## Self-Review
 
 **Spec coverage:**
+
 - Stylized basemap → Task 1 + Task 5 Step 4. ✓
 - Green-teal fog → Task 2 + Task 5 Step 4. ✓
 - Dashed frontier border → Task 2 + Task 5 Step 5. ✓

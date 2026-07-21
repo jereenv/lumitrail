@@ -20,13 +20,13 @@ the user's own.
 
 ### "Mystery Hike, but better" — our deliberate advantages
 
-| Dimension        | Mystery Hike                         | Lumitrail                                                             |
-| ---------------- | ------------------------------------ | -------------------------------------------------------------------- |
-| Explored areas   | Stay uniformly tinted; only a border | **Fully cleared** — bright styled map, strongest uncovered/left read |
-| Battery          | Continuous-ish tracking              | **Geofence-wake + batched, balanced accuracy** (never continuous HF) |
-| Price            | Premium upsell / coins economy       | **Free**, no paywall; coins are cosmetic-only, never real money      |
-| Offline          | Partial                              | **Offline-first**; conflict-free G-Set CRDT sync                     |
-| Assets           | Proprietary                          | **Original**, owned by us                                            |
+| Dimension      | Mystery Hike                         | Lumitrail                                                            |
+| -------------- | ------------------------------------ | -------------------------------------------------------------------- |
+| Explored areas | Stay uniformly tinted; only a border | **Fully cleared** — bright styled map, strongest uncovered/left read |
+| Battery        | Continuous-ish tracking              | **Geofence-wake + batched, balanced accuracy** (never continuous HF) |
+| Price          | Premium upsell / coins economy       | **Free**, no paywall; coins are cosmetic-only, never real money      |
+| Offline        | Partial                              | **Offline-first**; conflict-free G-Set CRDT sync                     |
+| Assets         | Proprietary                          | **Original**, owned by us                                            |
 
 ## Non-goals
 
@@ -40,7 +40,7 @@ the user's own.
 Each phase is designed → planned → built → verified on a physical device before
 the next begins.
 
-- **Phase 1 — The look** *(this cycle)*: stylized basemap, green-teal fog,
+- **Phase 1 — The look** _(this cycle)_: stylized basemap, green-teal fog,
   dashed frontier border, bottom region banner, HUD refresh.
 - **Phase 2 — Collectibles + journal**: original sticker icon set, POI markers
   placed at real nearby places, a walk-to-collect interaction, a Journal screen.
@@ -112,10 +112,10 @@ reveal-flash pulse is recolored to warm `palette.lumen` to pop against green.
 
 ### 6. Files touched (Phase 1)
 
-- `src/app/mapStyle.ts` *(new)* + `src/app/mapStyle.test.ts` *(new)*
+- `src/app/mapStyle.ts` _(new)_ + `src/app/mapStyle.test.ts` _(new)_
 - `src/app/theme.ts` — add `palette.fog` and frontier border colors
-- `src/data/location/reverseGeocode.ts` *(new)* + test *(new)*
-- `src/presentation/components/RegionBanner.tsx` *(new)* + test *(new)*
+- `src/data/location/reverseGeocode.ts` _(new)_ + test _(new)_
+- `src/presentation/components/RegionBanner.tsx` _(new)_ + test _(new)_
 - `src/presentation/components/index.ts` — export `RegionBanner`
 - `src/presentation/screens/MapScreen.tsx` — custom style, fog color, frontier
   polylines, banner wiring, HUD tweaks
@@ -126,8 +126,8 @@ reveal-flash pulse is recolored to warm `palette.lumen` to pop against green.
 So Phase 1 leaves clean seams and Phases 2–3 need no rework:
 
 - **POI (Phase 2):** `interface Poi { id: string; kind: PoiKind; location: GeoPoint;
-  name?: string; collectedAt?: number }` with `type PoiKind = 'treasure' |
-  'landmark' | 'mystery' | 'nature' | ...`. A `PoiSource` interface supplies
+name?: string; collectedAt?: number }` with `type PoiKind = 'treasure' |
+'landmark' | 'mystery' | 'nature' | ...`. A `PoiSource` interface supplies
   nearby POIs (`nearby(center, radiusM): Promise<Poi[]>`), implementable first
   from a deterministic local generator (seeded by H3 cell), later from a real
   places provider — mirrors the existing `LocationProvider` seam.
