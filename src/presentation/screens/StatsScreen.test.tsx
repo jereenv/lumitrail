@@ -45,20 +45,19 @@ function makePlayerStateWithLondon() {
   return { ...base, regions };
 }
 
-function mockExplorationStore(overrides: Record<string, unknown> = {}): void {
-  (useExplorationStore as jest.Mock).mockImplementation(() => ({
+function mockExplorationStore(): void {
+  (useExplorationStore as unknown as jest.Mock).mockImplementation(() => ({
     playerState: makePlayerStateWithLondon(),
     currentLocation: null,
     recentEvents: [],
     isDemoWalking: false,
     runDemoWalk: jest.fn(),
     locateMe: jest.fn(),
-    ...overrides,
   }));
 }
 
 function mockNavigationStore(mockFocusMap: jest.Mock): void {
-  (useNavigationStore as jest.Mock).mockImplementation((selector) =>
+  (useNavigationStore as unknown as jest.Mock).mockImplementation((selector) =>
     selector({
       focusMap: mockFocusMap,
       activeTab: 'stats' as const,
@@ -119,7 +118,7 @@ describe('StatsScreen', () => {
 
   it('shows empty state when no regions are explored', async () => {
     const mockFocusMap = jest.fn();
-    (useExplorationStore as jest.Mock).mockImplementation(() => ({
+    (useExplorationStore as unknown as jest.Mock).mockImplementation(() => ({
       playerState: createPlayerState('p1', 'Jereen'),
       currentLocation: null,
       recentEvents: [],

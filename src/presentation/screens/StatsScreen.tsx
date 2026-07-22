@@ -23,19 +23,9 @@ import { regionCenter } from '@/domain/regions/resolver';
 import type { RegionTally } from '@/domain/loop/state';
 import JourneyHero from '@/presentation/components/journey/JourneyHero';
 import StatTile from '@/presentation/components/journey/StatTile';
-import RegionCard from '@/presentation/components/journey/RegionCard';
+import RegionCard, { type RegionRow } from '@/presentation/components/journey/RegionCard';
 
 const MAX_REGIONS = 10;
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-interface RegionRow {
-  id: string;
-  tally: RegionTally;
-  percent: number;
-}
 
 function buildRegionRows(regions: ReadonlyMap<string, RegionTally>): RegionRow[] {
   const rows: RegionRow[] = [];

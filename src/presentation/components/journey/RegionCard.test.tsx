@@ -45,7 +45,7 @@ function makeLondonRow(): RegionRow {
 }
 
 function mockNavigationStore(mockFocusMap: jest.Mock): void {
-  (useNavigationStore as jest.Mock).mockImplementation((selector) =>
+  (useNavigationStore as unknown as jest.Mock).mockImplementation((selector) =>
     selector({
       focusMap: mockFocusMap,
       activeTab: 'stats' as const,
