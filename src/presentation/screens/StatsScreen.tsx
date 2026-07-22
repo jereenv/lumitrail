@@ -9,29 +9,26 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { palette, radii, spacing, typography } from '@/app/theme';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
+import { useNavigationStore } from '@/app/store/useNavigationStore';
 import {
+  GameCard,
   LevelBadge,
   ProgressRing,
   ScreenHeader,
-  StatCard,
   StreakFlame,
   XpBar,
 } from '@/presentation/components';
 import { levelForXp } from '@/domain/progression/levels';
-import { regionCompletion } from '@/domain/regions/exploration';
+import { regionCompletion, worldwidePercent } from '@/domain/regions/exploration';
+import { regionCenter } from '@/domain/regions/resolver';
+import { RES9_CELL_AREA_KM2 } from '@/domain/geo/fog';
 import type { RegionTally } from '@/domain/loop/state';
+import type { DomainEvent } from '@/domain/loop/events';
+import JourneyHero from '@/presentation/components/journey/JourneyHero';
+import StatTile from '@/presentation/components/journey/StatTile';
+import RegionCard, { type RegionRow } from '@/presentation/components/journey/RegionCard';
 
 const MAX_REGIONS = 10;
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-interface RegionRow {
-  id: string;
-  tally: RegionTally;
-  percent: number;
-}
 
 function buildRegionRows(regions: ReadonlyMap<string, RegionTally>): RegionRow[] {
   const rows: RegionRow[] = [];
@@ -44,6 +41,32 @@ function buildRegionRows(regions: ReadonlyMap<string, RegionTally>): RegionRow[]
 }
 
 // ---------------------------------------------------------------------------
+// Recent activity helpers
+// ---------------------------------------------------------------------------
+
+const MAX_ACTIVITY_EVENTS = 5;
+
+/** Returns a human-readable label for a meaningful domain event, or null for
+ *  events we intentionally hide (cellsRevealed, fixRejected). */
+function eventLabel(event: DomainEvent): string | null {
+  switch (event.type) {
+    case 'xpGained':
+      return `Gained ${event.breakdown.total} XP`;
+    case 'leveledUp':
+      return `Leveled up! → Level ${event.to}`;
+    case 'achievementUnlocked':
+      return 'Achievement unlocked';
+    case 'regionCompleted':
+      return `Completed: ${event.regionName}`;
+    case 'streakExtended':
+      return `Streak: ${event.days} days!`;
+    case 'cellsRevealed':
+    case 'fixRejected':
+      return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
 
@@ -51,32 +74,37 @@ function SectionLabel({ title }: { title: string }): React.ReactElement {
   return <Text style={styles.sectionLabel}>{title}</Text>;
 }
 
-interface RegionBarProps {
-  row: RegionRow;
+interface RecentActivityStripProps {
+  events: readonly DomainEvent[];
 }
 
-function RegionBar({ row }: RegionBarProps): React.ReactElement {
-  const { ref, revealedCells } = row.tally;
-  const pct = Math.min(100, Math.max(0, row.percent));
+function RecentActivityStrip({ events }: RecentActivityStripProps): React.ReactElement | null {
+  const labels = events
+    .slice()
+    .reverse()
+    .reduce<string[]>((acc, event) => {
+      if (acc.length >= MAX_ACTIVITY_EVENTS) return acc;
+      const label = eventLabel(event);
+      if (label !== null) acc.push(label);
+      return acc;
+    }, []);
+
+  if (labels.length === 0) return null;
 
   return (
-    <View style={styles.regionRow}>
-      <View style={styles.regionHeader}>
-        <Text style={styles.regionName} numberOfLines={1}>
-          {ref.name}
-        </Text>
-        <View style={styles.regionMeta}>
-          <Text style={styles.regionKindBadge}>{ref.kind}</Text>
-          <Text style={styles.regionPct}>{pct.toFixed(1)}%</Text>
-        </View>
-      </View>
-      <View style={styles.progressTrack}>
-        <View style={[styles.progressFill, { width: `${pct}%` }]} />
-      </View>
-      <Text style={styles.regionCells}>
-        {revealedCells} / {ref.targetCells} cells
-      </Text>
-    </View>
+    <>
+      <SectionLabel title="Recent Activity" />
+      <GameCard>
+        {labels.map((label, index) => (
+          <Text
+            key={`${label}-${index}`}
+            style={[styles.activityRow, index < labels.length - 1 && styles.activityRowDivider]}
+          >
+            {label}
+          </Text>
+        ))}
+      </GameCard>
+    </>
   );
 }
 
@@ -85,8 +113,9 @@ function RegionBar({ row }: RegionBarProps): React.ReactElement {
 // ---------------------------------------------------------------------------
 
 export default function StatsScreen(): React.ReactElement {
-  const { playerState } = useExplorationStore();
+  const { playerState, recentEvents } = useExplorationStore();
   const { stats, streak } = playerState;
+  const focusMap = useNavigationStore((s) => s.focusMap);
 
   const levelProgress = levelForXp(stats.totalXp);
 
@@ -97,6 +126,13 @@ export default function StatsScreen(): React.ReactElement {
 
   const regionRows = buildRegionRows(playerState.regions);
 
+  const handleRegionPress = (row: RegionRow): void => {
+    const c = regionCenter(row.tally.ref.id);
+    if (c !== null) {
+      focusMap({ ...c, label: row.tally.ref.name });
+    }
+  };
+
   return (
     <View style={styles.root}>
       <ScreenHeader title="Your Exploration" subtitle="Walk the world out of the fog." />
@@ -106,43 +142,82 @@ export default function StatsScreen(): React.ReactElement {
         showsVerticalScrollIndicator={false}
       >
         {/* ---------------------------------------------------------------- */}
-        {/* Big stats row                                                     */}
+        {/* Hero section                                                      */}
+        {/* ---------------------------------------------------------------- */}
+        <JourneyHero
+          displayName={playerState.displayName}
+          level={levelProgress.level}
+          worldPercent={worldwidePercent(stats.cellsRevealed)}
+        />
+
+        {/* ---------------------------------------------------------------- */}
+        {/* Stat tiles — 8-tile 2×4 animated count-up grid                  */}
         {/* ---------------------------------------------------------------- */}
         <View style={styles.statsGrid}>
-          <StatCard
+          <StatTile
             label="Cells revealed"
             value={stats.cellsRevealed}
             icon="⬡"
             accent={palette.aurora}
-            style={styles.statCard}
+            style={styles.statTile}
           />
-          <StatCard
+          <StatTile
             label="Distance"
-            value={`${(stats.distanceMeters / 1000).toFixed(1)} km`}
+            value={stats.distanceMeters / 1000}
+            format={(n) => `${n.toFixed(1)} km`}
             icon="📍"
             accent={palette.lumen}
-            style={styles.statCard}
+            style={styles.statTile}
           />
-          <StatCard
+          <StatTile
+            label="Area"
+            value={stats.cellsRevealed * RES9_CELL_AREA_KM2}
+            format={(n) => `${n.toFixed(1)} km²`}
+            icon="◼"
+            accent={palette.aurora}
+            style={styles.statTile}
+          />
+          <StatTile
             label="Countries"
             value={stats.countriesVisited}
             icon="🌍"
             accent={palette.sky}
-            style={styles.statCard}
+            style={styles.statTile}
           />
-          <StatCard
+          <StatTile
+            label="Cities"
+            value={stats.citiesVisited}
+            icon="🏙"
+            accent={palette.berry}
+            style={styles.statTile}
+          />
+          <StatTile
             label="Active days"
             value={stats.activeDays}
             icon="📅"
-            accent={palette.aurora}
-            style={styles.statCard}
+            accent={palette.lumen}
+            style={styles.statTile}
+          />
+          <StatTile
+            label="Streak"
+            value={stats.currentStreakDays}
+            icon="🔥"
+            accent={palette.coral}
+            style={styles.statTile}
+          />
+          <StatTile
+            label="Coins"
+            value={Math.floor(stats.totalXp / 10)} // 1 coin per 10 XP — cosmetic display only
+            icon="🪙"
+            accent={palette.lumen}
+            style={styles.statTile}
           />
         </View>
 
         {/* ---------------------------------------------------------------- */}
         {/* Level & XP section                                               */}
         {/* ---------------------------------------------------------------- */}
-        <SectionLabel title="Level &amp; XP" />
+        <SectionLabel title="Level & XP" />
         <View style={styles.card}>
           <View style={styles.levelRow}>
             <LevelBadge level={levelProgress.level} size="lg" />
@@ -199,12 +274,22 @@ export default function StatsScreen(): React.ReactElement {
             </Text>
           </View>
         ) : (
-          <View style={styles.card}>
+          <View style={styles.regionList}>
             {regionRows.map((row) => (
-              <RegionBar key={row.id} row={row} />
+              <RegionCard
+                key={row.id}
+                row={row}
+                onPress={() => handleRegionPress(row)}
+                testID={`region-card-${row.id}`}
+              />
             ))}
           </View>
         )}
+
+        {/* ---------------------------------------------------------------- */}
+        {/* Recent activity strip (optional — hidden when empty)            */}
+        {/* ---------------------------------------------------------------- */}
+        <RecentActivityStrip events={recentEvents} />
 
         {/* Extra bottom padding so content clears tab bar */}
         <View style={styles.bottomPad} />
@@ -241,7 +326,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing.sm,
   },
-  statCard: {
+  statTile: {
     flex: 1,
     minWidth: '45%',
   },
@@ -290,58 +375,8 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.xs,
     color: palette.textMuted,
   },
-  regionRow: {
-    gap: spacing.xs,
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: palette.surfaceAlt,
-  },
-  regionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  regionName: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.sm,
-    color: palette.text,
-    flex: 1,
-  },
-  regionMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  regionList: {
     gap: spacing.sm,
-  },
-  regionKindBadge: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.xs,
-    color: palette.textMuted,
-    backgroundColor: palette.surfaceAlt,
-    borderRadius: radii.sm,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-  },
-  regionPct: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.sm,
-    color: palette.aurora,
-    fontWeight: '600',
-  },
-  progressTrack: {
-    height: 4,
-    backgroundColor: palette.surfaceAlt,
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: 4,
-    backgroundColor: palette.aurora,
-    borderRadius: 2,
-  },
-  regionCells: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.xs,
-    color: palette.textMuted,
   },
   emptyRegions: {
     fontFamily: typography.body,
@@ -352,5 +387,15 @@ const styles = StyleSheet.create({
   },
   bottomPad: {
     height: spacing.xxl,
+  },
+  activityRow: {
+    fontFamily: typography.body,
+    fontSize: typography.sizes.sm,
+    color: palette.onCardMuted,
+    paddingVertical: spacing.xs,
+  },
+  activityRowDivider: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: palette.cardBorder,
   },
 });
