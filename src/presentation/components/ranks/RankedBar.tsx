@@ -9,7 +9,7 @@
  * Animation: Animated.spring with the shared `motion.spring` config so the
  * bar "bounces" into position — consistent with the rest of the app's motion.
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import { motion, palette, radii, spacing, typography } from '@/app/theme';
@@ -46,7 +46,7 @@ export default function RankedBar({
   const clampedRatio = Math.min(1, Math.max(0, ratio));
 
   // Animated.Value holds the bar width as a 0-1 interpolation input.
-  const animatedRatio = useRef(new Animated.Value(0)).current;
+  const [animatedRatio] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     Animated.spring(animatedRatio, {

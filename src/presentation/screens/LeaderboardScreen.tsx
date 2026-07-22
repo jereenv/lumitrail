@@ -11,7 +11,7 @@
  * so they can always find themselves. If their rank is > 3 the list auto-scrolls
  * to their entry on mount and whenever the tab or metric changes.
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   FlatList,
   ScrollView,
@@ -191,32 +191,26 @@ export default function LeaderboardScreen(): React.ReactElement {
     return undefined;
   }, [myIndex, tab, metric]);
 
-  const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<LeaderboardEntry>): React.ReactElement => {
-      const isCurrentPlayer = item.playerId === playerState.playerId;
-      return (
-        <RankedBar
-          rank={item.rank}
-          name={`${item.displayName}${isCurrentPlayer ? ' (you)' : ''}`}
-          value={formatValue(metric, item.value)}
-          ratio={item.value / safeTopValue}
-          isCurrentPlayer={isCurrentPlayer}
-          testID={isCurrentPlayer ? 'ranked-bar-you' : `ranked-bar-${item.playerId}`}
-        />
-      );
-    },
-    [metric, playerState.playerId, safeTopValue],
-  );
+  const renderItem = ({ item }: ListRenderItemInfo<LeaderboardEntry>): React.ReactElement => {
+    const isCurrentPlayer = item.playerId === playerState.playerId;
+    return (
+      <RankedBar
+        rank={item.rank}
+        name={`${item.displayName}${isCurrentPlayer ? ' (you)' : ''}`}
+        value={formatValue(metric, item.value)}
+        ratio={item.value / safeTopValue}
+        isCurrentPlayer={isCurrentPlayer}
+        testID={isCurrentPlayer ? 'ranked-bar-you' : `ranked-bar-${item.playerId}`}
+      />
+    );
+  };
 
-  const keyExtractor = useCallback(
-    (item: LeaderboardEntry): string => item.playerId,
-    [],
-  );
+  const keyExtractor = (item: LeaderboardEntry): string => item.playerId;
 
   // Graceful fallback when scrollToIndex fires before layout.
-  const onScrollToIndexFailed = useCallback((): void => {
+  const onScrollToIndexFailed = (): void => {
     // No-op: if the scroll fails (list not yet laid out), we simply don't scroll.
-  }, []);
+  };
 
   return (
     <View style={styles.root}>
@@ -268,7 +262,7 @@ export default function LeaderboardScreen(): React.ReactElement {
           </ScrollView>
 
           {/* Season framing line */}
-          <Text style={styles.seasonText}>Season 1 · This season's rankings</Text>
+          <Text style={styles.seasonText}>{'Season 1 · This season\'s rankings'}</Text>
         </GameCard>
       </View>
 

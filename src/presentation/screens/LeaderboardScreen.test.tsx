@@ -24,7 +24,9 @@ jest.mock('@/app/store/useExplorationStore', () => ({
 }));
 
 jest.mock('react-native-maps', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require('react');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { View } = require('react-native');
   const MapView = (props: { children?: React.ReactNode }) =>
     React.createElement(View, { testID: 'map-view' }, props.children);
@@ -33,6 +35,7 @@ jest.mock('react-native-maps', () => {
 });
 
 jest.mock('react-native-safe-area-context', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { View } = require('react-native');
   return { __esModule: true, SafeAreaView: View };
 });
