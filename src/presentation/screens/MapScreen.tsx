@@ -13,22 +13,26 @@
  * on-map HUD (level, XP, and "% uncovered", shown the moment the map opens).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Polygon, Polyline, type Region } from 'react-native-maps';
 import * as Location from 'expo-location';
 
-import { palette, radii, spacing, typography } from '@/app/theme';
+import { cardShadow, motion, palette, radii, spacing, typography } from '@/app/theme';
 import { mapStyle } from '@/app/mapStyle';
 import { createCachedReverseGeocoder } from '@/data/location/reverseGeocode';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
+import { useNavigationStore } from '@/app/store/useNavigationStore';
 import {
   EventToast,
   LevelBadge,
+  ProgressRing,
   RegionBanner,
   StreakFlame,
   XpBar,
 } from '@/presentation/components';
+import HudCard from '../components/explore/HudCard';
+import CoinsChip from '../components/explore/CoinsChip';
 import { cellCenter } from '@/domain/geo/grid';
 import {
   approximateAreaKm2,
@@ -37,6 +41,7 @@ import {
   viewExploredPercent,
   type Ring,
 } from '@/domain/geo/fog';
+import { smoothRings } from '@/domain/geo/smooth';
 import type { H3Index } from '@/domain/geo/types';
 import { levelForXp } from '@/domain/progression/levels';
 
@@ -47,9 +52,6 @@ const DEFAULT_REGION: Region = {
   latitudeDelta: 0.06,
   longitudeDelta: 0.06,
 };
-
-const REVEAL_PULSE_START = 0.55;
-const REVEAL_PULSE_STEP = 0.11;
 
 /** One cached geocoder for the app session (expo-location matches the Geocoder shape). */
 const lookupLocality = createCachedReverseGeocoder(Location);
@@ -95,6 +97,7 @@ function HudStat({ label, value }: { label: string; value: string }): React.Reac
 export default function MapScreen(): React.ReactElement {
   const { playerState, currentLocation, recentEvents, isDemoWalking, runDemoWalk, locateMe } =
     useExplorationStore();
+  const { focusTarget, clearMapFocus } = useNavigationStore();
 
   const cells = useMemo(
     () => Array.from(playerState.revealedCells) as H3Index[],
@@ -103,6 +106,8 @@ export default function MapScreen(): React.ReactElement {
 
   const mapRef = useRef<MapView>(null);
   const [region, setRegion] = useState<Region>(() => centroidRegion(cells) ?? DEFAULT_REGION);
+  const [focusLabel, setFocusLabel] = useState<string | null>(null);
+  const focusLabelTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Centre on the user's real location as soon as it resolves.
   useEffect(() => {
@@ -123,8 +128,38 @@ export default function MapScreen(): React.ReactElement {
     }
   }, [currentLocation]);
 
+  // Fly to a focus target set by another screen (e.g. a region tapped in Journey).
+  useEffect(() => {
+    if (focusTarget && mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: focusTarget.latitude,
+          longitude: focusTarget.longitude,
+          latitudeDelta: focusTarget.latitudeDelta,
+          longitudeDelta: focusTarget.longitudeDelta,
+        },
+        600,
+      );
+      clearMapFocus();
+      if (focusTarget.label) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setFocusLabel(focusTarget.label);
+        if (focusLabelTimerRef.current) clearTimeout(focusLabelTimerRef.current);
+        focusLabelTimerRef.current = setTimeout(() => setFocusLabel(null), 2000);
+      }
+    }
+    return () => {
+      if (focusLabelTimerRef.current) clearTimeout(focusLabelTimerRef.current);
+    };
+  }, [focusTarget, clearMapFocus]);
+
   // Fog geometry for the current viewport (pure, memoised).
   const overlay = useMemo(() => buildFogOverlay(region, cells), [region, cells]);
+
+  // Smooth the frontier rings once and reuse across all three render sites (fog, islands, frontier border).
+  const smoothedHoles = useMemo(() => smoothRings(overlay.holes, 2), [overlay.holes]);
+  const smoothedIslands = useMemo(() => smoothRings(overlay.islands, 2), [overlay.islands]);
+
   const levelProgress = levelForXp(playerState.stats.totalXp);
   const viewPct = viewExploredPercent(overlay.exploredInView, overlay.estimatedCellsInView);
   const areaKm2 = approximateAreaKm2(playerState.stats.cellsRevealed);
@@ -141,8 +176,10 @@ export default function MapScreen(): React.ReactElement {
     };
   }, [region.latitude, region.longitude]);
 
-  // --- Reveal animation: flash newly revealed outlines, then fade out. -------
+  // --- Reveal animation: springy scale-pop glow + amber polygon flash. -------
   const [pulseRings, setPulseRings] = useState<Ring[]>([]);
+  const smoothedPulseRings = useMemo(() => smoothRings(pulseRings, 2), [pulseRings]);
+  const pulseScale = useMemo(() => new Animated.Value(0), []);
   const [pulseAlpha, setPulseAlpha] = useState(0);
   const lastPulsedRef = useRef<readonly H3Index[] | null>(null);
 
@@ -151,19 +188,28 @@ export default function MapScreen(): React.ReactElement {
     if (latest?.type === 'cellsRevealed' && latest.cells !== lastPulsedRef.current) {
       lastPulsedRef.current = latest.cells;
       setPulseRings(computeFogGeometry(latest.cells).revealedOutlines);
-      setPulseAlpha(REVEAL_PULSE_START);
+
+      // Reset scale to 0, then spring to 1 (scale-pop on the glow overlay).
+      pulseScale.setValue(0);
+      setPulseAlpha(0.65); // start visible; timer steps it down
+
+      Animated.spring(pulseScale, {
+        toValue: 1,
+        damping: motion.spring.damping,
+        stiffness: motion.spring.stiffness,
+        mass: motion.spring.mass,
+        useNativeDriver: true, // scale CAN use native driver
+      }).start();
     }
-  }, [recentEvents]);
+  }, [recentEvents, pulseScale]);
 
   useEffect(() => {
-    // Step the fade down over time. setState happens only in the timer callback
-    // (never synchronously in the effect body), and the pulse polygons are
-    // rendered only while `pulseAlpha > 0`, so there is no need to clear the
-    // rings — stale ones simply stop rendering once the flash finishes.
+    // Step the alpha down over ~750ms (150ms × 5 steps). setState happens only
+    // in the timer callback; the pulse polygons stop rendering once alpha hits 0.
     if (pulseAlpha <= 0) {
       return;
     }
-    const timer = setTimeout(() => setPulseAlpha((a) => Math.max(0, a - REVEAL_PULSE_STEP)), 110);
+    const timer = setTimeout(() => setPulseAlpha((a) => Math.max(0, a - 0.13)), 150);
     return () => clearTimeout(timer);
   }, [pulseAlpha]);
 
@@ -192,14 +238,14 @@ export default function MapScreen(): React.ReactElement {
         {/* The fog: one green-teal polygon over the viewport, holes where explored. */}
         <Polygon
           coordinates={overlay.outer}
-          holes={overlay.holes}
+          holes={smoothedHoles}
           fillColor={palette.fog}
           strokeColor="transparent"
           strokeWidth={0}
           tappable={false}
         />
         {/* Fog islands: unexplored pockets surrounded by explored land. */}
-        {overlay.islands.map((ring, i) => (
+        {smoothedIslands.map((ring, i) => (
           <Polygon
             key={`island-${i}`}
             coordinates={ring}
@@ -210,7 +256,7 @@ export default function MapScreen(): React.ReactElement {
           />
         ))}
         {/* Dashed frontier border tracing the edge of explored land. */}
-        {[...overlay.holes, ...overlay.islands].map((ring, i) => {
+        {[...smoothedHoles, ...smoothedIslands].map((ring, i) => {
           const path = closedRing(ring);
           return (
             <React.Fragment key={`frontier-${i}`}>
@@ -224,25 +270,44 @@ export default function MapScreen(): React.ReactElement {
             </React.Fragment>
           );
         })}
-        {/* Reveal flash on newly uncovered cells. */}
+        {/* Reveal flash on newly uncovered cells (amber fill, JS-driven alpha). */}
         {pulseAlpha > 0 &&
-          pulseRings.map((ring, i) => (
+          smoothedPulseRings.map((ring, i) => (
             <Polygon
               key={`pulse-${i}`}
               coordinates={ring}
+              // palette.lumen (#FFB74D) with animated alpha — can't use the token
+              // string directly here because the alpha varies per frame.
               fillColor={`rgba(255,183,77,${pulseAlpha})`}
               strokeColor={`rgba(255,183,77,${Math.min(1, pulseAlpha + 0.35)})`}
-              strokeWidth={2}
+              strokeWidth={3}
               tappable={false}
             />
           ))}
       </MapView>
 
+      {/* Scale-pop glow overlay — springy entrance animation on reveal (native driver). */}
+      {pulseAlpha > 0 && (
+        <Animated.View
+          style={[
+            StyleSheet.absoluteFill,
+            styles.revealGlow,
+            {
+              opacity: pulseAlpha * 0.18, // subtle glow, not blinding
+              transform: [{ scale: pulseScale }],
+            },
+          ]}
+          pointerEvents="none"
+        />
+      )}
+
       {/* HUD — the first thing you see: how much you've uncovered. */}
       <SafeAreaView style={styles.hudWrap} pointerEvents="box-none" edges={['top']}>
-        <View style={styles.hud} pointerEvents="none">
-          <View style={styles.hudTopRow}>
-            <LevelBadge level={levelProgress.level} size="md" />
+        <HudCard>
+          <View style={styles.hudTopRow} pointerEvents="none">
+            <ProgressRing progress={levelProgress.progress} size={48} strokeWidth={4}>
+              <LevelBadge level={levelProgress.level} size="sm" />
+            </ProgressRing>
             <View style={styles.hudXp}>
               <XpBar
                 progress={levelProgress.progress}
@@ -251,10 +316,11 @@ export default function MapScreen(): React.ReactElement {
                 showLabel
               />
             </View>
+            <CoinsChip totalXp={playerState.stats.totalXp} />
             <StreakFlame days={playerState.stats.currentStreakDays} size={32} />
           </View>
 
-          <View style={styles.hudStatsRow}>
+          <View style={styles.hudStatsRow} pointerEvents="none">
             <HudStat label="Area" value={`${areaKm2.toFixed(1)} km²`} />
             <HudStat
               label="Distance"
@@ -262,7 +328,7 @@ export default function MapScreen(): React.ReactElement {
             />
             <HudStat label="Cells" value={`${playerState.stats.cellsRevealed}`} />
           </View>
-        </View>
+        </HudCard>
       </SafeAreaView>
 
       {/* Event toasts */}
@@ -301,6 +367,15 @@ export default function MapScreen(): React.ReactElement {
         </TouchableOpacity>
       </View>
 
+      {/* Focus label chip — briefly shows the name of a location flown to from another screen. */}
+      {focusLabel !== null && (
+        <View style={styles.focusLabelWrap} pointerEvents="none">
+          <View style={styles.focusLabelChip}>
+            <Text style={styles.focusLabelText}>{focusLabel}</Text>
+          </View>
+        </View>
+      )}
+
       {/* Bottom region banner: where you are + how much of the view is uncovered. */}
       <SafeAreaView style={styles.bannerWrap} pointerEvents="box-none" edges={['bottom']}>
         <RegionBanner locality={locality} percent={viewPct} />
@@ -319,13 +394,6 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-  },
-  hud: {
-    margin: spacing.md,
-    padding: spacing.md,
-    borderRadius: radii.lg,
-    backgroundColor: 'rgba(15,27,45,0.82)',
-    gap: spacing.sm,
   },
   hudTopRow: {
     flexDirection: 'row',
@@ -346,13 +414,13 @@ const styles = StyleSheet.create({
   hudStatValue: {
     fontFamily: typography.display,
     fontSize: typography.sizes.md,
-    color: palette.text,
+    color: palette.onCard,
     fontWeight: '700',
   },
   hudStatLabel: {
     fontFamily: typography.body,
     fontSize: typography.sizes.xs,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
   },
   toastColumn: {
     position: 'absolute',
@@ -374,28 +442,30 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: radii.pill,
-    backgroundColor: palette.surface,
+    backgroundColor: palette.card,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: palette.surfaceAlt,
+    borderWidth: 1.5,
+    borderColor: palette.cardBorder,
+    ...cardShadow,
   },
   fabIcon: {
     fontSize: 24,
-    color: palette.lumen,
+    color: palette.coral,
   },
   demoFab: {
-    backgroundColor: palette.lumen,
+    backgroundColor: palette.aurora,
     borderRadius: radii.pill,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
+    ...cardShadow,
   },
   demoFabDisabled: {
-    backgroundColor: palette.surfaceAlt,
+    backgroundColor: palette.cardBorder,
   },
   demoFabText: {
     fontFamily: typography.display,
-    fontSize: typography.sizes.md,
+    fontSize: typography.sizes.sm,
     color: palette.ink,
     fontWeight: '700',
   },
@@ -404,5 +474,31 @@ const styles = StyleSheet.create({
     left: spacing.md,
     right: spacing.md,
     bottom: spacing.md,
+  },
+  revealGlow: {
+    backgroundColor: palette.lumen,
+    borderRadius: radii.lg,
+  },
+  focusLabelWrap: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: spacing.xxl + spacing.xl,
+    alignItems: 'center',
+  },
+  focusLabelChip: {
+    backgroundColor: palette.card,
+    borderRadius: radii.pill,
+    borderWidth: 1.5,
+    borderColor: palette.cardBorder,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    ...cardShadow,
+  },
+  focusLabelText: {
+    fontFamily: typography.display,
+    fontSize: typography.sizes.md,
+    color: palette.onCard,
+    fontWeight: '700',
   },
 });
