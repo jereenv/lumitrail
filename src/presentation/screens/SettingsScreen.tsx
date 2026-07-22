@@ -4,48 +4,20 @@
  *
  * All toggle states are local (not yet persisted) so they survive re-renders
  * within a session. Destructive actions are guarded with an Alert confirmation.
+ *
+ * Uses the cartoony gamified design system: cream GameCard containers,
+ * Avatar for the player profile, and palette-only colors (no hardcoded hex).
  */
 import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { palette, radii, spacing, typography } from '@/app/theme';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
-import { ScreenHeader } from '@/presentation/components';
+import { Avatar, GameCard, ScreenHeader, SectionHeader } from '@/presentation/components';
 import { levelForXp } from '@/domain/progression/levels';
+import SettingsToggleRow from '../components/settings/SettingsToggleRow';
 
 const APP_VERSION = '1.0.0';
-
-// ---------------------------------------------------------------------------
-// Sub-components
-// ---------------------------------------------------------------------------
-
-function SectionLabel({ title }: { title: string }): React.ReactElement {
-  return <Text style={styles.sectionLabel}>{title}</Text>;
-}
-
-interface SettingsRowProps {
-  label: string;
-  description?: string;
-  right: React.ReactNode;
-}
-
-function SettingsRow({ label, description, right }: SettingsRowProps): React.ReactElement {
-  return (
-    <View style={styles.settingsRow}>
-      <View style={styles.settingsRowText}>
-        <Text style={styles.settingsRowLabel}>{label}</Text>
-        {description !== undefined && description !== '' && (
-          <Text style={styles.settingsRowDesc}>{description}</Text>
-        )}
-      </View>
-      <View style={styles.settingsRowRight}>{right}</View>
-    </View>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Main component
-// ---------------------------------------------------------------------------
 
 export default function SettingsScreen(): React.ReactElement {
   const { playerState, exportData, deleteAllData } = useExplorationStore();
@@ -82,7 +54,7 @@ export default function SettingsScreen(): React.ReactElement {
 
   return (
     <View style={styles.root}>
-      <ScreenHeader title="Privacy &amp; Settings" />
+      <ScreenHeader title="Settings" />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -91,74 +63,58 @@ export default function SettingsScreen(): React.ReactElement {
         {/* ---------------------------------------------------------------- */}
         {/* About You                                                         */}
         {/* ---------------------------------------------------------------- */}
-        <SectionLabel title="About You" />
-        <View style={styles.card}>
-          <View style={styles.profileRow}>
-            <View style={styles.profileAvatar}>
-              <Text style={styles.profileAvatarText}>{displayName.charAt(0).toUpperCase()}</Text>
-            </View>
-            <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>{displayName}</Text>
-              <Text style={styles.profileDetails}>
+        <SectionHeader title="About You" />
+        <GameCard testID="settings-card-about">
+          <View style={styles.aboutRow}>
+            <Avatar name={displayName} level={levelProgress.level} size={56} />
+            <View style={styles.aboutInfo}>
+              <Text style={styles.aboutName}>{displayName}</Text>
+              <Text style={styles.aboutDetails}>
                 Level {levelProgress.level} · {stats.cellsRevealed} cells revealed
               </Text>
             </View>
           </View>
-        </View>
+        </GameCard>
 
         {/* ---------------------------------------------------------------- */}
         {/* Sharing toggles                                                   */}
         {/* ---------------------------------------------------------------- */}
-        <SectionLabel title="Sharing" />
-        <View style={styles.card}>
-          <SettingsRow
+        <SectionHeader title="Sharing" />
+        <GameCard testID="settings-card-sharing">
+          <SettingsToggleRow
             label="Appear on global leaderboard"
             description="Let others see your exploration rank"
-            right={
-              <Switch
-                value={showOnGlobal}
-                onValueChange={setShowOnGlobal}
-                trackColor={{ false: palette.surfaceAlt, true: palette.aurora }}
-                thumbColor={palette.text}
-                accessibilityLabel="Toggle global leaderboard visibility"
-              />
-            }
+            value={showOnGlobal}
+            onValueChange={setShowOnGlobal}
+            accessibilityLabel="Toggle global leaderboard visibility"
+            testID="toggle-global-leaderboard"
+            showDivider
           />
-          <View style={styles.divider} />
-          <SettingsRow
+          <SettingsToggleRow
             label="Show my exploration to friends"
             description="Friends can see your stats and map"
-            right={
-              <Switch
-                value={showToFriends}
-                onValueChange={setShowToFriends}
-                trackColor={{ false: palette.surfaceAlt, true: palette.aurora }}
-                thumbColor={palette.text}
-                accessibilityLabel="Toggle exploration visibility to friends"
-              />
-            }
+            value={showToFriends}
+            onValueChange={setShowToFriends}
+            accessibilityLabel="Toggle exploration visibility to friends"
+            testID="toggle-friends-visibility"
+            showDivider
           />
-          <View style={styles.divider} />
-          <SettingsRow
+          <SettingsToggleRow
             label="Allow friend requests"
             description="Let other players send you requests"
-            right={
-              <Switch
-                value={allowFriendRequests}
-                onValueChange={setAllowFriendRequests}
-                trackColor={{ false: palette.surfaceAlt, true: palette.aurora }}
-                thumbColor={palette.text}
-                accessibilityLabel="Toggle friend request permissions"
-              />
-            }
+            value={allowFriendRequests}
+            onValueChange={setAllowFriendRequests}
+            accessibilityLabel="Toggle friend request permissions"
+            testID="toggle-friend-requests"
+            showDivider={false}
           />
-        </View>
+        </GameCard>
 
         {/* ---------------------------------------------------------------- */}
         {/* Location explanation                                              */}
         {/* ---------------------------------------------------------------- */}
-        <SectionLabel title="Location" />
-        <View style={styles.card}>
+        <SectionHeader title="Location" />
+        <GameCard testID="settings-card-location">
           <Text style={styles.bodyText}>
             Lumitrail uses your device&apos;s GPS to reveal hexagonal cells on your personal map as
             you walk, run, or cycle. Location data is processed on-device and only uploaded when you
@@ -169,13 +125,13 @@ export default function SettingsScreen(): React.ReactElement {
             revoke this permission in your device settings at any time — the app will still work in
             the foreground.
           </Text>
-        </View>
+        </GameCard>
 
         {/* ---------------------------------------------------------------- */}
         {/* Data management                                                   */}
         {/* ---------------------------------------------------------------- */}
-        <SectionLabel title="Your Data" />
-        <View style={styles.card}>
+        <SectionHeader title="Your Data" />
+        <GameCard testID="settings-card-data">
           <Text style={styles.bodyText}>
             All exploration data is yours. Export a full copy or permanently delete everything at
             any time.
@@ -196,13 +152,13 @@ export default function SettingsScreen(): React.ReactElement {
           >
             <Text style={styles.deleteButtonText}>Delete all my data</Text>
           </TouchableOpacity>
-        </View>
+        </GameCard>
 
         {/* ---------------------------------------------------------------- */}
         {/* App info                                                          */}
         {/* ---------------------------------------------------------------- */}
-        <SectionLabel title="App Info" />
-        <View style={styles.card}>
+        <SectionHeader title="App Info" />
+        <GameCard testID="settings-card-appinfo">
           <View style={styles.appInfoRow}>
             <Text style={styles.appInfoLabel}>Version</Text>
             <Text style={styles.appInfoValue}>{APP_VERSION}</Text>
@@ -210,7 +166,7 @@ export default function SettingsScreen(): React.ReactElement {
           <Text style={styles.tagline}>
             Walk the world out of the fog. ✦ Every step leaves a trail of light.
           </Text>
-        </View>
+        </GameCard>
 
         <View style={styles.bottomPad} />
       </ScrollView>
@@ -218,14 +174,10 @@ export default function SettingsScreen(): React.ReactElement {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Styles
-// ---------------------------------------------------------------------------
-
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: palette.ink,
+    backgroundColor: palette.canvas,
   },
   scroll: {
     flex: 1,
@@ -234,89 +186,34 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.md,
   },
-  sectionLabel: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.md,
-    color: palette.text,
-    fontWeight: '700',
-    marginTop: spacing.xs,
-  },
-  card: {
-    backgroundColor: palette.surface,
-    borderRadius: radii.md,
-    padding: spacing.md,
-    gap: spacing.md,
-  },
-  profileRow: {
+  aboutRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
   },
-  profileAvatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: `${palette.lumen}22`,
-    borderWidth: 2,
-    borderColor: palette.lumen,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profileAvatarText: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.xl,
-    color: palette.lumen,
-    fontWeight: '700',
-  },
-  profileInfo: {
-    flex: 1,
-  },
-  profileName: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.md,
-    color: palette.text,
-    fontWeight: '700',
-  },
-  profileDetails: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.sm,
-    color: palette.textMuted,
-  },
-  settingsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  settingsRowText: {
+  aboutInfo: {
     flex: 1,
     gap: 2,
   },
-  settingsRowLabel: {
-    fontFamily: typography.body,
+  aboutName: {
+    fontFamily: typography.display,
     fontSize: typography.sizes.md,
-    color: palette.text,
+    color: palette.onCard,
+    fontWeight: '700',
   },
-  settingsRowDesc: {
+  aboutDetails: {
     fontFamily: typography.body,
-    fontSize: typography.sizes.xs,
-    color: palette.textMuted,
-  },
-  settingsRowRight: {
-    flexShrink: 0,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: palette.surfaceAlt,
-    marginVertical: spacing.xs,
+    fontSize: typography.sizes.sm,
+    color: palette.onCardMuted,
   },
   bodyText: {
     fontFamily: typography.body,
     fontSize: typography.sizes.sm,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
     lineHeight: 22,
   },
   exportButton: {
-    backgroundColor: palette.sky,
+    backgroundColor: palette.aurora,
     borderRadius: radii.md,
     paddingVertical: 14,
     paddingHorizontal: 20,
@@ -325,11 +222,11 @@ const styles = StyleSheet.create({
   exportButtonText: {
     fontFamily: typography.display,
     fontSize: typography.sizes.md,
-    color: palette.ink,
+    color: palette.onCard,
     fontWeight: '700',
   },
   deleteButton: {
-    backgroundColor: palette.danger,
+    backgroundColor: palette.coral,
     borderRadius: radii.md,
     paddingVertical: 14,
     paddingHorizontal: 20,
@@ -338,7 +235,7 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     fontFamily: typography.display,
     fontSize: typography.sizes.md,
-    color: palette.text,
+    color: palette.card,
     fontWeight: '700',
   },
   appInfoRow: {
@@ -349,18 +246,18 @@ const styles = StyleSheet.create({
   appInfoLabel: {
     fontFamily: typography.body,
     fontSize: typography.sizes.sm,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
   },
   appInfoValue: {
     fontFamily: typography.display,
     fontSize: typography.sizes.sm,
-    color: palette.text,
+    color: palette.onCard,
     fontWeight: '600',
   },
   tagline: {
     fontFamily: typography.body,
     fontSize: typography.sizes.sm,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
     textAlign: 'center',
     fontStyle: 'italic',
   },
