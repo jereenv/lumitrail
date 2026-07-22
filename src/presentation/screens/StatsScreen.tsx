@@ -21,6 +21,7 @@ import {
 import { levelForXp } from '@/domain/progression/levels';
 import { regionCompletion, worldwidePercent } from '@/domain/regions/exploration';
 import { regionCenter } from '@/domain/regions/resolver';
+import { RES9_CELL_AREA_KM2 } from '@/domain/geo/fog';
 import type { RegionTally } from '@/domain/loop/state';
 import type { DomainEvent } from '@/domain/loop/events';
 import JourneyHero from '@/presentation/components/journey/JourneyHero';
@@ -96,7 +97,7 @@ function RecentActivityStrip({ events }: RecentActivityStripProps): React.ReactE
       <GameCard>
         {labels.map((label, index) => (
           <Text
-            key={index}
+            key={`${label}-${index}`}
             style={[styles.activityRow, index < labels.length - 1 && styles.activityRowDivider]}
           >
             {label}
@@ -170,7 +171,7 @@ export default function StatsScreen(): React.ReactElement {
           />
           <StatTile
             label="Area"
-            value={stats.cellsRevealed * 0.105}
+            value={stats.cellsRevealed * RES9_CELL_AREA_KM2}
             format={(n) => `${n.toFixed(1)} km²`}
             icon="◼"
             accent={palette.aurora}
@@ -206,7 +207,7 @@ export default function StatsScreen(): React.ReactElement {
           />
           <StatTile
             label="Coins"
-            value={Math.floor(stats.totalXp / 10)}
+            value={Math.floor(stats.totalXp / 10)} // 1 coin per 10 XP — cosmetic display only
             icon="🪙"
             accent={palette.lumen}
             style={styles.statTile}
@@ -216,7 +217,7 @@ export default function StatsScreen(): React.ReactElement {
         {/* ---------------------------------------------------------------- */}
         {/* Level & XP section                                               */}
         {/* ---------------------------------------------------------------- */}
-        <SectionLabel title="Level &amp; XP" />
+        <SectionLabel title="Level & XP" />
         <View style={styles.card}>
           <View style={styles.levelRow}>
             <LevelBadge level={levelProgress.level} size="lg" />
