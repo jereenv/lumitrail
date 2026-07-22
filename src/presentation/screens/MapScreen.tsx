@@ -25,10 +25,13 @@ import { useExplorationStore } from '@/app/store/useExplorationStore';
 import {
   EventToast,
   LevelBadge,
+  ProgressRing,
   RegionBanner,
   StreakFlame,
   XpBar,
 } from '@/presentation/components';
+import HudCard from '../components/explore/HudCard';
+import CoinsChip from '../components/explore/CoinsChip';
 import { cellCenter } from '@/domain/geo/grid';
 import {
   approximateAreaKm2,
@@ -246,9 +249,11 @@ export default function MapScreen(): React.ReactElement {
 
       {/* HUD — the first thing you see: how much you've uncovered. */}
       <SafeAreaView style={styles.hudWrap} pointerEvents="box-none" edges={['top']}>
-        <View style={styles.hud} pointerEvents="none">
-          <View style={styles.hudTopRow}>
-            <LevelBadge level={levelProgress.level} size="md" />
+        <HudCard>
+          <View style={styles.hudTopRow} pointerEvents="none">
+            <ProgressRing progress={levelProgress.progress} size={48} strokeWidth={4}>
+              <LevelBadge level={levelProgress.level} size="sm" />
+            </ProgressRing>
             <View style={styles.hudXp}>
               <XpBar
                 progress={levelProgress.progress}
@@ -257,10 +262,11 @@ export default function MapScreen(): React.ReactElement {
                 showLabel
               />
             </View>
+            <CoinsChip totalXp={playerState.stats.totalXp} />
             <StreakFlame days={playerState.stats.currentStreakDays} size={32} />
           </View>
 
-          <View style={styles.hudStatsRow}>
+          <View style={styles.hudStatsRow} pointerEvents="none">
             <HudStat label="Area" value={`${areaKm2.toFixed(1)} km²`} />
             <HudStat
               label="Distance"
@@ -268,7 +274,7 @@ export default function MapScreen(): React.ReactElement {
             />
             <HudStat label="Cells" value={`${playerState.stats.cellsRevealed}`} />
           </View>
-        </View>
+        </HudCard>
       </SafeAreaView>
 
       {/* Event toasts */}
@@ -326,13 +332,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  hud: {
-    margin: spacing.md,
-    padding: spacing.md,
-    borderRadius: radii.lg,
-    backgroundColor: 'rgba(15,27,45,0.82)',
-    gap: spacing.sm,
-  },
   hudTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -352,13 +351,13 @@ const styles = StyleSheet.create({
   hudStatValue: {
     fontFamily: typography.display,
     fontSize: typography.sizes.md,
-    color: palette.text,
+    color: palette.onCard,
     fontWeight: '700',
   },
   hudStatLabel: {
     fontFamily: typography.body,
     fontSize: typography.sizes.xs,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
   },
   toastColumn: {
     position: 'absolute',
