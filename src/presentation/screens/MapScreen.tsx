@@ -18,10 +18,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Polygon, Polyline, type Region } from 'react-native-maps';
 import * as Location from 'expo-location';
 
-import { motion, palette, radii, spacing, typography } from '@/app/theme';
+import { cardShadow, motion, palette, radii, spacing, typography } from '@/app/theme';
 import { mapStyle } from '@/app/mapStyle';
 import { createCachedReverseGeocoder } from '@/data/location/reverseGeocode';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
+import { useNavigationStore } from '@/app/store/useNavigationStore';
 import {
   EventToast,
   LevelBadge,
@@ -96,6 +97,7 @@ function HudStat({ label, value }: { label: string; value: string }): React.Reac
 export default function MapScreen(): React.ReactElement {
   const { playerState, currentLocation, recentEvents, isDemoWalking, runDemoWalk, locateMe } =
     useExplorationStore();
+  const { focusTarget, clearMapFocus } = useNavigationStore();
 
   const cells = useMemo(
     () => Array.from(playerState.revealedCells) as H3Index[],
@@ -104,6 +106,8 @@ export default function MapScreen(): React.ReactElement {
 
   const mapRef = useRef<MapView>(null);
   const [region, setRegion] = useState<Region>(() => centroidRegion(cells) ?? DEFAULT_REGION);
+  const [focusLabel, setFocusLabel] = useState<string | null>(null);
+  const focusLabelTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Centre on the user's real location as soon as it resolves.
   useEffect(() => {
@@ -123,6 +127,30 @@ export default function MapScreen(): React.ReactElement {
       );
     }
   }, [currentLocation]);
+
+  // Fly to a focus target set by another screen (e.g. a region tapped in Journey).
+  useEffect(() => {
+    if (focusTarget && mapRef.current) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: focusTarget.latitude,
+          longitude: focusTarget.longitude,
+          latitudeDelta: focusTarget.latitudeDelta ?? 0.04,
+          longitudeDelta: focusTarget.longitudeDelta ?? 0.04,
+        },
+        600,
+      );
+      clearMapFocus();
+      if (focusTarget.label) {
+        setFocusLabel(focusTarget.label);
+        if (focusLabelTimerRef.current) clearTimeout(focusLabelTimerRef.current);
+        focusLabelTimerRef.current = setTimeout(() => setFocusLabel(null), 2000);
+      }
+    }
+    return () => {
+      if (focusLabelTimerRef.current) clearTimeout(focusLabelTimerRef.current);
+    };
+  }, [focusTarget, clearMapFocus]);
 
   // Fog geometry for the current viewport (pure, memoised).
   const overlay = useMemo(() => buildFogOverlay(region, cells), [region, cells]);
@@ -336,6 +364,15 @@ export default function MapScreen(): React.ReactElement {
         </TouchableOpacity>
       </View>
 
+      {/* Focus label chip — briefly shows the name of a location flown to from another screen. */}
+      {focusLabel !== null && (
+        <View style={styles.focusLabelWrap} pointerEvents="none">
+          <View style={styles.focusLabelChip}>
+            <Text style={styles.focusLabelText}>{focusLabel}</Text>
+          </View>
+        </View>
+      )}
+
       {/* Bottom region banner: where you are + how much of the view is uncovered. */}
       <SafeAreaView style={styles.bannerWrap} pointerEvents="box-none" edges={['bottom']}>
         <RegionBanner locality={locality} percent={viewPct} />
@@ -436,5 +473,27 @@ const styles = StyleSheet.create({
   revealGlow: {
     backgroundColor: palette.lumen,
     borderRadius: radii.lg,
+  },
+  focusLabelWrap: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: spacing.xxl + spacing.xl,
+    alignItems: 'center',
+  },
+  focusLabelChip: {
+    backgroundColor: palette.card,
+    borderRadius: radii.pill,
+    borderWidth: 1.5,
+    borderColor: palette.cardBorder,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    ...cardShadow,
+  },
+  focusLabelText: {
+    fontFamily: typography.display,
+    fontSize: typography.sizes.md,
+    color: palette.onCard,
+    fontWeight: '700',
   },
 });
