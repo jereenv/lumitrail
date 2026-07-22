@@ -11,6 +11,7 @@ import { palette, radii, spacing, typography } from '@/app/theme';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
 import { useNavigationStore } from '@/app/store/useNavigationStore';
 import {
+  GameCard,
   LevelBadge,
   ProgressRing,
   ScreenHeader,
@@ -21,6 +22,7 @@ import { levelForXp } from '@/domain/progression/levels';
 import { regionCompletion, worldwidePercent } from '@/domain/regions/exploration';
 import { regionCenter } from '@/domain/regions/resolver';
 import type { RegionTally } from '@/domain/loop/state';
+import type { DomainEvent } from '@/domain/loop/events';
 import JourneyHero from '@/presentation/components/journey/JourneyHero';
 import StatTile from '@/presentation/components/journey/StatTile';
 import RegionCard, { type RegionRow } from '@/presentation/components/journey/RegionCard';
@@ -38,6 +40,32 @@ function buildRegionRows(regions: ReadonlyMap<string, RegionTally>): RegionRow[]
 }
 
 // ---------------------------------------------------------------------------
+// Recent activity helpers
+// ---------------------------------------------------------------------------
+
+const MAX_ACTIVITY_EVENTS = 5;
+
+/** Returns a human-readable label for a meaningful domain event, or null for
+ *  events we intentionally hide (cellsRevealed, fixRejected). */
+function eventLabel(event: DomainEvent): string | null {
+  switch (event.type) {
+    case 'xpGained':
+      return `Gained ${event.breakdown.total} XP`;
+    case 'leveledUp':
+      return `Leveled up! → Level ${event.to}`;
+    case 'achievementUnlocked':
+      return 'Achievement unlocked';
+    case 'regionCompleted':
+      return `Completed: ${event.regionName}`;
+    case 'streakExtended':
+      return `Streak: ${event.days} days!`;
+    case 'cellsRevealed':
+    case 'fixRejected':
+      return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
 
@@ -45,12 +73,46 @@ function SectionLabel({ title }: { title: string }): React.ReactElement {
   return <Text style={styles.sectionLabel}>{title}</Text>;
 }
 
+interface RecentActivityStripProps {
+  events: readonly DomainEvent[];
+}
+
+function RecentActivityStrip({ events }: RecentActivityStripProps): React.ReactElement | null {
+  const labels = events
+    .slice()
+    .reverse()
+    .reduce<string[]>((acc, event) => {
+      if (acc.length >= MAX_ACTIVITY_EVENTS) return acc;
+      const label = eventLabel(event);
+      if (label !== null) acc.push(label);
+      return acc;
+    }, []);
+
+  if (labels.length === 0) return null;
+
+  return (
+    <>
+      <SectionLabel title="Recent Activity" />
+      <GameCard>
+        {labels.map((label, index) => (
+          <Text
+            key={index}
+            style={[styles.activityRow, index < labels.length - 1 && styles.activityRowDivider]}
+          >
+            {label}
+          </Text>
+        ))}
+      </GameCard>
+    </>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
 export default function StatsScreen(): React.ReactElement {
-  const { playerState } = useExplorationStore();
+  const { playerState, recentEvents } = useExplorationStore();
   const { stats, streak } = playerState;
   const focusMap = useNavigationStore((s) => s.focusMap);
 
@@ -223,6 +285,11 @@ export default function StatsScreen(): React.ReactElement {
           </View>
         )}
 
+        {/* ---------------------------------------------------------------- */}
+        {/* Recent activity strip (optional — hidden when empty)            */}
+        {/* ---------------------------------------------------------------- */}
+        <RecentActivityStrip events={recentEvents} />
+
         {/* Extra bottom padding so content clears tab bar */}
         <View style={styles.bottomPad} />
       </ScrollView>
@@ -319,5 +386,15 @@ const styles = StyleSheet.create({
   },
   bottomPad: {
     height: spacing.xxl,
+  },
+  activityRow: {
+    fontFamily: typography.body,
+    fontSize: typography.sizes.sm,
+    color: palette.onCardMuted,
+    paddingVertical: spacing.xs,
+  },
+  activityRowDivider: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: palette.cardBorder,
   },
 });

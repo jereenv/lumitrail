@@ -55,12 +55,7 @@ export default function RegionCard({ row, onPress, testID }: RegionCardProps): R
 
       {/* Row 2 — progress ring + cell count */}
       <View style={styles.progressRow}>
-        <ProgressRing
-          progress={pct / 100}
-          size={40}
-          strokeWidth={4}
-          color={palette.aurora}
-        />
+        <ProgressRing progress={pct / 100} size={40} strokeWidth={4} color={palette.aurora} />
         <Text style={styles.cellCount}>
           {revealedCells} / {ref.targetCells} cells
         </Text>
