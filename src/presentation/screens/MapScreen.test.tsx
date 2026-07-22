@@ -44,10 +44,16 @@ jest.mock('@/app/store/useExplorationStore', () => ({
   useExplorationStore: jest.fn(),
 }));
 
+jest.mock('@/app/store/useNavigationStore', () => ({
+  useNavigationStore: jest.fn(),
+}));
+
 import { Polygon } from 'react-native-maps';
+import { useNavigationStore } from '@/app/store/useNavigationStore';
 
 const PolygonMock = Polygon as unknown as jest.Mock;
 const useStoreMock = useExplorationStore as unknown as jest.Mock;
+const useNavStoreMock = useNavigationStore as unknown as jest.Mock;
 
 /** Builds a player state with a ring of cells around central Stockholm (in the default view). */
 function stockholmPlayerState() {
@@ -73,9 +79,19 @@ function mockStore(overrides: Record<string, unknown> = {}): void {
   });
 }
 
+function mockNavStore(overrides: Record<string, unknown> = {}): void {
+  useNavStoreMock.mockReturnValue({
+    focusTarget: null,
+    clearMapFocus: jest.fn(),
+    ...overrides,
+  });
+}
+
 beforeEach(() => {
   PolygonMock.mockClear();
+  useNavStoreMock.mockClear();
   mockStore();
+  mockNavStore();
 });
 
 function holesDrawn(): number {
@@ -110,5 +126,23 @@ describe('MapScreen', () => {
     mockStore({ playerState: createPlayerState('p', 'P') });
     await render(<MapScreen />);
     expect(holesDrawn()).toBe(0);
+  });
+
+  it('draws frontier Polylines for explored edges', async () => {
+    const { Polyline } = require('react-native-maps');
+    const PolylineMock = Polyline as jest.Mock;
+    PolylineMock.mockClear();
+    await render(<MapScreen />);
+    expect(PolylineMock.mock.calls.length).toBeGreaterThan(0);
+  });
+
+  it('calls clearMapFocus when focusTarget is set', async () => {
+    const clearMapFocus = jest.fn();
+    mockNavStore({
+      focusTarget: { latitude: 59.33, longitude: 18.07, latitudeDelta: 0.04, longitudeDelta: 0.04 },
+      clearMapFocus,
+    });
+    await render(<MapScreen />);
+    expect(clearMapFocus).toHaveBeenCalled();
   });
 });

@@ -142,6 +142,7 @@ export default function MapScreen(): React.ReactElement {
       );
       clearMapFocus();
       if (focusTarget.label) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setFocusLabel(focusTarget.label);
         if (focusLabelTimerRef.current) clearTimeout(focusLabelTimerRef.current);
         focusLabelTimerRef.current = setTimeout(() => setFocusLabel(null), 2000);
@@ -178,7 +179,7 @@ export default function MapScreen(): React.ReactElement {
   // --- Reveal animation: springy scale-pop glow + amber polygon flash. -------
   const [pulseRings, setPulseRings] = useState<Ring[]>([]);
   const smoothedPulseRings = useMemo(() => smoothRings(pulseRings, 2), [pulseRings]);
-  const pulseScale = useRef(new Animated.Value(0)).current;
+  const pulseScale = useMemo(() => new Animated.Value(0), []);
   const [pulseAlpha, setPulseAlpha] = useState(0);
   const lastPulsedRef = useRef<readonly H3Index[] | null>(null);
 
@@ -439,28 +440,30 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: radii.pill,
-    backgroundColor: palette.surface,
+    backgroundColor: palette.card,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: palette.surfaceAlt,
+    borderWidth: 1.5,
+    borderColor: palette.cardBorder,
+    ...cardShadow,
   },
   fabIcon: {
     fontSize: 24,
-    color: palette.lumen,
+    color: palette.coral,
   },
   demoFab: {
-    backgroundColor: palette.lumen,
+    backgroundColor: palette.aurora,
     borderRadius: radii.pill,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
+    ...cardShadow,
   },
   demoFabDisabled: {
-    backgroundColor: palette.surfaceAlt,
+    backgroundColor: palette.cardBorder,
   },
   demoFabText: {
     fontFamily: typography.display,
-    fontSize: typography.sizes.md,
+    fontSize: typography.sizes.sm,
     color: palette.ink,
     fontWeight: '700',
   },
