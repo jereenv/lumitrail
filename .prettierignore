@@ -7,3 +7,6 @@ assets/
 *.jpg
 *.svg
 package-lock.json
+
+# SDD scratch (git-ignored working files)
+.superpowers/
