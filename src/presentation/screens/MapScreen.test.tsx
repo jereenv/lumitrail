@@ -4,7 +4,7 @@
  * therefore imported after the mocks are declared. Both are standard jest
  * idioms, intentional here, and confined to this test file. */
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { act, render } from '@testing-library/react-native';
 import { gridDisk } from 'h3-js';
 
 import { cellForPoint } from '@/domain/geo/grid';
@@ -154,5 +154,33 @@ describe('MapScreen', () => {
       600,
     );
     expect(clearMapFocus).toHaveBeenCalled();
+  });
+
+  it('shows focus label immediately and hides it after 2 s', async () => {
+    jest.useFakeTimers();
+    const clearMapFocus = jest.fn();
+    mockNavStore({
+      focusTarget: {
+        latitude: 59.33,
+        longitude: 18.07,
+        latitudeDelta: 0.04,
+        longitudeDelta: 0.04,
+        label: 'London',
+      },
+      clearMapFocus,
+    });
+
+    const { getByText, queryByText } = await render(<MapScreen />);
+
+    // Label must be visible immediately after fly-to.
+    expect(getByText('London')).toBeTruthy();
+
+    // Advance past the 2 s hide delay.
+    await act(async () => {
+      jest.advanceTimersByTime(2000);
+    });
+    expect(queryByText('London')).toBeNull();
+
+    jest.useRealTimers();
   });
 });

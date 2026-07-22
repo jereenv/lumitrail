@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   togglePill: {
     flexDirection: 'row',
-    backgroundColor: palette.surface,
+    backgroundColor: palette.canvas,
     borderRadius: radii.pill,
     overflow: 'hidden',
   },
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.display,
     fontSize: typography.sizes.sm,
     fontWeight: '600',
-    color: palette.textMuted,
+    color: palette.onCardMuted,
   },
   toggleTextActive: {
     color: palette.ink,

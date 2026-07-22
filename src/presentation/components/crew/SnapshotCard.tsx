@@ -15,6 +15,7 @@ import { palette, radii, spacing, typography } from '@/app/theme';
 import Avatar from '@/presentation/components/Avatar';
 import GameCard from '@/presentation/components/GameCard';
 import { worldwidePercent } from '@/domain/regions/exploration';
+import { explorerTitle } from '@/domain/progression/explorerTitle';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -29,21 +30,6 @@ interface SnapshotCardProps {
     countriesVisited: number;
     totalXp: number;
   };
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Returns a human-readable explorer title for the given level.
- * These correspond to the four tiers of exploration mastery in Lumitrail.
- */
-function explorerTitle(level: number): string {
-  if (level >= 15) return 'Voyager';
-  if (level >= 10) return 'Trailblazer';
-  if (level >= 5) return 'Pathfinder';
-  return 'Wanderer';
 }
 
 // ---------------------------------------------------------------------------

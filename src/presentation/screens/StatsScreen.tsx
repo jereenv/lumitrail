@@ -7,7 +7,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { palette, radii, spacing, typography } from '@/app/theme';
+import { palette, spacing, typography } from '@/app/theme';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
 import { useNavigationStore } from '@/app/store/useNavigationStore';
 import {
@@ -15,6 +15,7 @@ import {
   LevelBadge,
   ProgressRing,
   ScreenHeader,
+  SectionHeader,
   StreakFlame,
   XpBar,
 } from '@/presentation/components';
@@ -70,10 +71,6 @@ function eventLabel(event: DomainEvent): string | null {
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function SectionLabel({ title }: { title: string }): React.ReactElement {
-  return <Text style={styles.sectionLabel}>{title}</Text>;
-}
-
 interface RecentActivityStripProps {
   events: readonly DomainEvent[];
 }
@@ -93,7 +90,7 @@ function RecentActivityStrip({ events }: RecentActivityStripProps): React.ReactE
 
   return (
     <>
-      <SectionLabel title="Recent Activity" />
+      <SectionHeader title="Recent Activity" />
       <GameCard>
         {labels.map((label, index) => (
           <Text
@@ -217,8 +214,8 @@ export default function StatsScreen(): React.ReactElement {
         {/* ---------------------------------------------------------------- */}
         {/* Level & XP section                                               */}
         {/* ---------------------------------------------------------------- */}
-        <SectionLabel title="Level & XP" />
-        <View style={styles.card}>
+        <SectionHeader title="Level & XP" />
+        <GameCard>
           <View style={styles.levelRow}>
             <LevelBadge level={levelProgress.level} size="lg" />
             <View style={styles.levelDetails}>
@@ -234,13 +231,13 @@ export default function StatsScreen(): React.ReactElement {
               />
             </View>
           </View>
-        </View>
+        </GameCard>
 
         {/* ---------------------------------------------------------------- */}
         {/* Streak section                                                    */}
         {/* ---------------------------------------------------------------- */}
-        <SectionLabel title="Streak" />
-        <View style={styles.card}>
+        <SectionHeader title="Streak" />
+        <GameCard>
           <View style={styles.streakRow}>
             <ProgressRing progress={streakProgress} size={80} strokeWidth={7} color={palette.lumen}>
               <StreakFlame days={stats.currentStreakDays} size={24} />
@@ -261,18 +258,18 @@ export default function StatsScreen(): React.ReactElement {
               </Text>
             </View>
           </View>
-        </View>
+        </GameCard>
 
         {/* ---------------------------------------------------------------- */}
         {/* Region breakdown                                                  */}
         {/* ---------------------------------------------------------------- */}
-        <SectionLabel title="Regions Explored" />
+        <SectionHeader title="Regions Explored" />
         {regionRows.length === 0 ? (
-          <View style={styles.card}>
+          <GameCard>
             <Text style={styles.emptyRegions}>
               Explore new places to see region breakdown here.
             </Text>
-          </View>
+          </GameCard>
         ) : (
           <View style={styles.regionList}>
             {regionRows.map((row) => (
@@ -305,7 +302,7 @@ export default function StatsScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: palette.ink,
+    backgroundColor: palette.canvas,
   },
   scroll: {
     flex: 1,
@@ -313,13 +310,6 @@ const styles = StyleSheet.create({
   content: {
     padding: spacing.md,
     gap: spacing.md,
-  },
-  sectionLabel: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.md,
-    color: palette.text,
-    fontWeight: '700',
-    marginTop: spacing.xs,
   },
   statsGrid: {
     flexDirection: 'row',
@@ -329,12 +319,6 @@ const styles = StyleSheet.create({
   statTile: {
     flex: 1,
     minWidth: '45%',
-  },
-  card: {
-    backgroundColor: palette.surface,
-    borderRadius: radii.md,
-    padding: spacing.md,
-    gap: spacing.md,
   },
   levelRow: {
     flexDirection: 'row',
@@ -348,7 +332,7 @@ const styles = StyleSheet.create({
   levelText: {
     fontFamily: typography.body,
     fontSize: typography.sizes.sm,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
   },
   streakRow: {
     flexDirection: 'row',
@@ -368,12 +352,12 @@ const styles = StyleSheet.create({
   streakLongest: {
     fontFamily: typography.body,
     fontSize: typography.sizes.sm,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
   },
   streakSince: {
     fontFamily: typography.body,
     fontSize: typography.sizes.xs,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
   },
   regionList: {
     gap: spacing.sm,
@@ -381,7 +365,7 @@ const styles = StyleSheet.create({
   emptyRegions: {
     fontFamily: typography.body,
     fontSize: typography.sizes.sm,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
     textAlign: 'center',
     paddingVertical: spacing.md,
   },

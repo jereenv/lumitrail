@@ -87,8 +87,8 @@ describe('SnapshotCard', () => {
     expect(getByText('Trailblazer')).toBeTruthy();
   });
 
-  it('renders Voyager for level 15', async () => {
-    const { getByText } = await render(<SnapshotCard {...BASE_PROPS} level={15} />);
+  it('renders Voyager for level 20', async () => {
+    const { getByText } = await render(<SnapshotCard {...BASE_PROPS} level={20} />);
     expect(getByText('Voyager')).toBeTruthy();
   });
 

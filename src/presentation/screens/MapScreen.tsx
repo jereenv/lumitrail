@@ -107,7 +107,6 @@ export default function MapScreen(): React.ReactElement {
   const mapRef = useRef<MapView>(null);
   const [region, setRegion] = useState<Region>(() => centroidRegion(cells) ?? DEFAULT_REGION);
   const [focusLabel, setFocusLabel] = useState<string | null>(null);
-  const focusLabelTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Centre on the user's real location as soon as it resolves.
   useEffect(() => {
@@ -129,6 +128,10 @@ export default function MapScreen(): React.ReactElement {
   }, [currentLocation]);
 
   // Fly to a focus target set by another screen (e.g. a region tapped in Journey).
+  // clearMapFocus() is called immediately so the store is cleared, but the label
+  // is captured into focusLabel state first. The auto-hide timer runs in the
+  // separate effect below, keyed on focusLabel — so clearing the store does NOT
+  // cancel the hide timer.
   useEffect(() => {
     if (focusTarget && mapRef.current) {
       mapRef.current.animateToRegion(
@@ -140,18 +143,26 @@ export default function MapScreen(): React.ReactElement {
         },
         600,
       );
-      clearMapFocus();
       if (focusTarget.label) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setFocusLabel(focusTarget.label);
-        if (focusLabelTimerRef.current) clearTimeout(focusLabelTimerRef.current);
-        focusLabelTimerRef.current = setTimeout(() => setFocusLabel(null), 2000);
       }
+      clearMapFocus();
     }
-    return () => {
-      if (focusLabelTimerRef.current) clearTimeout(focusLabelTimerRef.current);
-    };
   }, [focusTarget, clearMapFocus]);
+
+  // Auto-hide the focus label chip after 2 s. This effect is keyed on focusLabel
+  // only, so it is NOT cancelled when clearMapFocus() runs in the effect above.
+  const LABEL_HIDE_MS = 2000;
+  useEffect(() => {
+    if (focusLabel === null) return;
+    const timer = setTimeout(() => {
+      setFocusLabel(null);
+    }, LABEL_HIDE_MS);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [focusLabel]);
 
   // Fog geometry for the current viewport (pure, memoised).
   const overlay = useMemo(() => buildFogOverlay(region, cells), [region, cells]);

@@ -168,7 +168,7 @@ export default function FriendsScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: palette.ink,
+    backgroundColor: palette.canvas,
   },
   scroll: {
     flex: 1,
