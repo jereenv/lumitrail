@@ -259,9 +259,14 @@ export const useExplorationStore = create<ExplorationStore>((set, get) => ({
     try {
       for (const point of DEMO_ROUTE) {
         const { state, events } = await service.processFix(point);
+        // Advance currentLocation to the fix we just processed so the map's
+        // camera-follow effect pans to where the walk is revealing cells. Without
+        // this the cells are revealed correctly but off-screen, and the map looks
+        // frozen — the demo appears to do nothing.
         set((prev) => ({
           playerState: state,
           recentEvents: mergeEvents(prev.recentEvents, events),
+          currentLocation: point,
         }));
         await delay(200);
       }
