@@ -13,7 +13,6 @@ import {
   LevelBadge,
   ProgressRing,
   ScreenHeader,
-  StatCard,
   StreakFlame,
   XpBar,
 } from '@/presentation/components';
@@ -21,6 +20,7 @@ import { levelForXp } from '@/domain/progression/levels';
 import { regionCompletion, worldwidePercent } from '@/domain/regions/exploration';
 import type { RegionTally } from '@/domain/loop/state';
 import JourneyHero from '@/presentation/components/journey/JourneyHero';
+import StatTile from '@/presentation/components/journey/StatTile';
 
 const MAX_REGIONS = 10;
 
@@ -116,36 +116,66 @@ export default function StatsScreen(): React.ReactElement {
         />
 
         {/* ---------------------------------------------------------------- */}
-        {/* Big stats row                                                     */}
+        {/* Stat tiles — 8-tile 2×4 animated count-up grid                  */}
         {/* ---------------------------------------------------------------- */}
         <View style={styles.statsGrid}>
-          <StatCard
+          <StatTile
             label="Cells revealed"
             value={stats.cellsRevealed}
             icon="⬡"
             accent={palette.aurora}
-            style={styles.statCard}
+            style={styles.statTile}
           />
-          <StatCard
+          <StatTile
             label="Distance"
-            value={`${(stats.distanceMeters / 1000).toFixed(1)} km`}
+            value={stats.distanceMeters / 1000}
+            format={(n) => `${n.toFixed(1)} km`}
             icon="📍"
             accent={palette.lumen}
-            style={styles.statCard}
+            style={styles.statTile}
           />
-          <StatCard
+          <StatTile
+            label="Area"
+            value={stats.cellsRevealed * 0.105}
+            format={(n) => `${n.toFixed(1)} km²`}
+            icon="◼"
+            accent={palette.aurora}
+            style={styles.statTile}
+          />
+          <StatTile
             label="Countries"
             value={stats.countriesVisited}
             icon="🌍"
             accent={palette.sky}
-            style={styles.statCard}
+            style={styles.statTile}
           />
-          <StatCard
+          <StatTile
+            label="Cities"
+            value={stats.citiesVisited}
+            icon="🏙"
+            accent={palette.berry}
+            style={styles.statTile}
+          />
+          <StatTile
             label="Active days"
             value={stats.activeDays}
             icon="📅"
-            accent={palette.aurora}
-            style={styles.statCard}
+            accent={palette.lumen}
+            style={styles.statTile}
+          />
+          <StatTile
+            label="Streak"
+            value={stats.currentStreakDays}
+            icon="🔥"
+            accent={palette.coral}
+            style={styles.statTile}
+          />
+          <StatTile
+            label="Coins"
+            value={Math.floor(stats.totalXp / 10)}
+            icon="🪙"
+            accent={palette.lumen}
+            style={styles.statTile}
           />
         </View>
 
@@ -251,7 +281,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing.sm,
   },
-  statCard: {
+  statTile: {
     flex: 1,
     minWidth: '45%',
   },
