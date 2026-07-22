@@ -25,11 +25,20 @@ export const palette = {
   success: '#38E0A6',
   warning: '#FFB74D',
   /** Green-teal fog painted over UNEXPLORED map (translucent so streets hint through). */
-  fog: 'rgba(30, 107, 92, 0.82)',
+  fog: 'rgba(111, 224, 176, 0.55)',
   /** Dashed frontier border tracing the explored region's edge. */
-  frontier: '#FFFFFF',
+  frontier: '#FFF3D6',
   /** Dark casing drawn under the frontier dashes for contrast. */
-  frontierCasing: 'rgba(17, 42, 36, 0.6)',
+  frontierCasing: 'rgba(38, 74, 62, 0.35)',
+  /** Bright cartoony palette — wave 0 redesign. */
+  canvas: '#EAF7F1',
+  card: '#FFF8EC',
+  cardBorder: '#F0E2C8',
+  onCard: '#26333F',
+  onCardMuted: '#6B7B88',
+  coral: '#FF7A66',
+  berry: '#B57BFF',
+  shadow: '#123027',
 } as const;
 
 export const typography = {
@@ -70,6 +79,27 @@ export const tierColors = {
   platinum: '#7FE7FF',
 } as const;
 
-export const theme = { palette, typography, spacing, radii, tierColors } as const;
+export const cardShadow = {
+  shadowColor: palette.shadow,
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.18,
+  shadowRadius: 10,
+  elevation: 5,
+} as const;
+
+export const motion = {
+  spring: { damping: 14, stiffness: 160, mass: 1 },
+  durations: { short: 160, medium: 280, long: 480 },
+} as const;
+
+export const theme = {
+  palette,
+  typography,
+  spacing,
+  radii,
+  tierColors,
+  cardShadow,
+  motion,
+} as const;
 
 export type Theme = typeof theme;
