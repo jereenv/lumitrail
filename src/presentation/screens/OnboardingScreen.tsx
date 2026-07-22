@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 import Svg, { Polygon, Rect } from 'react-native-svg';
 
-import { palette, radii, spacing, typography } from '@/app/theme';
+import { cardShadow, palette, radii, spacing, typography } from '@/app/theme';
 
 interface OnboardingScreenProps {
   onComplete: () => void;
@@ -62,9 +62,9 @@ function HeroHexGrid(): React.ReactElement {
         <Polygon
           key={`${h.cx}-${h.cy}`}
           points={hexPoints(h.cx, h.cy, 44)}
-          fill={h.lit ? 'rgba(255,183,77,0.15)' : 'rgba(30,49,73,0.6)'}
-          stroke={h.lit ? 'rgba(255,183,77,0.6)' : 'rgba(30,49,73,0.9)'}
-          strokeWidth={1}
+          fill={h.lit ? 'rgba(255,122,102,0.18)' : 'rgba(111,224,176,0.20)'}
+          stroke={h.lit ? 'rgba(255,122,102,0.55)' : 'rgba(111,224,176,0.45)'}
+          strokeWidth={1.5}
         />
       ))}
     </Svg>
@@ -227,12 +227,12 @@ export default function OnboardingScreen({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: palette.ink,
+    backgroundColor: palette.canvas,
   },
   slide: {
     flex: 1,
     height: SCREEN_HEIGHT,
-    backgroundColor: palette.ink,
+    backgroundColor: palette.canvas,
     alignItems: 'center',
   },
   heroGraphic: {
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontFamily: typography.display,
     fontSize: typography.sizes.xxl,
-    color: palette.lumen,
+    color: palette.coral,
     textAlign: 'center',
     fontWeight: '700',
     lineHeight: 48,
@@ -266,14 +266,14 @@ const styles = StyleSheet.create({
   tagline: {
     fontFamily: typography.body,
     fontSize: typography.sizes.md,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
     textAlign: 'center',
     lineHeight: 24,
   },
   slideTitle: {
     fontFamily: typography.display,
     fontSize: typography.sizes.xl,
-    color: palette.text,
+    color: palette.onCard,
     textAlign: 'center',
     fontWeight: '700',
     marginBottom: spacing.md,
@@ -281,13 +281,13 @@ const styles = StyleSheet.create({
   slideBody: {
     fontFamily: typography.body,
     fontSize: typography.sizes.md,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: spacing.sm,
   },
   highlight: {
-    color: palette.lumen,
+    color: palette.coral,
     fontWeight: '600',
   },
   featureList: {
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
   featureItem: {
     fontFamily: typography.body,
     fontSize: typography.sizes.sm,
-    color: palette.text,
+    color: palette.onCard,
     lineHeight: 22,
   },
   dotsRow: {
@@ -316,11 +316,11 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   dotActive: {
-    backgroundColor: palette.lumen,
+    backgroundColor: palette.coral,
     width: 24,
   },
   dotInactive: {
-    backgroundColor: palette.surfaceAlt,
+    backgroundColor: palette.cardBorder,
   },
   nextButton: {
     position: 'absolute',
@@ -330,26 +330,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     borderRadius: radii.pill,
     borderWidth: 1.5,
-    borderColor: palette.lumen,
+    borderColor: palette.coral,
+    backgroundColor: palette.card,
+    ...cardShadow,
   },
   nextButtonText: {
     fontFamily: typography.display,
     fontSize: typography.sizes.sm,
-    color: palette.lumen,
+    color: palette.coral,
     fontWeight: '600',
   },
   ctaButton: {
     marginTop: spacing.xl,
     alignSelf: 'stretch',
-    backgroundColor: palette.lumen,
+    backgroundColor: palette.coral,
     borderRadius: radii.pill,
     paddingVertical: spacing.md,
     alignItems: 'center',
+    ...cardShadow,
   },
   ctaButtonText: {
     fontFamily: typography.display,
     fontSize: typography.sizes.md,
-    color: palette.ink,
+    color: palette.card,
     fontWeight: '700',
   },
 });
