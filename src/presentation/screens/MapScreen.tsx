@@ -37,6 +37,7 @@ import {
   viewExploredPercent,
   type Ring,
 } from '@/domain/geo/fog';
+import { smoothRings } from '@/domain/geo/smooth';
 import type { H3Index } from '@/domain/geo/types';
 import { levelForXp } from '@/domain/progression/levels';
 
@@ -192,14 +193,14 @@ export default function MapScreen(): React.ReactElement {
         {/* The fog: one green-teal polygon over the viewport, holes where explored. */}
         <Polygon
           coordinates={overlay.outer}
-          holes={overlay.holes}
+          holes={smoothRings(overlay.holes, 2)}
           fillColor={palette.fog}
           strokeColor="transparent"
           strokeWidth={0}
           tappable={false}
         />
         {/* Fog islands: unexplored pockets surrounded by explored land. */}
-        {overlay.islands.map((ring, i) => (
+        {smoothRings(overlay.islands, 2).map((ring, i) => (
           <Polygon
             key={`island-${i}`}
             coordinates={ring}
@@ -211,7 +212,8 @@ export default function MapScreen(): React.ReactElement {
         ))}
         {/* Dashed frontier border tracing the edge of explored land. */}
         {[...overlay.holes, ...overlay.islands].map((ring, i) => {
-          const path = closedRing(ring);
+          const smoothedRing = smoothRings([ring], 2)[0];
+          const path = closedRing(smoothedRing);
           return (
             <React.Fragment key={`frontier-${i}`}>
               <Polyline coordinates={path} strokeColor={palette.frontierCasing} strokeWidth={6} />
@@ -226,7 +228,7 @@ export default function MapScreen(): React.ReactElement {
         })}
         {/* Reveal flash on newly uncovered cells. */}
         {pulseAlpha > 0 &&
-          pulseRings.map((ring, i) => (
+          smoothRings(pulseRings, 2).map((ring, i) => (
             <Polygon
               key={`pulse-${i}`}
               coordinates={ring}
