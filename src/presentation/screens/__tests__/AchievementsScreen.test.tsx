@@ -6,7 +6,7 @@
  * The real ACHIEVEMENTS catalog is used (not mocked).
  */
 import React from 'react';
-import { act, render } from '@testing-library/react-native';
+import { render, within } from '@testing-library/react-native';
 
 import AchievementsScreen from '../AchievementsScreen';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
@@ -168,12 +168,13 @@ describe('AchievementsScreen', () => {
   it('shows progress fraction "150 / 1000" for the discovery next-goal card', async () => {
     makeStore(mockStatsPartialUnlock, new Set(['first-light', 'pathfinder']));
 
-    const { getByText } = await render(
+    const { getByText, getByTestId } = await render(
       <AchievementsScreen />,
     );
 
     // Cartographer is the next discovery goal (threshold 1000); player has 150.
-    expect(getByText('150 / 1000')).toBeTruthy();
+    const card = getByTestId('next-goal-card-discovery');
+    expect(within(card).getByText('150 / 1000')).toBeTruthy();
   });
 
   // 8 -----------------------------------------------------------------------
