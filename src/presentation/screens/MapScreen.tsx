@@ -364,7 +364,9 @@ const styles = StyleSheet.create({
   fabColumn: {
     position: 'absolute',
     right: spacing.md,
-    bottom: spacing.xl,
+    // Sit clear above the bottom region banner so the Demo-walk button is not
+    // overlapped by it.
+    bottom: spacing.xxl * 2,
     alignItems: 'flex-end',
     gap: spacing.md,
   },
