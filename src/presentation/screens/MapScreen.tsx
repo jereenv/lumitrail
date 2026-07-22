@@ -13,12 +13,12 @@
  * on-map HUD (level, XP, and "% uncovered", shown the moment the map opens).
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Polygon, Polyline, type Region } from 'react-native-maps';
 import * as Location from 'expo-location';
 
-import { palette, radii, spacing, typography } from '@/app/theme';
+import { motion, palette, radii, spacing, typography } from '@/app/theme';
 import { mapStyle } from '@/app/mapStyle';
 import { createCachedReverseGeocoder } from '@/data/location/reverseGeocode';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
@@ -51,9 +51,6 @@ const DEFAULT_REGION: Region = {
   latitudeDelta: 0.06,
   longitudeDelta: 0.06,
 };
-
-const REVEAL_PULSE_START = 0.55;
-const REVEAL_PULSE_STEP = 0.11;
 
 /** One cached geocoder for the app session (expo-location matches the Geocoder shape). */
 const lookupLocality = createCachedReverseGeocoder(Location);
@@ -150,8 +147,10 @@ export default function MapScreen(): React.ReactElement {
     };
   }, [region.latitude, region.longitude]);
 
-  // --- Reveal animation: flash newly revealed outlines, then fade out. -------
+  // --- Reveal animation: springy scale-pop glow + amber polygon flash. -------
   const [pulseRings, setPulseRings] = useState<Ring[]>([]);
+  const smoothedPulseRings = useMemo(() => smoothRings(pulseRings, 2), [pulseRings]);
+  const pulseScale = useRef(new Animated.Value(0)).current;
   const [pulseAlpha, setPulseAlpha] = useState(0);
   const lastPulsedRef = useRef<readonly H3Index[] | null>(null);
 
@@ -160,19 +159,28 @@ export default function MapScreen(): React.ReactElement {
     if (latest?.type === 'cellsRevealed' && latest.cells !== lastPulsedRef.current) {
       lastPulsedRef.current = latest.cells;
       setPulseRings(computeFogGeometry(latest.cells).revealedOutlines);
-      setPulseAlpha(REVEAL_PULSE_START);
+
+      // Reset scale to 0, then spring to 1 (scale-pop on the glow overlay).
+      pulseScale.setValue(0);
+      setPulseAlpha(0.65); // start visible; timer steps it down
+
+      Animated.spring(pulseScale, {
+        toValue: 1,
+        damping: motion.spring.damping,
+        stiffness: motion.spring.stiffness,
+        mass: motion.spring.mass,
+        useNativeDriver: true, // scale CAN use native driver
+      }).start();
     }
-  }, [recentEvents]);
+  }, [recentEvents, pulseScale]);
 
   useEffect(() => {
-    // Step the fade down over time. setState happens only in the timer callback
-    // (never synchronously in the effect body), and the pulse polygons are
-    // rendered only while `pulseAlpha > 0`, so there is no need to clear the
-    // rings — stale ones simply stop rendering once the flash finishes.
+    // Step the alpha down over ~750ms (150ms × 5 steps). setState happens only
+    // in the timer callback; the pulse polygons stop rendering once alpha hits 0.
     if (pulseAlpha <= 0) {
       return;
     }
-    const timer = setTimeout(() => setPulseAlpha((a) => Math.max(0, a - REVEAL_PULSE_STEP)), 110);
+    const timer = setTimeout(() => setPulseAlpha((a) => Math.max(0, a - 0.13)), 150);
     return () => clearTimeout(timer);
   }, [pulseAlpha]);
 
@@ -233,19 +241,34 @@ export default function MapScreen(): React.ReactElement {
             </React.Fragment>
           );
         })}
-        {/* Reveal flash on newly uncovered cells. */}
+        {/* Reveal flash on newly uncovered cells (amber fill, JS-driven alpha). */}
         {pulseAlpha > 0 &&
-          smoothRings(pulseRings, 2).map((ring, i) => (
+          smoothedPulseRings.map((ring, i) => (
             <Polygon
               key={`pulse-${i}`}
               coordinates={ring}
               fillColor={`rgba(255,183,77,${pulseAlpha})`}
               strokeColor={`rgba(255,183,77,${Math.min(1, pulseAlpha + 0.35)})`}
-              strokeWidth={2}
+              strokeWidth={3}
               tappable={false}
             />
           ))}
       </MapView>
+
+      {/* Scale-pop glow overlay — springy entrance animation on reveal (native driver). */}
+      {pulseAlpha > 0 && (
+        <Animated.View
+          style={[
+            StyleSheet.absoluteFill,
+            styles.revealGlow,
+            {
+              opacity: pulseAlpha * 0.18, // subtle glow, not blinding
+              transform: [{ scale: pulseScale }],
+            },
+          ]}
+          pointerEvents="none"
+        />
+      )}
 
       {/* HUD — the first thing you see: how much you've uncovered. */}
       <SafeAreaView style={styles.hudWrap} pointerEvents="box-none" edges={['top']}>
@@ -409,5 +432,9 @@ const styles = StyleSheet.create({
     left: spacing.md,
     right: spacing.md,
     bottom: spacing.md,
+  },
+  revealGlow: {
+    backgroundColor: palette.lumen,
+    borderRadius: radii.lg,
   },
 });
