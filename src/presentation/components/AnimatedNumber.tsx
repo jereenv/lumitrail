@@ -23,6 +23,8 @@ interface AnimatedNumberProps {
   format?: (n: number) => string;
   /** Animation duration in ms. Defaults to `motion.durations.medium`. */
   duration?: number;
+  /** When true, animates from 0 to value on mount. Defaults to false. */
+  countUpOnMount?: boolean;
   style?: TextStyle;
 }
 
@@ -32,12 +34,14 @@ export default function AnimatedNumber({
   value,
   format = defaultFormat,
   duration = motion.durations.medium,
+  countUpOnMount = false,
   style,
 }: AnimatedNumberProps): React.ReactElement {
   // Lazy useState keeps a single Animated.Value across renders without reading
   // a ref's `.current` during render (which the react-hooks/refs rule forbids).
-  const [animated] = useState(() => new Animated.Value(value));
-  const [display, setDisplay] = useState<number>(value);
+  // When countUpOnMount is true, seed to 0; otherwise seed to the target value.
+  const [animated] = useState(() => new Animated.Value(countUpOnMount ? 0 : value));
+  const [display, setDisplay] = useState<number>(countUpOnMount ? 0 : value);
 
   useEffect(() => {
     const id = animated.addListener(({ value: current }) => {

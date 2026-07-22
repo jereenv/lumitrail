@@ -41,4 +41,14 @@ describe('AnimatedNumber', () => {
 
     expect(getByText('1200 km')).toBeTruthy();
   });
+
+  it('counts up from 0 on mount when countUpOnMount is true', async () => {
+    const { getByText } = await render(<AnimatedNumber value={100} countUpOnMount />);
+
+    await act(async () => {
+      jest.runAllTimers();
+    });
+
+    expect(getByText('100')).toBeTruthy();
+  });
 });
