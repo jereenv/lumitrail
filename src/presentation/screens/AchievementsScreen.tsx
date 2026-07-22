@@ -9,16 +9,15 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { cardShadow, palette, radii, spacing, tierColors, typography } from '@/app/theme';
+import { cardShadow, palette, spacing, typography } from '@/app/theme';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
 import { AchievementBadge, ProgressRing } from '@/presentation/components';
 import {
   ACHIEVEMENTS,
-  nextAchievementInCategory,
   type AchievementCategory,
   type AchievementDefinition,
 } from '@/domain/achievements/catalog';
-import type { PlayerStats } from '@/domain/player/stats';
+import CategoryShelf from '../components/trophies/CategoryShelf';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -31,10 +30,6 @@ const ALL_CATEGORIES: AchievementCategory[] = [
   'streak',
   'progression',
 ];
-
-function capitalise(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
 
 function groupByCategory(
   achievements: readonly AchievementDefinition[],
@@ -49,59 +44,6 @@ function groupByCategory(
     }
   }
   return map;
-}
-
-// ---------------------------------------------------------------------------
-// Next-goal nudge card
-// ---------------------------------------------------------------------------
-
-interface NextGoalCardProps {
-  category: AchievementCategory;
-  stats: PlayerStats;
-  unlockedAchievements: ReadonlySet<string>;
-}
-
-function NextGoalCard({
-  category,
-  stats,
-  unlockedAchievements,
-}: NextGoalCardProps): React.ReactElement | null {
-  const next = nextAchievementInCategory(category, stats, unlockedAchievements);
-  if (next === undefined) {
-    return (
-      <View style={styles.nextGoalCard}>
-        <Text style={styles.nextGoalComplete}>✓ Category complete!</Text>
-      </View>
-    );
-  }
-
-  const current = stats[next.metric] as number;
-  const progress = Math.min(1, next.threshold > 0 ? current / next.threshold : 0);
-  const tierColor = tierColors[next.tier];
-
-  return (
-    <View style={[styles.nextGoalCard, { borderColor: `${tierColor}40` }]}>
-      <View style={styles.nextGoalHeader}>
-        <Text style={styles.nextGoalLabel}>Next goal</Text>
-        <Text style={[styles.nextGoalTier, { color: tierColor }]}>{next.tier.toUpperCase()}</Text>
-      </View>
-      <Text style={styles.nextGoalTitle}>{next.title}</Text>
-      <Text style={styles.nextGoalDesc}>{next.description}</Text>
-      <View style={styles.nextGoalProgressRow}>
-        <View style={styles.nextGoalTrack}>
-          <View
-            style={[
-              styles.nextGoalFill,
-              { width: `${progress * 100}%`, backgroundColor: tierColor },
-            ]}
-          />
-        </View>
-        <Text style={styles.nextGoalFraction}>
-          {current} / {next.threshold}
-        </Text>
-      </View>
-    </View>
-  );
 }
 
 // ---------------------------------------------------------------------------
@@ -142,17 +84,13 @@ export default function AchievementsScreen(): React.ReactElement {
         {ALL_CATEGORIES.map((category) => {
           const defs = grouped.get(category) ?? [];
           return (
-            <View key={category} style={styles.categorySection}>
-              {/* Category header */}
-              <Text style={styles.categoryHeader}>{capitalise(category)}</Text>
-
-              {/* Next goal nudge */}
-              <NextGoalCard
-                category={category}
-                stats={stats}
-                unlockedAchievements={unlockedAchievements}
-              />
-
+            <CategoryShelf
+              key={category}
+              category={category}
+              stats={stats}
+              unlockedAchievements={unlockedAchievements}
+              definitions={defs}
+            >
               {/* Badge grid */}
               <View style={styles.badgeGrid}>
                 {defs.map((achievement) => {
@@ -173,7 +111,7 @@ export default function AchievementsScreen(): React.ReactElement {
                   );
                 })}
               </View>
-            </View>
+            </CategoryShelf>
           );
         })}
 
@@ -231,80 +169,6 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
     backgroundColor: palette.canvas,
   },
-  categorySection: {
-    gap: spacing.md,
-  },
-  categoryHeader: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.lg,
-    color: palette.text,
-    fontWeight: '700',
-  },
-  nextGoalCard: {
-    backgroundColor: palette.surface,
-    borderRadius: radii.md,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: palette.surfaceAlt,
-    gap: spacing.xs,
-  },
-  nextGoalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  nextGoalLabel: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.xs,
-    color: palette.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  nextGoalTier: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.xs,
-    fontWeight: '700',
-  },
-  nextGoalTitle: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.md,
-    color: palette.text,
-    fontWeight: '600',
-  },
-  nextGoalDesc: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.sm,
-    color: palette.textMuted,
-  },
-  nextGoalProgressRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  nextGoalTrack: {
-    flex: 1,
-    height: 4,
-    backgroundColor: palette.surfaceAlt,
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  nextGoalFill: {
-    height: 4,
-    borderRadius: 2,
-  },
-  nextGoalFraction: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.xs,
-    color: palette.textMuted,
-  },
-  nextGoalComplete: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.sm,
-    color: palette.aurora,
-    textAlign: 'center',
-    paddingVertical: spacing.xs,
-  },
   badgeGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -320,7 +184,7 @@ const styles = StyleSheet.create({
   badgeProgress: {
     fontFamily: typography.body,
     fontSize: typography.sizes.xs,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
     textAlign: 'center',
   },
   bottomPad: {
