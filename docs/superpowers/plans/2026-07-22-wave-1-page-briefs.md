@@ -34,6 +34,7 @@
 **Goal:** The living game board. Smooth paintbrush reveal, bright cartoony basemap, animated juicy HUD, and it obeys `focusTarget`.
 
 **Must do:**
+
 1. Wrap every rendered ring through `smoothRings(..., 2)` before drawing: fog `holes`, `islands`, frontier `Polyline`s, and reveal-pulse rings. Keep `buildFogOverlay`/counts unchanged.
 2. Recolor fog/frontier via the new tokens (mint fog, warm-cream dashes over soft casing). Keep `customMapStyle`.
 3. HUD as cream sticker-cards (`GameCard` + `cardShadow`): level ring (`ProgressRing`+`LevelBadge`), `XpBar`, a **coins** chip (derive a display coins value from stats/XP — document the formula; cosmetic only), `StreakFlame`, and the slim area/distance/cells stats. Dark-on-cream text.
@@ -52,6 +53,7 @@
 **Goal:** Explorer profile + the tappable-region fly-to feature.
 
 **Must do:**
+
 1. **Hero:** `Avatar` (with level ring) + explorer title derived from level (define a small pure `explorerTitle(level)` with tests, e.g. Wanderer→Pathfinder→Trailblazer→Voyager) + headline **world uncovered %** from `worldwidePercent(stats.cellsRevealed)`.
 2. **Stat tiles** as `GameCard`/`StatCard` with `AnimatedNumber` count-ups: cells, distance (km), area (km²), countries, cities, active days, streak, coins.
 3. **Regions explored:** iterate `playerState.regions`, sort by `regionCompletion` %. Each region = a **tappable `GameCard`**: name, kind badge, % ring/bar, revealed/target. **onPress:** `const c = regionCenter(ref.id); if (c) focusMap({ ...c, label: ref.name })` (this also switches to the Explore tab). Empty state kept.
@@ -68,6 +70,7 @@
 **Goal:** A celebratory trophy case.
 
 **Must do:**
+
 1. Overall completion ring in the header ("X of Y unlocked" + `ProgressRing`).
 2. Category shelves (discovery/distance/world/streak/progression). Each shelf: a "next goal" nudge (`nextAchievementInCategory`) as a `GameCard` with progress, then a grid of `Medal`s (tier-colored, unlocked shine; locked dim + `progress` ring from current/threshold).
 3. Rarity/tier styling via `tierColors`. Celebratory unlocked state (pop/shine using `motion`).
@@ -83,6 +86,7 @@
 **Goal:** A proper game ladder that feels like a season leaderboard.
 
 **Must do:**
+
 1. **Podium** for top 3 via `PodiumRow` (gold/silver/bronze `Medal` + `Avatar`), 2-1-3 pedestal arrangement.
 2. Ranked list below as animated bars (bar width ∝ metric, `motion`); **your row highlighted** (`palette.coral` accent) and pinned/auto-scrolled into view if outside the top.
 3. Global / Crew segmented toggle (use `rankBy` vs `rankFriends` with `friendsOf`); metric chips (cells/distance/countries/XP) as a playful segmented control. "This season" framing text.
@@ -99,6 +103,7 @@
 **Goal:** Social explorers.
 
 **Must do:**
+
 1. Crew list: `GameCard` per friend with `Avatar`+level+area and a **Compare** action. Replace the `Alert` stub with a richer in-app compare sheet/modal where feasible (their stats vs yours side by side); if a full compare view is out of scope, ship a polished bottom-sheet preview — do NOT leave a bare Alert.
 2. Incoming requests (accept/decline) using existing friendship actions; add-crew affordance.
 3. **Snapshot card:** shareable explorer card (`Avatar`, title, headline stats). Use `expo-sharing`/RN `Share` for a real share if available; otherwise a polished shareable-looking card + a graceful "coming soon" that isn't a raw Alert.
@@ -114,6 +119,7 @@
 **Goal:** Make Settings belong to the game; keep behavior.
 
 **Must do:**
+
 1. Group into `GameCard` sections: About You (`Avatar`+name+level+cells), Sharing toggles, Location & privacy copy, Data (export/delete), App info (version/tagline).
 2. Restyle toggles/buttons to the cartoony system. Keep existing behaviors (local toggles, export/delete alerts) — no new persistence required this cycle.
 
@@ -124,6 +130,7 @@
 ## Wave 1 → Wave 2 handoff
 
 When all six owner branches report DONE with green gates, the controller:
+
 1. Merges `jereenv/wave1-*` branches into the base branch, resolving `components/index.ts` (add each page's exported page-local components) and any `App.tsx`/onboarding touch-points.
 2. Runs the full gate on the integrated branch; fixes conflicts.
 3. Dispatches a whole-branch code review (most-capable model); dispatches ONE fix subagent for all Critical/Important findings.

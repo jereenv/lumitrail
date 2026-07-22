@@ -27,14 +27,14 @@ navigation. No new backend, no tracking-cadence change (battery model preserved)
 
 ## Decisions locked (from brainstorming)
 
-| Question        | Decision                                                              |
-| --------------- | --------------------------------------------------------------------- |
-| Reveal look     | Chaikin corner-cutting smoothing (render-only, no deps)               |
-| Aesthetic       | Bright "mint & cream" cartoony sticker-card system                    |
-| App icon        | "Pin on a revealed map"                                               |
-| Tab naming      | **Game-voice:** Explore · Journey · Trophies · Ranks · Crew · Settings |
-| Boldness        | **Bold & juicy** — full cartoony game UI with animation everywhere    |
-| Orchestration   | Foundation wave first, then six parallel page-owner agents (worktrees) |
+| Question      | Decision                                                               |
+| ------------- | ---------------------------------------------------------------------- |
+| Reveal look   | Chaikin corner-cutting smoothing (render-only, no deps)                |
+| Aesthetic     | Bright "mint & cream" cartoony sticker-card system                     |
+| App icon      | "Pin on a revealed map"                                                |
+| Tab naming    | **Game-voice:** Explore · Journey · Trophies · Ranks · Crew · Settings |
+| Boldness      | **Bold & juicy** — full cartoony game UI with animation everywhere     |
+| Orchestration | Foundation wave first, then six parallel page-owner agents (worktrees) |
 
 ## Game pillars (the North Star every page serves)
 

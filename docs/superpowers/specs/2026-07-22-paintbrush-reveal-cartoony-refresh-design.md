@@ -34,11 +34,11 @@ battery model and the existing fog unit tests are unaffected. The one new
 
 ## Decisions locked (from brainstorming)
 
-| Question       | Decision                                                            |
-| -------------- | ------------------------------------------------------------------- |
-| Reveal look    | **Chaikin corner-cutting** smoothing of rendered rings (no deps)    |
-| Aesthetic      | **Bright mint & cream** — soft mint fog, cream sticker-cards        |
-| App icon       | **"Pin on a revealed map"** — pin + trail + mint fog peeling a corner |
+| Question    | Decision                                                              |
+| ----------- | --------------------------------------------------------------------- |
+| Reveal look | **Chaikin corner-cutting** smoothing of rendered rings (no deps)      |
+| Aesthetic   | **Bright mint & cream** — soft mint fog, cream sticker-cards          |
+| App icon    | **"Pin on a revealed map"** — pin + trail + mint fog peeling a corner |
 
 ---
 
@@ -136,17 +136,17 @@ color); add an assertion that a bottom inset increases bottom padding by mocking
 
 ### Palette (add to `src/app/theme.ts`, do not remove existing tokens)
 
-| Token             | Value                       | Use                                          |
-| ----------------- | --------------------------- | -------------------------------------------- |
-| `fog`             | `rgba(111, 224, 176, 0.55)` | soft glowing mint over unexplored map        |
-| `card`            | `#FFF8EC`                   | cream sticker-card surface (HUD, banner)     |
-| `cardBorder`      | `#F0E2C8`                   | warm hairline around cards                   |
-| `onCard`          | `#26333F`                   | dark ink text on cream cards (readable)      |
-| `onCardMuted`     | `#6B7B88`                   | muted label text on cards                    |
-| `coral`           | `#FF7A66`                   | playful pop accent (pin, highlights)         |
-| `frontier`        | `#FFF3D6`                   | warm-cream dashed frontier line              |
-| `frontierCasing`  | `rgba(38, 74, 62, 0.35)`    | soft casing under the dashes                 |
-| `shadow`          | `#123027`                   | shadow color for chunky card drop-shadows    |
+| Token            | Value                       | Use                                       |
+| ---------------- | --------------------------- | ----------------------------------------- |
+| `fog`            | `rgba(111, 224, 176, 0.55)` | soft glowing mint over unexplored map     |
+| `card`           | `#FFF8EC`                   | cream sticker-card surface (HUD, banner)  |
+| `cardBorder`     | `#F0E2C8`                   | warm hairline around cards                |
+| `onCard`         | `#26333F`                   | dark ink text on cream cards (readable)   |
+| `onCardMuted`    | `#6B7B88`                   | muted label text on cards                 |
+| `coral`          | `#FF7A66`                   | playful pop accent (pin, highlights)      |
+| `frontier`       | `#FFF3D6`                   | warm-cream dashed frontier line           |
+| `frontierCasing` | `rgba(38, 74, 62, 0.35)`    | soft casing under the dashes              |
+| `shadow`         | `#123027`                   | shadow color for chunky card drop-shadows |
 
 `ink`/`lumen`/`aurora` etc. stay — the map's dark loading state and other screens
 still use them. This is additive.
@@ -181,7 +181,7 @@ still use them. This is additive.
 
 ### Concept
 
-A bright rounded-square icon that reads instantly as *uncover-a-real-world-map*:
+A bright rounded-square icon that reads instantly as _uncover-a-real-world-map_:
 
 - **Background:** a soft sky→mint vertical gradient (bright, not navy).
 - **Map layer:** a simple cartoony landmass/streets block in cream + mint-green
@@ -270,6 +270,7 @@ small sizes.
 - Fog geometry stays pure and RN-free; smoothing is a separate pure module.
 - Smoothing is render-only — storage, sync, and battery model are unchanged.
 - Theme changes are additive tokens; no token the rest of the app depends on is
-  removed.
+removed.
 </content>
+
 </invoke>

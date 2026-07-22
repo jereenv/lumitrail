@@ -23,10 +23,12 @@
 ### Task 1: Design tokens + shared style helpers
 
 **Files:**
+
 - Modify: `src/app/theme.ts`
 - Test: `src/app/theme.test.ts` (create if absent)
 
 **Interfaces:**
+
 - Produces: new `palette` keys and two new exports `cardShadow` and `motion`.
 
 - [ ] **Step 1: Write the failing test**
@@ -35,7 +37,19 @@
 import { palette, cardShadow, motion } from './theme';
 
 test('game palette tokens exist and are strings', () => {
-  for (const key of ['fog','canvas','card','cardBorder','onCard','onCardMuted','coral','berry','frontier','frontierCasing','shadow'] as const) {
+  for (const key of [
+    'fog',
+    'canvas',
+    'card',
+    'cardBorder',
+    'onCard',
+    'onCardMuted',
+    'coral',
+    'berry',
+    'frontier',
+    'frontierCasing',
+    'shadow',
+  ] as const) {
     expect(typeof palette[key]).toBe('string');
     expect(palette[key].length).toBeGreaterThan(0);
   }
@@ -66,6 +80,7 @@ test('cardShadow and motion helpers are shaped correctly', () => {
   frontierCasing: 'rgba(38, 74, 62, 0.35)',
   shadow: '#123027',
 ```
+
 Replace the OLD `fog`/`frontier`/`frontierCasing` values with these (do not add duplicate keys). Then add:
 
 ```ts
@@ -82,6 +97,7 @@ export const motion = {
   durations: { short: 160, medium: 280, long: 480 },
 } as const;
 ```
+
 Add `cardShadow` and `motion` to the exported `theme` object.
 
 - [ ] **Step 4: Run test, verify pass.**
@@ -92,10 +108,12 @@ Add `cardShadow` and `motion` to the exported `theme` object.
 ### Task 2: Paintbrush geometry — `geo/smooth.ts` (Chaikin)
 
 **Files:**
+
 - Create: `src/domain/geo/smooth.ts`
 - Test: `src/domain/geo/smooth.test.ts`
 
 **Interfaces:**
+
 - Consumes: `Ring` from `@/domain/geo/fog` (`Coordinates[]`, `Coordinates = {latitude, longitude}`).
 - Produces: `chaikinRing(ring: Ring, iterations?: number): Ring`, `smoothRings(rings: Ring[], iterations?: number): Ring[]`.
 
@@ -215,10 +233,12 @@ export function smoothRings(rings: Ring[], iterations = 2): Ring[] {
 ### Task 3: `regionCenter` helper (fly-to coordinates)
 
 **Files:**
+
 - Modify: `src/domain/regions/resolver.ts` (add exported function using module-scoped `SEED`)
 - Test: `src/domain/regions/resolver.test.ts` (add cases; create if absent)
 
 **Interfaces:**
+
 - Consumes: `MapRegion` from `@/domain/geo/fog`, the module-local `SEED` array.
 - Produces: `regionCenter(id: string): MapRegion | null`.
 
@@ -282,11 +302,13 @@ export function regionCenter(id: string): MapRegion | null {
 ### Task 4: Navigation store — `activeTab` + `focusTarget`
 
 **Files:**
+
 - Create: `src/app/store/useNavigationStore.ts`
 - Test: `src/app/store/useNavigationStore.test.ts`
 - Modify: `src/presentation/components/TabBar.tsx` (import `TabId` from the store, re-export it so existing imports keep working)
 
 **Interfaces:**
+
 - Produces:
   - `type TabId = 'map' | 'stats' | 'achievements' | 'leaderboard' | 'friends' | 'settings'`
   - `interface MapFocus extends MapRegion { readonly label?: string }`
@@ -308,7 +330,13 @@ test('setActiveTab switches tab', () => {
 });
 
 test('focusMap sets the target and jumps to the map tab', () => {
-  const target = { latitude: 51.5, longitude: -0.1, latitudeDelta: 0.4, longitudeDelta: 0.8, label: 'London' };
+  const target = {
+    latitude: 51.5,
+    longitude: -0.1,
+    latitudeDelta: 0.4,
+    longitudeDelta: 0.8,
+    label: 'London',
+  };
   useNavigationStore.getState().setActiveTab('stats');
   useNavigationStore.getState().focusMap(target);
   expect(useNavigationStore.getState().focusTarget).toEqual(target);
@@ -316,7 +344,9 @@ test('focusMap sets the target and jumps to the map tab', () => {
 });
 
 test('clearMapFocus resets only the focus', () => {
-  useNavigationStore.getState().focusMap({ latitude: 1, longitude: 2, latitudeDelta: 0.1, longitudeDelta: 0.1 });
+  useNavigationStore
+    .getState()
+    .focusMap({ latitude: 1, longitude: 2, latitudeDelta: 0.1, longitudeDelta: 0.1 });
   useNavigationStore.getState().clearMapFocus();
   expect(useNavigationStore.getState().focusTarget).toBeNull();
   expect(useNavigationStore.getState().activeTab).toBe('map');
@@ -375,10 +405,12 @@ In `TabBar.tsx`, replace the local `TabId` declaration with:
 ### Task 5: App shell — store-driven tabs, game-voice labels, safe-area fix, bright background
 
 **Files:**
+
 - Modify: `App.tsx`, `src/presentation/components/TabBar.tsx`
 - Test: `src/presentation/components/TabBar.test.tsx` (update/create)
 
 **Interfaces:**
+
 - Consumes: `useNavigationStore` (Task 4), `useSafeAreaInsets` from `react-native-safe-area-context`.
 
 - [ ] **Step 1: Update the failing test** — assert game-voice labels render and a bottom inset increases bottom padding. Mock `useSafeAreaInsets`:
@@ -389,6 +421,7 @@ jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 34, left: 0, right: 0 }),
 }));
 ```
+
 Assert the bar renders labels `Explore`, `Journey`, `Trophies`, `Ranks`, `Crew`, `Settings`.
 
 - [ ] **Step 2: Run, verify fails.**
@@ -405,12 +438,14 @@ Assert the bar renders labels `Explore`, `Journey`, `Trophies`, `Ranks`, `Crew`,
 ### Task 6: Shared UI primitives
 
 **Files:**
+
 - Create: `src/presentation/components/GameCard.tsx`, `SectionHeader.tsx`, `Avatar.tsx`, `Medal.tsx`, `PodiumRow.tsx`, `AnimatedNumber.tsx`
 - Modify: `src/presentation/components/index.ts` (export all new ones)
 - Modify (restyle to tokens, keep public props + tests): `StatCard.tsx`, `ScreenHeader.tsx`, `ProgressRing.tsx`, `LevelBadge.tsx`, `XpBar.tsx`, `AchievementBadge.tsx`, `StreakFlame.tsx`, `RegionBanner.tsx`, `EventToast.tsx`
 - Test: one render test per NEW component (e.g. `GameCard.test.tsx`, `Medal.test.tsx`, `PodiumRow.test.tsx`, `Avatar.test.tsx`, `AnimatedNumber.test.tsx`)
 
 **Interfaces (Produces — page owners build against these):**
+
 - `GameCard({ children, onPress?, accent?, style?, testID? })` — cream sticker-card: `palette.card`, `radii.lg`, `borderColor: palette.cardBorder`, `cardShadow`; if `onPress`, wrap in `Pressable` with a subtle scale-press (`motion.spring`); optional left `accent` stripe color.
 - `SectionHeader({ title, action? })` — playful title (`typography.display`, `palette.onCard`) + optional right action node.
 - `Avatar({ name, level?, size?, imageUri? })` — round bubble showing initial (or image); when `level` given, draws a `ProgressRing`-style ring around it colored `palette.coral`.
@@ -431,6 +466,7 @@ Assert the bar renders labels `Explore`, `Journey`, `Trophies`, `Ranks`, `Crew`,
 ### Task 7: New app icon — "pin on a revealed map"
 
 **Files:**
+
 - Rewrite: `brand/icon.svg`, `brand/icon-foreground.svg`, `brand/icon-background.svg`, `brand/icon-monochrome.svg`
 - Modify: `brand/README.md` (palette table + concept), `app.json` (bright background colors)
 - Regenerate: `assets/*.png` (+ `assets/android/**`, `assets/store/thumbnail.png`, `assets/store/feature-graphic.png`) via the documented `sharp-cli` commands
@@ -442,7 +478,7 @@ Assert the bar renders labels `Explore`, `Journey`, `Trophies`, `Ranks`, `Crew`,
   - `icon-foreground.svg`: within the central 66% safe zone — a cartoony map block (cream + mint) with a curvy warm-cream **trail** (rounded caps), a wedge of **mint fog peeling off the top-left** (soft wavy edge), and a chunky **coral map pin** (`#FF7A66` body, cream dot, soft outline + drop-shadow) centered. Transparent background.
   - `icon.svg`: master = background gradient + the foreground scene, full-bleed with implied OS rounding.
   - `icon-monochrome.svg`: single white **pin silhouette** on transparent.
-  No comet, no literal hexagons.
+    No comet, no literal hexagons.
 - [ ] **Step 2:** Regenerate every PNG with the exact `sharp-cli` commands in `brand/README.md` ("Regenerate all PNGs at once").
 - [ ] **Step 3:** In `app.json`, set the adaptive-icon `backgroundColor`, top-level `backgroundColor`, and splash `backgroundColor` from `#0F1B2D` to the bright base `#BFE9FF` (keep splash image = `splash-icon.png`).
 - [ ] **Step 4:** Update `brand/README.md` palette table + the icon concept description. Run `npm run format:check` (SVG/JSON ignored or formatted as configured) and `npm run typecheck` (no code change, sanity).
