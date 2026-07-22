@@ -126,6 +126,11 @@ export default function MapScreen(): React.ReactElement {
 
   // Fog geometry for the current viewport (pure, memoised).
   const overlay = useMemo(() => buildFogOverlay(region, cells), [region, cells]);
+
+  // Smooth the frontier rings once and reuse across all three render sites (fog, islands, frontier border).
+  const smoothedHoles = useMemo(() => smoothRings(overlay.holes, 2), [overlay.holes]);
+  const smoothedIslands = useMemo(() => smoothRings(overlay.islands, 2), [overlay.islands]);
+
   const levelProgress = levelForXp(playerState.stats.totalXp);
   const viewPct = viewExploredPercent(overlay.exploredInView, overlay.estimatedCellsInView);
   const areaKm2 = approximateAreaKm2(playerState.stats.cellsRevealed);
@@ -193,14 +198,14 @@ export default function MapScreen(): React.ReactElement {
         {/* The fog: one green-teal polygon over the viewport, holes where explored. */}
         <Polygon
           coordinates={overlay.outer}
-          holes={smoothRings(overlay.holes, 2)}
+          holes={smoothedHoles}
           fillColor={palette.fog}
           strokeColor="transparent"
           strokeWidth={0}
           tappable={false}
         />
         {/* Fog islands: unexplored pockets surrounded by explored land. */}
-        {smoothRings(overlay.islands, 2).map((ring, i) => (
+        {smoothedIslands.map((ring, i) => (
           <Polygon
             key={`island-${i}`}
             coordinates={ring}
@@ -211,9 +216,8 @@ export default function MapScreen(): React.ReactElement {
           />
         ))}
         {/* Dashed frontier border tracing the edge of explored land. */}
-        {[...overlay.holes, ...overlay.islands].map((ring, i) => {
-          const smoothedRing = smoothRings([ring], 2)[0];
-          const path = closedRing(smoothedRing);
+        {[...smoothedHoles, ...smoothedIslands].map((ring, i) => {
+          const path = closedRing(ring);
           return (
             <React.Fragment key={`frontier-${i}`}>
               <Polyline coordinates={path} strokeColor={palette.frontierCasing} strokeWidth={6} />
