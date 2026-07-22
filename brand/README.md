@@ -4,33 +4,35 @@ This directory contains all SVG source files for the Lumitrail brand. PNGs are e
 
 ## Palette
 
-| Name                 | Hex       |
-| -------------------- | --------- |
-| Fog Blue (dark)      | `#0F1B2D` |
-| Fog Blue (mid)       | `#17263B` |
-| Lumen Amber          | `#FFB74D` |
-| Lumen Amber (bright) | `#FFC97A` |
-| Aurora Teal          | `#38E0A6` |
-| Light Text           | `#E8EEF5` |
+| Name             | Hex       | Usage                                 |
+| ---------------- | --------- | ------------------------------------- |
+| Sky Blue         | `#BFE9FF` | Icon gradient top / splash background |
+| Mint Green       | `#6FE0B0` | Icon gradient bottom                  |
+| Map Mint         | `#A8EDCC` | Street lines on map block             |
+| Fog Mint         | `#B8F0D8` | Fog wedge overlay                     |
+| Coral Pin        | `#FF7A66` | Map pin body                          |
+| Coral Pin (dark) | `#CC4433` | Map pin stroke / outline              |
+| Cream            | `#FFF8EE` | Map block fill, trail path, pin dot   |
+| Map Border       | `#E8DDCC` | Map block stroke                      |
 
 ---
 
 ## SVG Sources
 
-| File                  | Dimensions | Purpose                                                                             |
-| --------------------- | ---------- | ----------------------------------------------------------------------------------- |
-| `icon.svg`            | 1024×1024  | Master icon — full-bleed, rounded rect implied by OS                                |
-| `icon-foreground.svg` | 1024×1024  | Android adaptive icon foreground (transparent bg, content in central 66% safe zone) |
-| `icon-background.svg` | 1024×1024  | Android adaptive icon background (fog gradient field only)                          |
-| `icon-monochrome.svg` | 1024×1024  | Android 13+ themed icon (single-color white silhouette on transparent)              |
-| `feature-graphic.svg` | 1024×500   | Play Store feature graphic                                                          |
-| `wordmark.svg`        | 680×120    | "Lumitrail" wordmark + tagline lockup                                               |
-| `screenshot-1.svg`    | 1080×1920  | App screen: fog map with revealed glowing trail                                     |
-| `screenshot-2.svg`    | 1080×1920  | App screen: stats dashboard                                                         |
-| `screenshot-3.svg`    | 1080×1920  | App screen: achievements / badges grid                                              |
-| `screenshot-4.svg`    | 1080×1920  | App screen: level-up / XP moment                                                    |
-| `screenshot-5.svg`    | 1080×1920  | App screen: leaderboard (global + friends)                                          |
-| `screenshot-6.svg`    | 1080×1920  | App screen: friends / shareable snapshot                                            |
+| File                  | Dimensions | Purpose                                                                                         |
+| --------------------- | ---------- | ----------------------------------------------------------------------------------------------- |
+| `icon.svg`            | 1024×1024  | Master icon — sky→mint gradient + map block + fog wedge + coral pin, rounded rect implied by OS |
+| `icon-foreground.svg` | 1024×1024  | Android adaptive icon foreground (transparent bg, pin/map/fog/trail in central 66% safe zone)   |
+| `icon-background.svg` | 1024×1024  | Android adaptive icon background (sky→mint vertical gradient field only)                        |
+| `icon-monochrome.svg` | 1024×1024  | Android 13+ themed icon (single-color white pin silhouette on transparent)                      |
+| `feature-graphic.svg` | 1024×500   | Play Store feature graphic                                                                      |
+| `wordmark.svg`        | 680×120    | "Lumitrail" wordmark + tagline lockup                                                           |
+| `screenshot-1.svg`    | 1080×1920  | App screen: fog map with revealed glowing trail                                                 |
+| `screenshot-2.svg`    | 1080×1920  | App screen: stats dashboard                                                                     |
+| `screenshot-3.svg`    | 1080×1920  | App screen: achievements / badges grid                                                          |
+| `screenshot-4.svg`    | 1080×1920  | App screen: level-up / XP moment                                                                |
+| `screenshot-5.svg`    | 1080×1920  | App screen: leaderboard (global + friends)                                                      |
+| `screenshot-6.svg`    | 1080×1920  | App screen: friends / shareable snapshot                                                        |
 
 ---
 

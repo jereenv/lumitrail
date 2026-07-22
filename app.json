@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "scheme": "lumitrail",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#0F1B2D",
+    "backgroundColor": "#BFE9FF",
     "newArchEnabled": true,
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -23,7 +23,7 @@
       "package": "app.lumitrail",
       "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
-        "backgroundColor": "#0F1B2D",
+        "backgroundColor": "#BFE9FF",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -59,7 +59,7 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#0F1B2D"
+          "backgroundColor": "#BFE9FF"
         }
       ]
     ]

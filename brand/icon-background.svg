@@ -1,40 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
-  <!-- Adaptive icon background: the fog gradient field -->
   <defs>
-    <linearGradient id="bgGradBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0F1B2D"/>
-      <stop offset="100%" stop-color="#17263B"/>
+    <linearGradient id="skyMint" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#BFE9FF"/>
+      <stop offset="100%" stop-color="#6FE0B0"/>
     </linearGradient>
-    <radialGradient id="fogPatchBg" cx="25%" cy="60%" r="55%">
-      <stop offset="0%" stop-color="#1C3050" stop-opacity="0.7"/>
-      <stop offset="100%" stop-color="#0F1B2D" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="glowCenterBg" cx="65%" cy="50%" r="45%">
-      <stop offset="0%" stop-color="#1E3D5A" stop-opacity="0.4"/>
-      <stop offset="100%" stop-color="#17263B" stop-opacity="0"/>
-    </radialGradient>
   </defs>
-
-  <!-- Base gradient -->
-  <rect width="1024" height="1024" fill="url(#bgGradBg)"/>
-
-  <!-- Fog texture overlay -->
-  <rect width="1024" height="1024" fill="url(#fogPatchBg)"/>
-
-  <!-- Subtle warm glow in center-right (where trail will be in foreground) -->
-  <rect width="1024" height="1024" fill="url(#glowCenterBg)"/>
-
-  <!-- Very subtle star field -->
-  <circle cx="120" cy="80" r="2" fill="#E8EEF5" opacity="0.25"/>
-  <circle cx="280" cy="140" r="1.5" fill="#E8EEF5" opacity="0.18"/>
-  <circle cx="800" cy="60" r="2" fill="#E8EEF5" opacity="0.22"/>
-  <circle cx="950" cy="200" r="1.5" fill="#E8EEF5" opacity="0.25"/>
-  <circle cx="70" cy="350" r="1.5" fill="#E8EEF5" opacity="0.12"/>
-  <circle cx="900" cy="750" r="2" fill="#E8EEF5" opacity="0.18"/>
-  <circle cx="160" cy="900" r="1.5" fill="#E8EEF5" opacity="0.18"/>
-  <circle cx="880" cy="950" r="1.5" fill="#E8EEF5" opacity="0.12"/>
-  <circle cx="400" cy="100" r="1" fill="#E8EEF5" opacity="0.18"/>
-  <circle cx="600" cy="900" r="1.5" fill="#E8EEF5" opacity="0.12"/>
-  <circle cx="500" cy="300" r="1" fill="#E8EEF5" opacity="0.15"/>
-  <circle cx="750" cy="400" r="1.5" fill="#E8EEF5" opacity="0.12"/>
+  <rect width="1024" height="1024" fill="url(#skyMint)"/>
 </svg>
