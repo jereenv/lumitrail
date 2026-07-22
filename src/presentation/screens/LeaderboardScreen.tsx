@@ -1,16 +1,34 @@
 /**
- * LeaderboardScreen — ranked player list with global and friends views.
+ * LeaderboardScreen — season leaderboard with podium, ranked bars, and filters.
  *
- * Two tabs (Global / Friends) with a metric switcher across the top.
- * Demo players are seeded so the screen looks populated immediately.
- * The current player's row is highlighted in lumen amber.
+ * Layout (top → bottom):
+ *   ScreenHeader "Ranks"
+ *   GameCard  — Global/Crew toggle pill + metric chips + season label
+ *   PodiumRow — top 3 players (only when ≥ 3 entries have ranks 1/2/3)
+ *   FlatList  — rank 4+ entries as animated RankedBar rows
+ *
+ * The current player's entry always appears in the FlatList regardless of rank
+ * so they can always find themselves. If their rank is > 3 the list auto-scrolls
+ * to their entry on mount and whenever the tab or metric changes.
  */
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  type ListRenderItemInfo,
+} from 'react-native';
 
 import { palette, radii, spacing, typography } from '@/app/theme';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
-import { ScreenHeader } from '@/presentation/components';
+import {
+  GameCard,
+  PodiumRow,
+  ScreenHeader,
+} from '@/presentation/components';
 import { INITIAL_STATS } from '@/domain/player/stats';
 import {
   rankBy,
@@ -20,8 +38,10 @@ import {
   type LeaderboardMetric,
 } from '@/domain/leaderboard/ranking';
 
+import RankedBar from '@/presentation/components/ranks/RankedBar';
+
 // ---------------------------------------------------------------------------
-// Demo seed data
+// Demo seed — keep playerIds and stats exactly as-is (per brief)
 // ---------------------------------------------------------------------------
 
 const DEMO_PLAYERS: LeaderboardCandidate[] = [
@@ -82,7 +102,7 @@ const DEMO_PLAYERS: LeaderboardCandidate[] = [
 const FRIEND_IDS = new Set(['maya', 'kofi']);
 
 // ---------------------------------------------------------------------------
-// Formatting helpers
+// Metric config
 // ---------------------------------------------------------------------------
 
 const METRICS: LeaderboardMetric[] = [
@@ -93,11 +113,11 @@ const METRICS: LeaderboardMetric[] = [
 ];
 
 const METRIC_LABELS: Record<LeaderboardMetric, string> = {
-  cellsRevealed: 'Cells',
-  distanceMeters: 'Distance',
-  countriesVisited: 'Countries',
-  totalXp: 'XP',
-  longestStreakDays: 'Streak',
+  cellsRevealed: '🗺 Cells',
+  distanceMeters: '📍 Distance',
+  countriesVisited: '🌍 Countries',
+  totalXp: '⚡ XP',
+  longestStreakDays: '🔥 Streak',
 };
 
 function formatValue(metric: LeaderboardMetric, value: number): string {
@@ -115,54 +135,22 @@ function formatValue(metric: LeaderboardMetric, value: number): string {
   }
 }
 
-const RANK_COLORS: Record<number, string> = {
-  1: '#FFC24B',
-  2: '#C7D0DB',
-  3: '#CD7F32',
-};
-
 // ---------------------------------------------------------------------------
-// Row sub-component
+// Tabs
 // ---------------------------------------------------------------------------
 
-interface LeaderboardRowProps {
-  entry: LeaderboardEntry;
-  metric: LeaderboardMetric;
-  isCurrentPlayer: boolean;
-}
-
-function LeaderboardRow({
-  entry,
-  metric,
-  isCurrentPlayer,
-}: LeaderboardRowProps): React.ReactElement {
-  const rankColor = RANK_COLORS[entry.rank] ?? palette.textMuted;
-
-  return (
-    <View style={[styles.row, isCurrentPlayer && styles.rowHighlighted]}>
-      <Text style={[styles.rank, { color: rankColor }]}>{entry.rank}</Text>
-      <Text
-        style={[styles.playerName, isCurrentPlayer && styles.playerNameHighlighted]}
-        numberOfLines={1}
-      >
-        {entry.displayName}
-        {isCurrentPlayer ? ' (you)' : ''}
-      </Text>
-      <Text style={styles.valueText}>{formatValue(metric, entry.value)}</Text>
-    </View>
-  );
-}
+type BoardTab = 'global' | 'crew';
 
 // ---------------------------------------------------------------------------
-// Main component
+// Main screen
 // ---------------------------------------------------------------------------
-
-type BoardTab = 'global' | 'friends';
 
 export default function LeaderboardScreen(): React.ReactElement {
   const { playerState } = useExplorationStore();
   const [tab, setTab] = useState<BoardTab>('global');
   const [metric, setMetric] = useState<LeaderboardMetric>('cellsRevealed');
+
+  const flatListRef = useRef<FlatList<LeaderboardEntry>>(null);
 
   const currentUser: LeaderboardCandidate = {
     playerId: playerState.playerId,
@@ -177,188 +165,231 @@ export default function LeaderboardScreen(): React.ReactElement {
       ? rankBy(allCandidates, metric)
       : rankFriends(allCandidates, metric, playerState.playerId, FRIEND_IDS);
 
+  // Top-value for ratio calculation (rank 1's value, never 0 to avoid divide-by-zero).
+  const topValue = entries.length > 0 ? entries[0].value : 1;
+  const safeTopValue = topValue === 0 ? 1 : topValue;
+
+  // Split: top 3 go to PodiumRow, rank 4+ go to FlatList.
+  const podiumEntries = entries.filter((e) => e.rank <= 3);
+  const hasPodium = podiumEntries.length >= 3;
+  const listEntries = hasPodium ? entries.filter((e) => e.rank > 3) : entries;
+
+  // Find the current player's index in the FlatList so we can scroll to them.
+  const myIndex = listEntries.findIndex((e) => e.playerId === playerState.playerId);
+
+  // Auto-scroll to current player's row whenever tab or metric changes.
+  useEffect(() => {
+    if (myIndex >= 0 && flatListRef.current !== null) {
+      // Small delay lets the list finish its layout pass before scrolling.
+      const timer = setTimeout(() => {
+        flatListRef.current?.scrollToIndex({ index: myIndex, animated: true });
+      }, 100);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+    return undefined;
+  }, [myIndex, tab, metric]);
+
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<LeaderboardEntry>): React.ReactElement => {
+      const isCurrentPlayer = item.playerId === playerState.playerId;
+      return (
+        <RankedBar
+          rank={item.rank}
+          name={`${item.displayName}${isCurrentPlayer ? ' (you)' : ''}`}
+          value={formatValue(metric, item.value)}
+          ratio={item.value / safeTopValue}
+          isCurrentPlayer={isCurrentPlayer}
+          testID={isCurrentPlayer ? 'ranked-bar-you' : `ranked-bar-${item.playerId}`}
+        />
+      );
+    },
+    [metric, playerState.playerId, safeTopValue],
+  );
+
+  const keyExtractor = useCallback(
+    (item: LeaderboardEntry): string => item.playerId,
+    [],
+  );
+
+  // Graceful fallback when scrollToIndex fires before layout.
+  const onScrollToIndexFailed = useCallback((): void => {
+    // No-op: if the scroll fails (list not yet laid out), we simply don't scroll.
+  }, []);
+
   return (
     <View style={styles.root}>
-      <ScreenHeader title="Leaderboard" />
+      <ScreenHeader title="Ranks" />
 
-      {/* Tab switcher */}
-      <View style={styles.tabRow}>
-        {(['global', 'friends'] as BoardTab[]).map((t) => (
-          <TouchableOpacity
-            key={t}
-            style={[styles.tab, tab === t && styles.tabActive]}
-            onPress={() => setTab(t)}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: tab === t }}
+      {/* Controls card: toggle + metric chips + season label */}
+      <View style={styles.controlsWrapper}>
+        <GameCard style={styles.controlsCard}>
+          {/* Global / Crew pill toggle */}
+          <View style={styles.togglePill}>
+            {(['global', 'crew'] as BoardTab[]).map((t) => (
+              <TouchableOpacity
+                key={t}
+                style={[styles.toggleSegment, tab === t && styles.toggleSegmentActive]}
+                onPress={() => {
+                  setTab(t);
+                }}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: tab === t }}
+              >
+                <Text style={[styles.toggleText, tab === t && styles.toggleTextActive]}>
+                  {t === 'global' ? 'Global' : 'Crew'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Metric chips — horizontally scrollable */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chipsRow}
           >
-            <Text style={[styles.tabText, tab === t && styles.tabTextActive]}>
-              {t === 'global' ? 'Global' : 'Friends'}
-            </Text>
-          </TouchableOpacity>
-        ))}
+            {METRICS.map((m) => (
+              <TouchableOpacity
+                key={m}
+                style={[styles.chip, metric === m && styles.chipActive]}
+                onPress={() => {
+                  setMetric(m);
+                }}
+                accessibilityRole="button"
+                accessibilityState={{ selected: metric === m }}
+              >
+                <Text style={[styles.chipText, metric === m && styles.chipTextActive]}>
+                  {METRIC_LABELS[m]}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
+          {/* Season framing line */}
+          <Text style={styles.seasonText}>Season 1 · This season's rankings</Text>
+        </GameCard>
       </View>
 
-      {/* Metric switcher */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.metricScroll}
-        contentContainerStyle={styles.metricRow}
-      >
-        {METRICS.map((m) => (
-          <TouchableOpacity
-            key={m}
-            style={[styles.metricChip, metric === m && styles.metricChipActive]}
-            onPress={() => setMetric(m)}
-            accessibilityRole="button"
-            accessibilityState={{ selected: metric === m }}
-          >
-            <Text style={[styles.metricChipText, metric === m && styles.metricChipTextActive]}>
-              {METRIC_LABELS[m]}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      {/* Podium — only when top 3 are present */}
+      {hasPodium && (
+        <View style={styles.podiumWrapper}>
+          <PodiumRow
+            entries={podiumEntries.map((e) => ({
+              rank: e.rank as 1 | 2 | 3,
+              name: e.displayName,
+              value: formatValue(metric, e.value),
+              you: e.playerId === playerState.playerId,
+            }))}
+          />
+        </View>
+      )}
 
-      {/* Entries */}
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+      {/* Ranked bars list */}
+      <FlatList
+        ref={flatListRef}
+        data={listEntries}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        onScrollToIndexFailed={onScrollToIndexFailed}
+        contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-      >
-        {entries.length === 0 ? (
+        ListEmptyComponent={
           <Text style={styles.emptyText}>No players to rank yet.</Text>
-        ) : (
-          entries.map((entry) => (
-            <LeaderboardRow
-              key={entry.playerId}
-              entry={entry}
-              metric={metric}
-              isCurrentPlayer={entry.playerId === playerState.playerId}
-            />
-          ))
-        )}
-        <View style={styles.bottomPad} />
-      </ScrollView>
+        }
+      />
     </View>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Styles
+// Styles — all colors from palette / theme; zero hard-coded hex values
 // ---------------------------------------------------------------------------
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: palette.ink,
+    backgroundColor: palette.canvas,
   },
-  tabRow: {
+  controlsWrapper: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+  },
+  controlsCard: {
+    gap: spacing.sm,
+  },
+  togglePill: {
     flexDirection: 'row',
     backgroundColor: palette.surface,
-    marginHorizontal: spacing.md,
-    marginTop: spacing.md,
-    borderRadius: radii.md,
+    borderRadius: radii.pill,
     overflow: 'hidden',
   },
-  tab: {
+  toggleSegment: {
     flex: 1,
     paddingVertical: spacing.sm,
     alignItems: 'center',
+    borderRadius: radii.pill,
   },
-  tabActive: {
+  toggleSegmentActive: {
     backgroundColor: palette.lumen,
   },
-  tabText: {
+  toggleText: {
     fontFamily: typography.display,
     fontSize: typography.sizes.sm,
-    color: palette.textMuted,
     fontWeight: '600',
+    color: palette.textMuted,
   },
-  tabTextActive: {
+  toggleTextActive: {
     color: palette.ink,
   },
-  metricScroll: {
-    marginTop: spacing.sm,
-  },
-  metricRow: {
-    paddingHorizontal: spacing.md,
-    gap: spacing.sm,
+  chipsRow: {
     flexDirection: 'row',
+    gap: spacing.sm,
   },
-  metricChip: {
+  chip: {
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
     borderRadius: radii.pill,
     borderWidth: 1.5,
-    borderColor: palette.surfaceAlt,
-    backgroundColor: palette.surface,
+    borderColor: palette.cardBorder,
+    backgroundColor: palette.card,
   },
-  metricChipActive: {
+  chipActive: {
     borderColor: palette.lumen,
     backgroundColor: `${palette.lumen}22`,
   },
-  metricChipText: {
+  chipText: {
     fontFamily: typography.body,
     fontSize: typography.sizes.sm,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
   },
-  metricChipTextActive: {
+  chipTextActive: {
     color: palette.lumen,
     fontWeight: '600',
   },
-  scroll: {
-    flex: 1,
-    marginTop: spacing.md,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.md,
-    gap: spacing.xs,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: palette.surface,
-    borderRadius: radii.sm,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    gap: spacing.md,
-  },
-  rowHighlighted: {
-    backgroundColor: `${palette.lumen}18`,
-    borderWidth: 1,
-    borderColor: `${palette.lumen}44`,
-  },
-  rank: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.md,
-    fontWeight: '700',
-    width: 28,
+  seasonText: {
+    fontFamily: typography.body,
+    fontSize: typography.sizes.xs,
+    color: palette.onCardMuted,
     textAlign: 'center',
   },
-  playerName: {
-    flex: 1,
-    fontFamily: typography.body,
-    fontSize: typography.sizes.md,
-    color: palette.text,
+  podiumWrapper: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.sm,
   },
-  playerNameHighlighted: {
-    color: palette.lumen,
-    fontWeight: '600',
-  },
-  valueText: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.sm,
-    color: palette.textMuted,
+  listContent: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.xxl,
+    gap: spacing.sm,
   },
   emptyText: {
     fontFamily: typography.body,
     fontSize: typography.sizes.md,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
     textAlign: 'center',
     marginTop: spacing.xl,
-  },
-  bottomPad: {
-    height: spacing.xxl,
   },
 });
