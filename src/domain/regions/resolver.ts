@@ -9,6 +9,7 @@
  * calling code changes. See ARCHITECTURE.md § Region resolution.
  */
 import type { Coordinates } from '@/domain/geo/types';
+import type { MapRegion } from '@/domain/geo/fog';
 
 import type { RegionPath, RegionRef, RegionResolver } from './types';
 
@@ -76,6 +77,26 @@ const SEED: readonly SeedEntry[] = [
     parentCountryId: 'US',
   },
 ];
+
+const SPAN_PADDING = 1.15;
+const MIN_SPAN_DEG = 0.02;
+
+/**
+ * Centre + span of a seeded region, suitable for `animateToRegion`. Returns
+ * null when the id is not in the seed set. Coarse (bounding-box) but good
+ * enough to fly the map to a region tapped in the Journey screen.
+ */
+export function regionCenter(id: string): MapRegion | null {
+  const entry = SEED.find((e) => e.ref.id === id);
+  if (!entry) return null;
+  const { minLat, maxLat, minLng, maxLng } = entry.box;
+  return {
+    latitude: (minLat + maxLat) / 2,
+    longitude: (minLng + maxLng) / 2,
+    latitudeDelta: Math.max(MIN_SPAN_DEG, (maxLat - minLat) * SPAN_PADDING),
+    longitudeDelta: Math.max(MIN_SPAN_DEG, (maxLng - minLng) * SPAN_PADDING),
+  };
+}
 
 export class BoundingBoxRegionResolver implements RegionResolver {
   private readonly seed: readonly SeedEntry[];
