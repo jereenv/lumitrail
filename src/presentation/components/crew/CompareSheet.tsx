@@ -10,6 +10,7 @@ import React from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { palette, radii, spacing, typography } from '@/app/theme';
+import { approximateAreaKm2 } from '@/domain/geo/fog';
 import Avatar from '@/presentation/components/Avatar';
 import type { FriendProfile } from './friendDemoData';
 
@@ -96,9 +97,8 @@ export default function CompareSheet({
     {
       key: 'area',
       label: 'Area',
-      // Each res-9 hex ≈ 0.105 km²
-      friendValue: `${(friendProfile.stats.cellsRevealed * 0.105).toFixed(1)} km²`,
-      playerValue: `${(playerStats.cellsRevealed * 0.105).toFixed(1)} km²`,
+      friendValue: `${approximateAreaKm2(friendProfile.stats.cellsRevealed).toFixed(1)} km²`,
+      playerValue: `${approximateAreaKm2(playerStats.cellsRevealed).toFixed(1)} km²`,
       friendRaw: friendProfile.stats.cellsRevealed,
       playerRaw: playerStats.cellsRevealed,
     },

@@ -14,6 +14,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { palette, radii, spacing, typography } from '@/app/theme';
 import Avatar from '@/presentation/components/Avatar';
 import GameCard from '@/presentation/components/GameCard';
+import { approximateAreaKm2 } from '@/domain/geo/fog';
 import { levelForXp } from '@/domain/progression/levels';
 import type { FriendProfile } from './friendDemoData';
 
@@ -25,7 +26,7 @@ interface CrewCardProps {
 export default function CrewCard({ friendProfile, onCompare }: CrewCardProps): React.ReactElement {
   const { playerId, displayName, stats } = friendProfile;
   const { level } = levelForXp(stats.totalXp);
-  const areaStat = (stats.cellsRevealed * 0.105).toFixed(1) + ' km²';
+  const areaStat = approximateAreaKm2(stats.cellsRevealed).toFixed(1) + ' km²';
 
   return (
     <GameCard testID={`crew-card-${playerId}`}>

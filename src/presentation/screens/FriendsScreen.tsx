@@ -5,7 +5,7 @@
  * Composes all the new crew components:
  *   - RequestCard for pending friend requests
  *   - CrewCard for accepted friends
- *   - AddCrewButton as an action inside the "Your Crew" section header
+ *   - AddCrewButton rendered as a standalone row under the "Your Crew" heading
  *   - SnapshotCard for the player's own exploration stats
  *   - CompareSheet (modal) opened when tapping Compare on a CrewCard
  *
@@ -124,7 +124,8 @@ export default function FriendsScreen(): React.ReactElement {
         )}
 
         {/* ---- Your Crew ---- */}
-        <SectionHeader title="Your Crew" action={<AddCrewButton />} />
+        <SectionHeader title="Your Crew" />
+        <AddCrewButton />
         {friends.length === 0 ? (
           <GameCard>
             <Text style={styles.emptyText}>No crew yet. Invite friends to explore together!</Text>
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontFamily: typography.body,
     fontSize: typography.sizes.sm,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
     textAlign: 'center',
     padding: spacing.lg,
   },
