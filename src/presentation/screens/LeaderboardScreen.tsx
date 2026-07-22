@@ -24,11 +24,7 @@ import {
 
 import { palette, radii, spacing, typography } from '@/app/theme';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
-import {
-  GameCard,
-  PodiumRow,
-  ScreenHeader,
-} from '@/presentation/components';
+import { GameCard, PodiumRow, ScreenHeader } from '@/presentation/components';
 import { INITIAL_STATS } from '@/domain/player/stats';
 import {
   rankBy,
@@ -262,7 +258,7 @@ export default function LeaderboardScreen(): React.ReactElement {
           </ScrollView>
 
           {/* Season framing line */}
-          <Text style={styles.seasonText}>{'Season 1 · This season\'s rankings'}</Text>
+          <Text style={styles.seasonText}>{"Season 1 · This season's rankings"}</Text>
         </GameCard>
       </View>
 
@@ -289,9 +285,7 @@ export default function LeaderboardScreen(): React.ReactElement {
         onScrollToIndexFailed={onScrollToIndexFailed}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No players to rank yet.</Text>
-        }
+        ListEmptyComponent={<Text style={styles.emptyText}>No players to rank yet.</Text>}
       />
     </View>
   );

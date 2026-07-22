@@ -62,18 +62,11 @@ export default function RankedBar({
   const accentColor = isCurrentPlayer ? palette.coral : undefined;
 
   return (
-    <GameCard
-      testID={testID}
-      accent={accentColor}
-      style={styles.card}
-    >
+    <GameCard testID={testID} accent={accentColor} style={styles.card}>
       {/* Top row: rank badge + name + value */}
       <View style={styles.topRow}>
         <Text style={styles.rank}>{rank}</Text>
-        <Text
-          style={[styles.name, isCurrentPlayer && styles.nameYou]}
-          numberOfLines={1}
-        >
+        <Text style={[styles.name, isCurrentPlayer && styles.nameYou]} numberOfLines={1}>
           {name}
         </Text>
         <Text style={styles.value}>{value}</Text>
