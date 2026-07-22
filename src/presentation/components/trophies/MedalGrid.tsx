@@ -56,18 +56,10 @@ function MedalCell({ def, unlocked, progress }: MedalCellProps): React.ReactElem
   }, []);
 
   return (
-    <View
-      testID={`medal-${def.id}`}
-      style={styles.cell}
-    >
+    <View testID={`medal-${def.id}`} style={styles.cell}>
       <Animated.View style={{ transform: [{ scale }] }}>
         {/* Shine overlay — subtle glow on top of the medal for unlocked state */}
-        {unlocked && (
-          <View
-            pointerEvents="none"
-            style={styles.shineOverlay}
-          />
-        )}
+        {unlocked && <View pointerEvents="none" style={styles.shineOverlay} />}
         <Medal
           tier={def.tier}
           size={72}
@@ -104,14 +96,7 @@ export default function MedalGrid({
           def.threshold > 0 ? (stats[def.metric] as number) / def.threshold : 0,
         );
 
-        return (
-          <MedalCell
-            key={def.id}
-            def={def}
-            unlocked={unlocked}
-            progress={progress}
-          />
-        );
+        return <MedalCell key={def.id} def={def} unlocked={unlocked} progress={progress} />;
       })}
     </View>
   );

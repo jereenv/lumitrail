@@ -19,7 +19,7 @@ import type { PlayerStats } from '@/domain/player/stats';
 
 jest.mock('@/app/store/useExplorationStore');
 
-const mockStore = useExplorationStore as jest.Mock;
+const mockStore = useExplorationStore as unknown as jest.Mock;
 
 // ---------------------------------------------------------------------------
 // Test fixtures
@@ -59,10 +59,7 @@ const mockStatsPartialUnlock: PlayerStats = {
 // Helper: build a default store shape with overrides
 // ---------------------------------------------------------------------------
 
-function makeStore(
-  stats: PlayerStats,
-  unlockedAchievements: ReadonlySet<string>,
-): void {
+function makeStore(stats: PlayerStats, unlockedAchievements: ReadonlySet<string>): void {
   mockStore.mockReturnValue({
     playerState: {
       playerId: 'test-player',
@@ -97,9 +94,7 @@ describe('AchievementsScreen', () => {
   it('shows "0 of N unlocked" when all locked', async () => {
     makeStore(mockStatsAllLocked, new Set<string>());
 
-    const { getByText, getByTestId } = await render(
-      <AchievementsScreen />,
-    );
+    const { getByText, getByTestId } = await render(<AchievementsScreen />);
 
     expect(getByText(`0 of ${ACHIEVEMENTS.length} unlocked`)).toBeTruthy();
     expect(getByTestId('trophies-header')).toBeTruthy();
@@ -109,27 +104,21 @@ describe('AchievementsScreen', () => {
   it('shows "2 of N unlocked" when two achievements are unlocked', async () => {
     makeStore(mockStatsPartialUnlock, new Set(['first-light', 'pathfinder']));
 
-    const { getByText } = await render(
-      <AchievementsScreen />,
-    );
+    const { getByText } = await render(<AchievementsScreen />);
 
     expect(getByText(`2 of ${ACHIEVEMENTS.length} unlocked`)).toBeTruthy();
   });
 
   // 3 -----------------------------------------------------------------------
   it('renders the header progress ring', async () => {
-    const { getByTestId } = await render(
-      <AchievementsScreen />,
-    );
+    const { getByTestId } = await render(<AchievementsScreen />);
 
     expect(getByTestId('header-ring')).toBeTruthy();
   });
 
   // 4 -----------------------------------------------------------------------
   it('renders section headers for all five categories', async () => {
-    const { getAllByText } = await render(
-      <AchievementsScreen />,
-    );
+    const { getAllByText } = await render(<AchievementsScreen />);
 
     // getAllByText because category names may appear more than once (header + chip).
     expect(getAllByText('Discovery').length).toBeGreaterThanOrEqual(1);
@@ -143,9 +132,7 @@ describe('AchievementsScreen', () => {
   it('shows an unlocked bronze medal accessible label', async () => {
     makeStore(mockStatsPartialUnlock, new Set(['first-light', 'pathfinder']));
 
-    const { getByLabelText } = await render(
-      <AchievementsScreen />,
-    );
+    const { getByLabelText } = await render(<AchievementsScreen />);
 
     // First Light is bronze and unlocked.
     expect(getByLabelText(/bronze medal - unlocked/)).toBeTruthy();
@@ -155,9 +142,7 @@ describe('AchievementsScreen', () => {
   it('shows a locked gold medal accessible label', async () => {
     makeStore(mockStatsPartialUnlock, new Set(['first-light', 'pathfinder']));
 
-    const { getAllByLabelText } = await render(
-      <AchievementsScreen />,
-    );
+    const { getAllByLabelText } = await render(<AchievementsScreen />);
 
     // Multiple gold locked medals exist (Cartographer, Long Hauler, etc.).
     // Assert that at least one is present.
@@ -168,9 +153,7 @@ describe('AchievementsScreen', () => {
   it('shows progress fraction "150 / 1000" for the discovery next-goal card', async () => {
     makeStore(mockStatsPartialUnlock, new Set(['first-light', 'pathfinder']));
 
-    const { getByText, getByTestId } = await render(
-      <AchievementsScreen />,
-    );
+    const { getByTestId } = await render(<AchievementsScreen />);
 
     // Cartographer is the next discovery goal (threshold 1000); player has 150.
     const card = getByTestId('next-goal-card-discovery');
@@ -179,15 +162,11 @@ describe('AchievementsScreen', () => {
 
   // 8 -----------------------------------------------------------------------
   it('shows "All Streak trophies unlocked!" when all streak achievements are unlocked', async () => {
-    const allStreakIds = ACHIEVEMENTS
-      .filter((a) => a.category === 'streak')
-      .map((a) => a.id);
+    const allStreakIds = ACHIEVEMENTS.filter((a) => a.category === 'streak').map((a) => a.id);
 
     makeStore(mockStatsAllLocked, new Set(allStreakIds));
 
-    const { getByText } = await render(
-      <AchievementsScreen />,
-    );
+    const { getByText } = await render(<AchievementsScreen />);
 
     expect(getByText('All Streak trophies unlocked!')).toBeTruthy();
   });

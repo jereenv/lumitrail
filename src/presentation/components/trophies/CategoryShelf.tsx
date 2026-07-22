@@ -70,22 +70,15 @@ export default function CategoryShelf({
 
       {next === undefined ? (
         // All trophies in this category are unlocked.
-        <GameCard
-          accent={palette.aurora}
-          testID={`next-goal-card-${category}`}
-        >
-          <Text style={styles.completeText}>
-            All {capitalise(category)} trophies unlocked!
-          </Text>
+        <GameCard accent={palette.aurora} testID={`next-goal-card-${category}`}>
+          <Text style={styles.completeText}>All {capitalise(category)} trophies unlocked!</Text>
         </GameCard>
       ) : (
         // Show the next locked achievement as a nudge card.
         <NextGoalCard category={category} stats={stats} next={next} />
       )}
 
-      {children !== undefined && (
-        <View style={styles.childrenWrapper}>{children}</View>
-      )}
+      {children !== undefined && <View style={styles.childrenWrapper}>{children}</View>}
     </View>
   );
 }
@@ -100,27 +93,18 @@ interface NextGoalCardInternalProps {
   next: AchievementDefinition;
 }
 
-function NextGoalCard({
-  category,
-  stats,
-  next,
-}: NextGoalCardInternalProps): React.ReactElement {
+function NextGoalCard({ category, stats, next }: NextGoalCardInternalProps): React.ReactElement {
   const tierColor = tierColors[next.tier];
   const current = stats[next.metric] as number;
   const progress = Math.min(1, next.threshold > 0 ? current / next.threshold : 0);
 
   return (
-    <GameCard
-      accent={tierColor}
-      testID={`next-goal-card-${category}`}
-    >
+    <GameCard accent={tierColor} testID={`next-goal-card-${category}`}>
       {/* Top row: "Next goal" label + tier chip */}
       <View style={styles.topRow}>
         <Text style={styles.nextGoalLabel}>NEXT GOAL</Text>
         <View style={[styles.tierChip, { backgroundColor: `${tierColor}20` }]}>
-          <Text style={[styles.tierChipText, { color: tierColor }]}>
-            {next.tier.toUpperCase()}
-          </Text>
+          <Text style={[styles.tierChipText, { color: tierColor }]}>{next.tier.toUpperCase()}</Text>
         </View>
       </View>
 

@@ -73,7 +73,9 @@ export default function AchievementsScreen(): React.ReactElement {
         </View>
         <View style={styles.headerText}>
           <Text style={styles.headerTitle}>Trophies</Text>
-          <Text style={styles.headerSubtitle}>{unlockedCount} of {total} unlocked</Text>
+          <Text style={styles.headerSubtitle}>
+            {unlockedCount} of {total} unlocked
+          </Text>
         </View>
       </View>
       <ScrollView
