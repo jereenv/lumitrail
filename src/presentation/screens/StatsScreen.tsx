@@ -9,6 +9,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { palette, radii, spacing, typography } from '@/app/theme';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
+import { useNavigationStore } from '@/app/store/useNavigationStore';
 import {
   LevelBadge,
   ProgressRing,
@@ -18,9 +19,11 @@ import {
 } from '@/presentation/components';
 import { levelForXp } from '@/domain/progression/levels';
 import { regionCompletion, worldwidePercent } from '@/domain/regions/exploration';
+import { regionCenter } from '@/domain/regions/resolver';
 import type { RegionTally } from '@/domain/loop/state';
 import JourneyHero from '@/presentation/components/journey/JourneyHero';
 import StatTile from '@/presentation/components/journey/StatTile';
+import RegionCard from '@/presentation/components/journey/RegionCard';
 
 const MAX_REGIONS = 10;
 
@@ -52,35 +55,6 @@ function SectionLabel({ title }: { title: string }): React.ReactElement {
   return <Text style={styles.sectionLabel}>{title}</Text>;
 }
 
-interface RegionBarProps {
-  row: RegionRow;
-}
-
-function RegionBar({ row }: RegionBarProps): React.ReactElement {
-  const { ref, revealedCells } = row.tally;
-  const pct = Math.min(100, Math.max(0, row.percent));
-
-  return (
-    <View style={styles.regionRow}>
-      <View style={styles.regionHeader}>
-        <Text style={styles.regionName} numberOfLines={1}>
-          {ref.name}
-        </Text>
-        <View style={styles.regionMeta}>
-          <Text style={styles.regionKindBadge}>{ref.kind}</Text>
-          <Text style={styles.regionPct}>{pct.toFixed(1)}%</Text>
-        </View>
-      </View>
-      <View style={styles.progressTrack}>
-        <View style={[styles.progressFill, { width: `${pct}%` }]} />
-      </View>
-      <Text style={styles.regionCells}>
-        {revealedCells} / {ref.targetCells} cells
-      </Text>
-    </View>
-  );
-}
-
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
@@ -88,6 +62,7 @@ function RegionBar({ row }: RegionBarProps): React.ReactElement {
 export default function StatsScreen(): React.ReactElement {
   const { playerState } = useExplorationStore();
   const { stats, streak } = playerState;
+  const focusMap = useNavigationStore((s) => s.focusMap);
 
   const levelProgress = levelForXp(stats.totalXp);
 
@@ -97,6 +72,13 @@ export default function StatsScreen(): React.ReactElement {
       : Math.min(1, stats.currentStreakDays / stats.longestStreakDays);
 
   const regionRows = buildRegionRows(playerState.regions);
+
+  const handleRegionPress = (row: RegionRow): void => {
+    const c = regionCenter(row.tally.ref.id);
+    if (c !== null) {
+      focusMap({ ...c, label: row.tally.ref.name });
+    }
+  };
 
   return (
     <View style={styles.root}>
@@ -239,9 +221,14 @@ export default function StatsScreen(): React.ReactElement {
             </Text>
           </View>
         ) : (
-          <View style={styles.card}>
+          <View style={styles.regionList}>
             {regionRows.map((row) => (
-              <RegionBar key={row.id} row={row} />
+              <RegionCard
+                key={row.id}
+                row={row}
+                onPress={() => handleRegionPress(row)}
+                testID={`region-card-${row.id}`}
+              />
             ))}
           </View>
         )}
@@ -330,58 +317,8 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.xs,
     color: palette.textMuted,
   },
-  regionRow: {
-    gap: spacing.xs,
-    paddingVertical: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: palette.surfaceAlt,
-  },
-  regionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  regionName: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.sm,
-    color: palette.text,
-    flex: 1,
-  },
-  regionMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  regionList: {
     gap: spacing.sm,
-  },
-  regionKindBadge: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.xs,
-    color: palette.textMuted,
-    backgroundColor: palette.surfaceAlt,
-    borderRadius: radii.sm,
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-  },
-  regionPct: {
-    fontFamily: typography.display,
-    fontSize: typography.sizes.sm,
-    color: palette.aurora,
-    fontWeight: '600',
-  },
-  progressTrack: {
-    height: 4,
-    backgroundColor: palette.surfaceAlt,
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: 4,
-    backgroundColor: palette.aurora,
-    borderRadius: 2,
-  },
-  regionCells: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.xs,
-    color: palette.textMuted,
   },
   emptyRegions: {
     fontFamily: typography.body,
