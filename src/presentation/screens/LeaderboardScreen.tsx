@@ -113,6 +113,7 @@ const METRIC_LABELS: Record<LeaderboardMetric, string> = {
   distanceMeters: '📍 Distance',
   countriesVisited: '🌍 Countries',
   totalXp: '⚡ XP',
+  // Streak metric: available but not shown in the default chips row.
   longestStreakDays: '🔥 Streak',
 };
 
@@ -167,8 +168,18 @@ export default function LeaderboardScreen(): React.ReactElement {
 
   // Split: top 3 go to PodiumRow, rank 4+ go to FlatList.
   const podiumEntries = entries.filter((e) => e.rank <= 3);
-  const hasPodium = podiumEntries.length >= 3;
-  const listEntries = hasPodium ? entries.filter((e) => e.rank > 3) : entries;
+  // Require all three distinct ranks (1, 2, 3) to be present.
+  // Standard competition ranking can produce ties like [1, 1, 3, 4…] which
+  // would satisfy `length >= 3` but leave the silver pedestal blank.
+  const hasPodium =
+    podiumEntries.some((e) => e.rank === 1) &&
+    podiumEntries.some((e) => e.rank === 2) &&
+    podiumEntries.some((e) => e.rank === 3);
+  // Always include the current player in the FlatList so the ranked-bar-you
+  // row is always reachable, even when they occupy a podium spot.
+  const listEntries = hasPodium
+    ? entries.filter((e) => e.rank > 3 || e.playerId === playerState.playerId)
+    : entries;
 
   // Find the current player's index in the FlatList so we can scroll to them.
   const myIndex = listEntries.findIndex((e) => e.playerId === playerState.playerId);
