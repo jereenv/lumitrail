@@ -1,9 +1,4 @@
-import {
-  FriendStats,
-  FriendProfile,
-  DEMO_FRIEND_PROFILES,
-  getFriendProfile,
-} from './friendDemoData';
+import { DEMO_FRIEND_PROFILES, getFriendProfile } from './friendDemoData';
 
 describe('friendDemoData', () => {
   describe('DEMO_FRIEND_PROFILES', () => {

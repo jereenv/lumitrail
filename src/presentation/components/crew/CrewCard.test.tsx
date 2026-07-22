@@ -35,16 +35,12 @@ const FRIEND: FriendProfile = {
 
 describe('CrewCard', () => {
   it('renders the display name', async () => {
-    const { getByText } = await render(
-      <CrewCard friendProfile={FRIEND} onCompare={jest.fn()} />,
-    );
+    const { getByText } = await render(<CrewCard friendProfile={FRIEND} onCompare={jest.fn()} />);
     expect(getByText('Maya')).toBeTruthy();
   });
 
   it('renders the level label', async () => {
-    const { getByText } = await render(
-      <CrewCard friendProfile={FRIEND} onCompare={jest.fn()} />,
-    );
+    const { getByText } = await render(<CrewCard friendProfile={FRIEND} onCompare={jest.fn()} />);
     // levelForXp(520) with LEVEL_BASE_XP=100: level = floor((1+sqrt(1+8*520/100))/2)
     // = floor((1+sqrt(1+41.6))/2) = floor((1+6.53)/2) = floor(3.76) = 3 — but actual
     // implementation is used here; test just checks the label format.
@@ -53,17 +49,13 @@ describe('CrewCard', () => {
 
   it('calls onCompare when the Compare button is pressed', async () => {
     const onCompare = jest.fn();
-    const { getByTestId } = await render(
-      <CrewCard friendProfile={FRIEND} onCompare={onCompare} />,
-    );
+    const { getByTestId } = await render(<CrewCard friendProfile={FRIEND} onCompare={onCompare} />);
     fireEvent.press(getByTestId('crew-card-compare-maya'));
     expect(onCompare).toHaveBeenCalledTimes(1);
   });
 
   it('has the correct testID on the GameCard', async () => {
-    const { getByTestId } = await render(
-      <CrewCard friendProfile={FRIEND} onCompare={jest.fn()} />,
-    );
+    const { getByTestId } = await render(<CrewCard friendProfile={FRIEND} onCompare={jest.fn()} />);
     expect(getByTestId('crew-card-maya')).toBeTruthy();
   });
 });

@@ -7,14 +7,7 @@
  * from the bottom with rounded top corners.
  */
 import React from 'react';
-import {
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { palette, radii, spacing, typography } from '@/app/theme';
 import Avatar from '@/presentation/components/Avatar';
@@ -59,10 +52,7 @@ interface StatRowConfig {
  *   - Lower value  → palette.onCardMuted  (muted)
  *   - Tie          → both get palette.aurora
  */
-function winnerColors(
-  friendRaw: number,
-  playerRaw: number,
-): { friend: string; player: string } {
+function winnerColors(friendRaw: number, playerRaw: number): { friend: string; player: string } {
   if (friendRaw > playerRaw) {
     return { friend: palette.aurora, player: palette.onCardMuted };
   }
@@ -123,12 +113,7 @@ export default function CompareSheet({
   ];
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       {/* Full-screen dim overlay — testID on the outermost View inside Modal */}
       <View style={styles.overlay} testID="compare-sheet-overlay">
         {/* The card slides up from the bottom */}
@@ -160,11 +145,7 @@ export default function CompareSheet({
             {rows.map((row) => {
               const colors = winnerColors(row.friendRaw, row.playerRaw);
               return (
-                <View
-                  key={row.key}
-                  style={styles.statRow}
-                  testID={`compare-row-${row.key}`}
-                >
+                <View key={row.key} style={styles.statRow} testID={`compare-row-${row.key}`}>
                   <Text
                     style={[styles.statValue, { color: colors.friend }]}
                     accessibilityLabel={`${row.label} friend ${row.friendValue}`}

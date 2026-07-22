@@ -22,10 +22,7 @@ interface CrewCardProps {
   onCompare: () => void;
 }
 
-export default function CrewCard({
-  friendProfile,
-  onCompare,
-}: CrewCardProps): React.ReactElement {
+export default function CrewCard({ friendProfile, onCompare }: CrewCardProps): React.ReactElement {
   const { playerId, displayName, stats } = friendProfile;
   const { level } = levelForXp(stats.totalXp);
   const areaStat = (stats.cellsRevealed * 0.105).toFixed(1) + ' km²';

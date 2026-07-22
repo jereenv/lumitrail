@@ -59,11 +59,7 @@ const PLAYER_TIE = {
 // Helper
 // ---------------------------------------------------------------------------
 
-function renderSheet(
-  playerStats = PLAYER_WINNER,
-  visible = true,
-  onClose = jest.fn(),
-) {
+function renderSheet(playerStats = PLAYER_WINNER, visible = true, onClose = jest.fn()) {
   return render(
     <CompareSheet
       visible={visible}

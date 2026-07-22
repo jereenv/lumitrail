@@ -41,9 +41,27 @@ import SnapshotCard from '../components/crew/SnapshotCard';
 
 function buildInitialRequests(toPlayerId: string): FriendRequest[] {
   return [
-    { id: 'req-1', fromPlayerId: 'maya', toPlayerId, status: 'accepted', createdAt: Date.now() - 86400000 },
-    { id: 'req-2', fromPlayerId: 'kofi', toPlayerId, status: 'accepted', createdAt: Date.now() - 172800000 },
-    { id: 'req-3', fromPlayerId: 'priya', toPlayerId, status: 'pending', createdAt: Date.now() - 3600000 },
+    {
+      id: 'req-1',
+      fromPlayerId: 'maya',
+      toPlayerId,
+      status: 'accepted',
+      createdAt: Date.now() - 86400000,
+    },
+    {
+      id: 'req-2',
+      fromPlayerId: 'kofi',
+      toPlayerId,
+      status: 'accepted',
+      createdAt: Date.now() - 172800000,
+    },
+    {
+      id: 'req-3',
+      fromPlayerId: 'priya',
+      toPlayerId,
+      status: 'pending',
+      createdAt: Date.now() - 3600000,
+    },
   ];
 }
 
@@ -123,11 +141,7 @@ export default function FriendsScreen(): React.ReactElement {
 
         {/* ---- Explorer Snapshot ---- */}
         <SectionHeader title="Explorer Snapshot" />
-        <SnapshotCard
-          playerName={displayName}
-          level={levelProgress.level}
-          stats={stats}
-        />
+        <SnapshotCard playerName={displayName} level={levelProgress.level} stats={stats} />
 
         <View style={styles.bottomPad} />
       </ScrollView>
