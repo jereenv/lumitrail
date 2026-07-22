@@ -135,8 +135,8 @@ export default function MapScreen(): React.ReactElement {
         {
           latitude: focusTarget.latitude,
           longitude: focusTarget.longitude,
-          latitudeDelta: focusTarget.latitudeDelta ?? 0.04,
-          longitudeDelta: focusTarget.longitudeDelta ?? 0.04,
+          latitudeDelta: focusTarget.latitudeDelta,
+          longitudeDelta: focusTarget.longitudeDelta,
         },
         600,
       );
@@ -276,6 +276,8 @@ export default function MapScreen(): React.ReactElement {
             <Polygon
               key={`pulse-${i}`}
               coordinates={ring}
+              // palette.lumen (#FFB74D) with animated alpha — can't use the token
+              // string directly here because the alpha varies per frame.
               fillColor={`rgba(255,183,77,${pulseAlpha})`}
               strokeColor={`rgba(255,183,77,${Math.min(1, pulseAlpha + 0.35)})`}
               strokeWidth={3}

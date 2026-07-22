@@ -13,6 +13,11 @@ import { useExplorationStore } from '@/app/store/useExplorationStore';
 
 import MapScreen from './MapScreen';
 
+// Prefixed with "mock" so jest.mock() factories (which are hoisted above imports
+// by Babel) are allowed to reference it. Variables without that prefix are
+// rejected at parse time by the babel-jest hoisting plugin.
+const mockAnimateToRegion = jest.fn();
+
 // --- Mock the native map SDK so the screen renders with no device. -----------
 jest.mock('react-native-maps', () => {
   const React = require('react');
@@ -21,7 +26,7 @@ jest.mock('react-native-maps', () => {
   const Polyline = jest.fn(() => null);
   const MapView = React.forwardRef(
     (props: { children?: React.ReactNode }, ref: React.Ref<unknown>) => {
-      React.useImperativeHandle(ref, () => ({ animateToRegion: () => undefined }));
+      React.useImperativeHandle(ref, () => ({ animateToRegion: mockAnimateToRegion }));
       return React.createElement(View, { testID: 'map-view' }, props.children);
     },
   );
@@ -90,6 +95,7 @@ function mockNavStore(overrides: Record<string, unknown> = {}): void {
 beforeEach(() => {
   PolygonMock.mockClear();
   useNavStoreMock.mockClear();
+  mockAnimateToRegion.mockClear();
   mockStore();
   mockNavStore();
 });
@@ -136,13 +142,17 @@ describe('MapScreen', () => {
     expect(PolylineMock.mock.calls.length).toBeGreaterThan(0);
   });
 
-  it('calls clearMapFocus when focusTarget is set', async () => {
+  it('calls animateToRegion and clearMapFocus when focusTarget is set', async () => {
     const clearMapFocus = jest.fn();
     mockNavStore({
       focusTarget: { latitude: 59.33, longitude: 18.07, latitudeDelta: 0.04, longitudeDelta: 0.04 },
       clearMapFocus,
     });
     await render(<MapScreen />);
+    expect(mockAnimateToRegion).toHaveBeenCalledWith(
+      expect.objectContaining({ latitude: 59.33, longitude: 18.07 }),
+      600,
+    );
     expect(clearMapFocus).toHaveBeenCalled();
   });
 });
