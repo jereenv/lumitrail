@@ -37,9 +37,9 @@ interface MedalCellProps {
 }
 
 function MedalCell({ def, unlocked, progress }: MedalCellProps): React.ReactElement {
-  // Initialise at 1 if already unlocked (stable value), or 0.85 so the
-  // spring has somewhere to animate from on locked→unlocked first render.
-  const [scale] = useState(() => new Animated.Value(unlocked ? 1 : 0.85));
+  // Initialise at 0.85 if unlocked (so the spring animates from 0.85 → 1),
+  // or 1 if locked (full size, no animation needed).
+  const [scale] = useState(() => new Animated.Value(unlocked ? 0.85 : 1));
 
   useEffect(() => {
     if (unlocked) {
