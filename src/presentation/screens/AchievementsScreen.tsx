@@ -1,23 +1,23 @@
 /**
  * AchievementsScreen — grouped achievement gallery with next-goal nudges.
  *
- * Achievements are grouped by category. Each group shows a "next goal" card
- * (the lowest-threshold locked achievement for that category) and a 2-column
- * grid of AchievementBadge components. Locked badges are rendered at reduced
- * opacity so players can see what's coming.
+ * Achievements are grouped by category. Each group is rendered by
+ * CategoryShelf, which shows a section header, a next-goal nudge card, and a
+ * MedalGrid of all achievements in that category.
  */
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { cardShadow, palette, spacing, typography } from '@/app/theme';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
-import { AchievementBadge, ProgressRing } from '@/presentation/components';
+import { ProgressRing } from '@/presentation/components';
 import {
   ACHIEVEMENTS,
   type AchievementCategory,
   type AchievementDefinition,
 } from '@/domain/achievements/catalog';
 import CategoryShelf from '../components/trophies/CategoryShelf';
+import MedalGrid from '../components/trophies/MedalGrid';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -91,26 +91,11 @@ export default function AchievementsScreen(): React.ReactElement {
               unlockedAchievements={unlockedAchievements}
               definitions={defs}
             >
-              {/* Badge grid */}
-              <View style={styles.badgeGrid}>
-                {defs.map((achievement) => {
-                  const unlocked = unlockedAchievements.has(achievement.id);
-                  return (
-                    <View
-                      key={achievement.id}
-                      style={[styles.badgeWrapper, !unlocked && styles.badgeLocked]}
-                    >
-                      <AchievementBadge achievement={achievement} unlocked={unlocked} size={88} />
-                      {!unlocked && (
-                        <Text style={styles.badgeProgress}>
-                          {Math.min(stats[achievement.metric] as number, achievement.threshold)} /{' '}
-                          {achievement.threshold}
-                        </Text>
-                      )}
-                    </View>
-                  );
-                })}
-              </View>
+              <MedalGrid
+                definitions={defs}
+                stats={stats}
+                unlockedAchievements={unlockedAchievements}
+              />
             </CategoryShelf>
           );
         })}
@@ -168,24 +153,6 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.lg,
     backgroundColor: palette.canvas,
-  },
-  badgeGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  badgeWrapper: {
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  badgeLocked: {
-    opacity: 0.4,
-  },
-  badgeProgress: {
-    fontFamily: typography.body,
-    fontSize: typography.sizes.xs,
-    color: palette.onCardMuted,
-    textAlign: 'center',
   },
   bottomPad: {
     height: spacing.xxl,

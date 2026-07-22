@@ -83,7 +83,9 @@ export default function CategoryShelf({
         <NextGoalCard category={category} stats={stats} next={next} />
       )}
 
-      {children}
+      {children !== undefined && (
+        <View style={styles.childrenWrapper}>{children}</View>
+      )}
     </View>
   );
 }
@@ -153,6 +155,9 @@ function NextGoalCard({
 const styles = StyleSheet.create({
   shelf: {
     gap: spacing.md,
+  },
+  childrenWrapper: {
+    gap: spacing.sm,
   },
   countChip: {
     fontFamily: typography.body,
