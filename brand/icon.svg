@@ -27,8 +27,8 @@
     <!-- Trail winding path (warm cream, rounded caps, leading up to pin) -->
     <path d="M 360 670 Q 390 610 430 570 Q 470 530 512 510 Q 512 480 512 460" stroke="#FFF8EE" stroke-width="14" fill="none" stroke-linecap="round"/>
 
-    <!-- Fog wedge peeling off top-left corner of map -->
-    <path d="M 174 174 L 460 174 Q 500 200 490 240 Q 480 280 450 300 Q 420 340 380 360 Q 330 390 280 400 Q 230 410 200 440 Q 174 460 174 500 Z" fill="#B8F0D8" fill-opacity="0.82"/>
+    <!-- Fog wedge peeling off top-left corner of map card, within safe zone -->
+    <path d="M 320 320 Q 370 315 430 320 Q 510 328 580 345 Q 620 356 625 385 Q 628 410 600 425 Q 565 442 520 452 Q 475 462 435 468 Q 395 474 365 484 Q 340 494 332 518 Q 324 542 330 560 Q 320 560 320 520 Q 320 480 320 460 Q 320 420 320 400 Q 320 360 320 320 Z" fill="#B8F0D8" fill-opacity="0.80"/>
 
     <!-- Map pin group with drop shadow -->
     <g filter="url(#pinShadow)">
