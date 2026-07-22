@@ -11,9 +11,10 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import type { TabId } from '@/app/store/useNavigationStore';
 import { palette, spacing, typography } from '@/app/theme';
 
-export type TabId = 'map' | 'stats' | 'achievements' | 'leaderboard' | 'friends' | 'settings';
+export type { TabId };
 
 interface TabBarProps {
   activeTab: TabId;
