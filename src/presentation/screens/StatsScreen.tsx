@@ -18,8 +18,9 @@ import {
   XpBar,
 } from '@/presentation/components';
 import { levelForXp } from '@/domain/progression/levels';
-import { regionCompletion } from '@/domain/regions/exploration';
+import { regionCompletion, worldwidePercent } from '@/domain/regions/exploration';
 import type { RegionTally } from '@/domain/loop/state';
+import JourneyHero from '@/presentation/components/journey/JourneyHero';
 
 const MAX_REGIONS = 10;
 
@@ -105,6 +106,15 @@ export default function StatsScreen(): React.ReactElement {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
+        {/* ---------------------------------------------------------------- */}
+        {/* Hero section                                                      */}
+        {/* ---------------------------------------------------------------- */}
+        <JourneyHero
+          displayName={playerState.displayName}
+          level={levelProgress.level}
+          worldPercent={worldwidePercent(stats.cellsRevealed)}
+        />
+
         {/* ---------------------------------------------------------------- */}
         {/* Big stats row                                                     */}
         {/* ---------------------------------------------------------------- */}
