@@ -57,7 +57,7 @@ describe('FriendsScreen', () => {
   });
 
   it('accepting a request moves it to the crew', async () => {
-    const { getByTestId, queryAllByText, getByText } = await render(<FriendsScreen />);
+    const { getByTestId, getByText } = await render(<FriendsScreen />);
 
     await act(async () => {
       fireEvent.press(getByTestId('request-accept-req-3'));
@@ -92,9 +92,13 @@ describe('FriendsScreen', () => {
     expect(getByText('vs')).toBeTruthy();
   });
 
-  it('snapshot card renders player name', async () => {
+  it('snapshot card renders player figures', async () => {
     const { getByText } = await render(<FriendsScreen />);
     // SnapshotCard receives playerName="Test Player" from the mocked store
     expect(getByText('Test Player')).toBeTruthy();
+    // Level 3 yields "Wanderer" title (from explorerTitle function)
+    expect(getByText('Wanderer')).toBeTruthy();
+    // cellsRevealed is 25 (mocked as .toLocaleString() which renders as "25")
+    expect(getByText('25')).toBeTruthy();
   });
 });
