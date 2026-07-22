@@ -41,7 +41,7 @@ export default function ScreenHeader({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: palette.surface,
+    backgroundColor: palette.canvas,
     flexDirection: 'row',
     alignItems: 'center',
     padding: spacing.md,
@@ -54,13 +54,13 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: typography.display,
     fontSize: typography.sizes.lg,
-    color: palette.text,
+    color: palette.onCard,
     fontWeight: '700',
   },
   subtitle: {
     fontFamily: typography.body,
     fontSize: typography.sizes.sm,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
   },
   right: {
     flexShrink: 0,

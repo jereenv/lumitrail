@@ -9,14 +9,14 @@
 import React from 'react';
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 
-import { palette, radii, spacing, typography } from '@/app/theme';
+import { cardShadow, palette, radii, spacing, typography } from '@/app/theme';
 
 interface StatCardProps {
   label: string;
   value: string | number;
   /** Optional emoji or short text displayed before the label. */
   icon?: string;
-  /** Override colour for the value text. Defaults to `palette.lumen`. */
+  /** Override colour for the value text. Defaults to `palette.coral`. */
   accent?: string;
   style?: ViewStyle;
 }
@@ -25,7 +25,7 @@ export default function StatCard({
   label,
   value,
   icon,
-  accent = palette.lumen,
+  accent = palette.coral,
   style,
 }: StatCardProps): React.ReactElement {
   return (
@@ -43,20 +43,23 @@ export default function StatCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: palette.surface,
+    backgroundColor: palette.card,
     borderRadius: radii.md,
+    borderWidth: 1.5,
+    borderColor: palette.cardBorder,
     padding: spacing.md,
     gap: spacing.xs,
+    ...cardShadow,
   },
   labelRow: {
     fontFamily: typography.body,
     fontSize: typography.sizes.sm,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
   },
   label: {
     fontFamily: typography.body,
     fontSize: typography.sizes.sm,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
   },
   value: {
     fontFamily: typography.display,

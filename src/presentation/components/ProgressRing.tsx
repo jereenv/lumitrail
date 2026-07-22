@@ -30,7 +30,7 @@ interface ProgressRingProps {
   strokeWidth?: number;
   /** Arc colour. Defaults to `palette.lumen`. */
   color?: string;
-  /** Background ring colour. Defaults to `palette.surfaceAlt`. */
+  /** Background ring colour. Defaults to `palette.cardBorder`. */
   backgroundColor?: string;
   children?: React.ReactNode;
 }
@@ -39,8 +39,8 @@ export default function ProgressRing({
   progress,
   size = 64,
   strokeWidth = 6,
-  color = palette.lumen,
-  backgroundColor = palette.surfaceAlt,
+  color = palette.coral,
+  backgroundColor = palette.cardBorder,
   children,
 }: ProgressRingProps): React.ReactElement {
   const clamped = Math.min(1, Math.max(0, progress));

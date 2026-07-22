@@ -17,7 +17,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { palette, radii, spacing, tierColors, typography } from '@/app/theme';
+import { cardShadow, palette, radii, spacing, tierColors, typography } from '@/app/theme';
 import { ACHIEVEMENTS_BY_ID } from '@/domain/achievements/catalog';
 import type { DomainEvent } from '@/domain/loop/events';
 
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     top: spacing.xl,
     left: spacing.md,
     right: spacing.md,
-    backgroundColor: palette.surface,
+    backgroundColor: palette.card,
     borderWidth: 1.5,
     borderRadius: radii.md,
     paddingVertical: spacing.sm,
@@ -111,12 +111,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    // Subtle elevation so the toast floats above the map
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 6,
+    ...cardShadow,
   },
   message: {
     flex: 1,

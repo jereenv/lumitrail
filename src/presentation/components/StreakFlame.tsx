@@ -25,7 +25,7 @@ export default function StreakFlame({
   active = true,
 }: StreakFlameProps): React.ReactElement {
   const isActive = active && days > 0;
-  const color = isActive ? palette.lumen : palette.textMuted;
+  const color = isActive ? palette.coral : palette.onCardMuted;
   const emojiSize = size * 0.65;
   const countSize = size * 0.45;
 

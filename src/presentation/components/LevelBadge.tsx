@@ -50,20 +50,20 @@ export default function LevelBadge({ level, size = 'md' }: LevelBadgeProps): Rea
 
 const styles = StyleSheet.create({
   badge: {
-    backgroundColor: palette.surface,
+    backgroundColor: palette.card,
     borderWidth: 2,
-    borderColor: palette.lumen,
+    borderColor: palette.coral,
     alignItems: 'center',
     justifyContent: 'center',
   },
   text: {
     fontFamily: typography.display,
-    color: palette.lumen,
+    color: palette.coral,
     lineHeight: undefined,
   },
   number: {
     fontFamily: typography.display,
-    color: palette.lumen,
+    color: palette.coral,
     fontWeight: '700',
     lineHeight: undefined,
   },

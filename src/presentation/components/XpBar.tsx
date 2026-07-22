@@ -77,12 +77,12 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   track: {
-    backgroundColor: palette.surface,
+    backgroundColor: palette.cardBorder,
     borderRadius: 999,
     overflow: 'hidden',
   },
   fill: {
-    backgroundColor: palette.lumen,
+    backgroundColor: palette.aurora,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -90,13 +90,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-    backgroundColor: palette.lumenBright,
+    backgroundColor: palette.lumen,
     opacity: 0.6,
   },
   label: {
     fontFamily: typography.body,
     fontSize: typography.sizes.xs,
-    color: palette.textMuted,
+    color: palette.onCardMuted,
     textAlign: 'right',
   },
 });

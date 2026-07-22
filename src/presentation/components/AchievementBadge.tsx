@@ -25,9 +25,9 @@ export default function AchievementBadge({
   size = 80,
 }: AchievementBadgeProps): React.ReactElement {
   const tierColor = tierColors[achievement.tier];
-  const backgroundColor = unlocked ? `${tierColor}22` : palette.surfaceAlt;
-  const textColor = unlocked ? tierColor : palette.textMuted;
-  const borderColor = unlocked ? tierColor : palette.surfaceAlt;
+  const backgroundColor = unlocked ? `${tierColor}22` : palette.cardBorder;
+  const textColor = unlocked ? tierColor : palette.onCardMuted;
+  const borderColor = unlocked ? tierColor : palette.cardBorder;
 
   return (
     <View
@@ -45,7 +45,7 @@ export default function AchievementBadge({
     >
       {/* Tier indicator dot */}
       <View
-        style={[styles.tierDot, { backgroundColor: unlocked ? tierColor : palette.textMuted }]}
+        style={[styles.tierDot, { backgroundColor: unlocked ? tierColor : palette.onCardMuted }]}
       />
 
       <Text
