@@ -1,18 +1,21 @@
 /**
  * TabBar — the custom bottom navigation bar.
  *
- * Each tab is a TouchableOpacity with an emoji icon and a short label. The
- * active tab glows in `palette.lumen`; inactive tabs are muted. A thin top
- * border visually separates the bar from screen content.
+ * Each tab is a TouchableOpacity with an emoji icon and a game-voice label.
+ * The active tab uses `palette.coral`; inactive tabs use `palette.onCardMuted`.
+ * A soft top border and card shadow separate the bar from screen content.
+ * `useSafeAreaInsets` ensures the bar clears the home indicator on iOS and
+ * gesture navigation bar on Android.
  *
  * We export `TabId` as a named type so screens can type their own navigation
  * state without importing from a navigation library.
  */
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { TabId } from '@/app/store/useNavigationStore';
-import { palette, spacing, typography } from '@/app/theme';
+import { cardShadow, palette, spacing, typography } from '@/app/theme';
 
 export type { TabId };
 
@@ -28,20 +31,22 @@ interface TabMeta {
 }
 
 const TABS: readonly TabMeta[] = [
-  { id: 'map', icon: '🗺️', label: 'Map' },
-  { id: 'stats', icon: '📊', label: 'Stats' },
-  { id: 'achievements', icon: '🏅', label: 'Badges' },
-  { id: 'leaderboard', icon: '🏆', label: 'Board' },
-  { id: 'friends', icon: '👥', label: 'Friends' },
+  { id: 'map', icon: '🗺️', label: 'Explore' },
+  { id: 'stats', icon: '📊', label: 'Journey' },
+  { id: 'achievements', icon: '🏅', label: 'Trophies' },
+  { id: 'leaderboard', icon: '🏆', label: 'Ranks' },
+  { id: 'friends', icon: '👥', label: 'Crew' },
   { id: 'settings', icon: '⚙️', label: 'Settings' },
 ];
 
 export default function TabBar({ activeTab, onTabPress }: TabBarProps): React.ReactElement {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: Math.max(spacing.sm, insets.bottom) }]}>
       {TABS.map((tab) => {
         const isActive = tab.id === activeTab;
-        const color = isActive ? palette.lumen : palette.textMuted;
+        const color = isActive ? palette.coral : palette.onCardMuted;
 
         return (
           <TouchableOpacity
@@ -65,12 +70,12 @@ export default function TabBar({ activeTab, onTabPress }: TabBarProps): React.Re
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: palette.surface,
+    backgroundColor: palette.card,
     borderTopWidth: 1,
-    borderTopColor: palette.surfaceAlt,
+    borderTopColor: palette.cardBorder,
     flexDirection: 'row',
-    paddingBottom: spacing.sm,
     paddingHorizontal: spacing.xs,
+    ...cardShadow,
   },
   tab: {
     flex: 1,

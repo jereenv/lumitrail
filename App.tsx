@@ -2,7 +2,7 @@
  * Lumitrail — App shell.
  *
  * Manages first-run onboarding and the main bottom-tab navigation.
- * Deliberately lightweight: navigation state lives in a single useState,
+ * Deliberately lightweight: navigation state lives in useNavigationStore,
  * no third-party router required.
  */
 import React, { useEffect, useState } from 'react';
@@ -12,8 +12,8 @@ import { StatusBar } from 'expo-status-bar';
 
 import { palette } from '@/app/theme';
 import { useExplorationStore } from '@/app/store/useExplorationStore';
+import { useNavigationStore } from '@/app/store/useNavigationStore';
 import { TabBar } from '@/presentation/components';
-import type { TabId } from '@/presentation/components';
 import {
   OnboardingScreen,
   MapScreen,
@@ -27,7 +27,8 @@ import {
 export default function App(): React.ReactElement {
   const { init } = useExplorationStore();
   const [hasOnboarded, setHasOnboarded] = useState(false);
-  const [activeTab, setActiveTab] = useState<TabId>('map');
+  const activeTab = useNavigationStore((s) => s.activeTab);
+  const setActiveTab = useNavigationStore((s) => s.setActiveTab);
 
   useEffect(() => {
     void init();
@@ -63,10 +64,10 @@ export default function App(): React.ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: palette.ink,
+    backgroundColor: palette.canvas,
   },
   content: {
     flex: 1,
-    backgroundColor: palette.ink,
+    backgroundColor: palette.canvas,
   },
 });
