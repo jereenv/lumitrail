@@ -40,3 +40,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# local design specs and plans (not published)
+docs/superpowers/
