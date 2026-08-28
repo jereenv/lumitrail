@@ -45,20 +45,6 @@ paywalls, no premium tier, and no ads in the core experience.
 - 🔒 **Privacy-first** — location stays on your device; granular sharing opt-ins;
   full data export and delete.
 
-## Why it's better than the originals
-
-|                        | **Lumitrail**                                    | Fog of World                 | Wandrer                   |
-| ---------------------- | ------------------------------------------------ | ---------------------------- | ------------------------- |
-| Price                  | **Free**                                         | $30–40 one-time              | $40/yr (free tier capped) |
-| Platforms              | **Android + iOS**                                | iOS/Android/macOS            | Web-first                 |
-| Battery                | **Geofence-wake, batched, balanced accuracy**    | 5–10%/hr reported            | n/a (web)                 |
-| Background reliability | **Fixes queued + replayed; never silently lost** | Silently stops               | n/a                       |
-| Social / leaderboards  | **Built in, open to all**                        | None                         | Limited                   |
-| Offline                | **Fully offline-first**                          | Partial                      | No                        |
-| Sync                   | **Conflict-free (G-Set CRDT)**                   | iCloud/Drive (crash reports) | Server-side               |
-
----
-
 ## Quick start
 
 ### Prerequisites
